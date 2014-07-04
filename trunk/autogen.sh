@@ -11,7 +11,7 @@ currentDir=`pwd`
 function prepareST()
 {
     if ! test -f $_3rdParty/st-1.9/obj/libst.a ;then
-        cd $_3rdParty && unzip st-1.9.zip && cd st-1.9 && make linux-debug
+        cd $_3rdParty && unzip st-1.9.zip && cd st-1.9/ && make linux-debug
     fi
     if test $? -ne 0;then
         echo -e $RED"...\t\tFailed!"$BLACK
