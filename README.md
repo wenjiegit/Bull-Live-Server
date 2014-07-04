@@ -32,4 +32,4 @@ BLS 就是为了汲取上述软件的特点，做一个更好用的直播服务�
 
 history
 ================
-2014-07-05[0.1]  init project
+[0.1]&nbsp;2014-07-05&nbsp;init project
