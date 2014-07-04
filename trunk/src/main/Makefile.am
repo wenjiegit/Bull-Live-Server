@@ -2,7 +2,6 @@ INCLUDES = -I @TOP_INCLUDE@
 
 bin_PROGRAMS = bls
 
-# ccms edge
 bls_LDFLAGS = -ldl
 bls_LDFLAGS += -lz
 bls_SOURCES = main.cpp
