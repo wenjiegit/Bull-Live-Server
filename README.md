@@ -4,11 +4,11 @@ Bull Live Server 简称 BLS ，旨在使用C++语言提供一款兼顾性能和�
 
 为何要写 BLS ？
 
-1、simple rtmp server  https://github.com/winlinvip/simple-rtmp-server &nbsp;
+1、simple rtmp server  https://github.com/winlinvip/simple-rtmp-server </br>
   SRS很简洁却功能太少，BLS 使用C++ 语言，结合基于state thread library
   的基础库和ST架构可以功能更强大，可以让编码更简洁，功能更强大。
 
-2、crtmp server  http://www.rtmpd.com/
+2、crtmp server  http://www.rtmpd.com/</br>
   CRTMPD功能很完善，架构上却很复杂，C++代码也写得晦涩难懂。
   而BLS会使用更优秀的C++特性。
 
