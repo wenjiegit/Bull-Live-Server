@@ -5,8 +5,9 @@ Bull Live Server 简称 BLS ，旨在使用C++语言提供强大功能和高性�
 为何要写 BLS ？
 
 1、simple rtmp server  https://github.com/winlinvip/simple-rtmp-server<br/>
-  SRS很简洁却功能太少，BLS 使用C++语言强有力的现代特性，完全重新架构和编码，结合基于state thread library<br/>
-  的基础库和ST架构可以功能更强大，可以让编码更简洁，功能更强大。<br/>
+  SRS很简洁却功能太少，BLS 使用C++语言强有力的现代特性，完全重新架构和编码，
+  结合基于state thread library的基础库和ST架构可以功能更强大，可以让编码更简洁，功能更强大。
+<br/>
 <br/>
 2、crtmp server  http://www.rtmpd.com/<br/>
   CRTMPD功能很完善，架构上却很复杂，C++代码也写得晦涩难懂。<br/>
@@ -28,3 +29,7 @@ Bull Live Server 简称 BLS ，旨在使用C++语言提供强大功能和高性�
 比较了这么多，BLS要做什么？目标是什么？定位是什么?<br/>
 BLS 就是为了汲取上述软件的特点，做一个更好用的直播服务器，要免费，要开源，功能和性能不打折，<br/>
 代码要简洁、易懂。<br/>
+
+history
+================
+[0.1]&nbsp;&nbsp;2014-07-05&nbsp;&nbsp;&nbsp;init project
