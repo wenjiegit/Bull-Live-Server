@@ -16,10 +16,10 @@ Bull Live Server 简称 BLS ，旨在使用C++语言提供一款兼顾性能和�
   这个基于nginx，性能自不必说，功能比crtmp少，但是纯异步架构的复杂度和简洁性都不够好。<br/>
 <br/>
 4、red 5 http://www.red5.org/<br/>
-  red 5 代码很老，和新的一些rtmp 服务器对接会有问题。<br/>
+  red 5 性能有瓶颈，而且和新的一些rtmp 服务器对接会有问题。<br/>
 <br/>
 5、wowza http://www.wowza.com/<br/>
-  基于java语言，性能不好，还是收费版，不适合屌丝们部署。<br/>
+  基于java语言，收费版，不适合屌丝们部署，但架构比较陈旧，而且配置很繁琐，正在作古之中。<br/>
 <br/>
 6、FMS http://www.adobe.com<br/>
   现在叫AMS，功能和性能都不差，基本什么功能都有，毕竟是adobe自家的，但是license很昂贵！<br/>
