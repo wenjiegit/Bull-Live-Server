@@ -13,3 +13,5 @@ all-am:
 	@echo -e "\\e[32m"
 	@echo "build bls success."
 	@echo -e "\\e[0m"
+	mkdir ${top_builddir}/bin
+	cp -f bls ${top_builddir}/bin

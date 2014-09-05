@@ -14,7 +14,8 @@ libmrtmp_a_SOURCES = \
 	mrtmpsource.cpp \
 	mrtmppool.cpp \
 	mflashvideoinfo.cpp \
-	mrtmptimestampcorrector.cpp
+	mrtmptimestampcorrector.cpp \
+	mflvrecoder.cpp
 
 noinst_HEADERS = \
 	mrtmpconnection.hpp \
@@ -27,7 +28,8 @@ noinst_HEADERS = \
 	mrtmpsource.hpp \
 	mrtmppool.hpp \
 	mflashvideoinfo.hpp \
-	mrtmptimestampcorrector.hpp
+	mrtmptimestampcorrector.hpp \
+	mflvrecoder.hpp
 
 all-am:
 	@echo -e "\\e[32m"
