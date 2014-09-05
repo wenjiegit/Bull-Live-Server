@@ -7,6 +7,8 @@ BLACK="\\e[0m"
 
 _3rdParty="3rdparty"
 currentDir=`pwd`
+hpdir="http-parser-2.1"
+ssldir="openssl-1.0.1c"
 
 function prepareST()
 {
@@ -19,9 +21,32 @@ function prepareST()
     fi
 }
 
+# check http parser
+function prepareHttpParser()
+{
+    if ! test -f $_3rdParty/$hpdiar/libhttp_parser.a; then
+        if test -d $_3rdParty/$hpdir; then
+            rm -rf $_3rdParty/$hpdir
+        fi
+        cd $_3rdParty && unzip http-parser-2.1.zip && cd $hpdir && make package
+        if test $? -ne 0; then
+            exit -1
+        fi
+    fi
+}
+
+
 function prepareOpenSSL()
 {
-    exit 0   
+    if ! test -f $_3rdParty/$ssldir/libcrypto.a; then
+        if test -d $_3rdParty/$ssldir; then
+            rm -rf $_3rdParty/$ssldir
+        fi
+        cd $_3rdParty && unzip openssl-1.0.1c.zip && cd $ssldir && ./config && make
+        if test $? -ne 0; then
+            exit -1
+        fi
+    fi
 }
 
 function runCommand()
@@ -44,6 +69,10 @@ function checkFile()
 }
 
 runCommand prepareST
+cd $currentDir
+runCommand prepareHttpParser
+cd $currentDir
+runCommand prepareOpenSSL
 cd $currentDir
 
 checkFile NEWS

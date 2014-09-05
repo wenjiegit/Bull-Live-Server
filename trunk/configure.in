@@ -21,8 +21,17 @@ AC_PROG_RANLIB
 AC_DEFINE_UNQUOTED(BLS_VERSION,	["0.1.`git rev-list --all|wc -l`"], [bls version])
 AC_DEFINE_UNQUOTED(BLS_BUILD_DATE,	["`date`"],		[bls build time])
 
-TOP_INCLUDE="\${top_builddir}/include"
+TOP_INCLUDE="\${top_builddir}/include -I\${top_builddir}/include/mcore -I\${top_builddir}/include/mnetwork -I\${top_builddir}/src/mrtmp"
 AC_SUBST(TOP_INCLUDE)
+
+TP_INCLUDE="\${top_builddir}/3rdparty/st-1.9/obj -I\${top_builddir}/3rdparty/http-parser-2.1"
+AC_SUBST(TP_INCLUDE)
+
+TOP_LIBS="\${top_builddir}/src/mrtmp -lmrtmp -L\${top_builddir}/src/mnetwork -lmnetwork -L\${top_builddir}/src/mcore -lmcore"
+AC_SUBST(TOP_LIBS)
+
+TP_LIBS="\${top_builddir}/3rdparty/st-1.9/obj -lst -L\${top_builddir}/3rdparty/http-parser-2.1 -lhttp_parser -L\${top_builddir}/3rdparty/openssl-1.0.1c/ -lssl -lcrypto"
+AC_SUBST(TP_LIBS)
 
 # Checks for typedefs, structures, and compiler characteristics.
 #AC_HEADER_STDBOOL
@@ -64,6 +73,12 @@ AC_CHECK_FUNCS([clock_gettime \
 
 AC_CONFIG_FILES([Makefile
 				 src/Makefile
-                 src/main/Makefile])
+                 src/mcore/Makefile
+                 src/mnetwork/Makefile
+                 src/mrtmp/Makefile
+                 src/main/Makefile
+                 include/Makefile
+                 include/mcore/Makefile
+                 include/mnetwork/Makefile])
 #AC_CONFIG_SUBDIRS([])
 AC_OUTPUT

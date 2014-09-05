@@ -19,3 +19,33 @@
 *.exe
 *.out
 *.app
+
+# Makefile
+Makefile.in
+Makefile
+
+# bls
+http-parser-2.1
+openssl-1.0.1c
+st-1.9
+
+# automake
+.deps
+stamp-h1
+aclocal.m4
+install-sh
+missing
+configure
+depcomp
+config.log
+config.status
+bls
+autom4te.cache
+bls.creator.user
+config.h
+config.h.in
+config.h.in~
+bls.config
+bls.creator
+bls.files
+bls.includes

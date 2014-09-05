@@ -1,1 +1,1 @@
-SUBDIRS = main
+SUBDIRS = mcore mnetwork mrtmp main

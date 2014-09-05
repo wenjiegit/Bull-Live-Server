@@ -1,9 +1,12 @@
-INCLUDES = -I @TOP_INCLUDE@
-
+INCLUDES = -I@TP_INCLUDE@ -I@TOP_INCLUDE@
 bin_PROGRAMS = bls
 
 bls_LDFLAGS = -ldl
 bls_LDFLAGS += -lz
+bls_LDADD  = ../mrtmp/libmrtmp.a
+bls_LDADD += ../mnetwork/libmnetwork.a
+bls_LDADD += ../mcore/libmcore.a
+bls_LDADD += -L@TP_LIBS@
 bls_SOURCES = main.cpp
 
 all-am:
