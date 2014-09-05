@@ -5,11 +5,9 @@ lib_LIBRARIES = libmrtmp.a
 CXXFLAGS += -Wall
 libmrtmp_a_SOURCES = \
 	mrtmpconnection.cpp \
-	mrtmpplayer.cpp \
-	mrtmpsocket.cpp \
 	mrtmpurl.cpp \
 	mrtmpserver.cpp \
-	srs_core_handshake.cpp \
+	mrtmphandshake.cpp \
 	mrtmpprotocol.cpp \
 	mamf0serializer.cpp \
 	mamfvariant.cpp \
@@ -21,11 +19,9 @@ libmrtmp_a_SOURCES = \
 
 noinst_HEADERS = \
 	mrtmpconnection.hpp \
-	mrtmpplayer.hpp \
-	mrtmpsocket.hpp \
 	mrtmpurl.hpp \
 	mrtmpserver.hpp \
-	srs_core_handshake.hpp \
+	mrtmphandshake.hpp \
 	mrtmpprotocol.hpp \
 	mamf0serializer.hpp \
 	mamfvariant.hpp \

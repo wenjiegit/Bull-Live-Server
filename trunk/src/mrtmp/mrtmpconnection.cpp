@@ -6,7 +6,7 @@
 
 
 #include "mrtmpconnection.hpp"
-#include "srs_core_handshake.hpp"
+#include "mrtmphandshake.hpp"
 #include "mrtmpprotocol.hpp"
 #include "mrtmpsource.hpp"
 #include "mrtmppool.hpp"
