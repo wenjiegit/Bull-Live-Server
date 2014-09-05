@@ -290,9 +290,7 @@ int MRtmpConnection::onVideo(MRtmpMessage *msg)
 
 int MRtmpConnection::onMetadata(MRtmpMessage *msg)
 {
-    int ret = E_SUCCESS;
-
-    return ret;
+    return m_source->onMetadata(*msg);
 }
 
 int MRtmpConnection::publishService()

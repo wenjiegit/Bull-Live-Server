@@ -30,7 +30,7 @@ AC_SUBST(TP_INCLUDE)
 TOP_LIBS="\${top_builddir}/src/mrtmp -lmrtmp -L\${top_builddir}/src/mnetwork -lmnetwork -L\${top_builddir}/src/mcore -lmcore"
 AC_SUBST(TOP_LIBS)
 
-TP_LIBS="\${top_builddir}/3rdparty/st-1.9/obj -lst -L\${top_builddir}/3rdparty/http-parser-2.1 -lhttp_parser -L\${top_builddir}/3rdparty/openssl-1.0.1c/ -lssl -lcrypto"
+TP_LIBS="\${top_builddir}/3rdparty/st-1.9/obj/libst.a -L\${top_builddir}/3rdparty/http-parser-2.1 -lhttp_parser -L\${top_builddir}/3rdparty/openssl-1.0.1c/ -lssl -lcrypto"
 AC_SUBST(TP_LIBS)
 
 # Checks for typedefs, structures, and compiler characteristics.

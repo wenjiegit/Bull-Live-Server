@@ -326,6 +326,7 @@ private:
 private:
     int fillStream(int size, MStream &stream);
     int responeAck();
+    MRtmpMessage *reEncodeMetadata(MRtmpMessage *metadata);
 
 private:
     static int decodeAny(MStream &stream, MAMF0Any **arg1, MAMF0Any **arg2, MAMF0Any **arg3, MAMF0Any **arg4, MAMF0Any **arg5, MAMF0Any **arg6);

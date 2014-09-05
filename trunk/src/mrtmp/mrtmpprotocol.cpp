@@ -1,5 +1,4 @@
 #include "mrtmpprotocol.hpp"
-#include "mrtmp.hpp"
 #include "mrtmphandshake.hpp"
 #include "mrtmpurl.hpp"
 
@@ -781,7 +780,11 @@ int MRtmpProtocol::on_recv_message(MRtmpMessage* msg)
         if ((ret = m_session->onVideo(msg)) != E_SUCCESS) {
             return ret;
         }
-    } else if (msg->isAmf0Command() || msg->isAmf3Command()) {
+    } else if (msg->isAmf0Data()) {
+        if ((ret = m_session->onMetadata(msg)) != E_SUCCESS) {
+            return ret;
+        }
+    }else if (msg->isAmf0Command() || msg->isAmf3Command()) {
         MAMF0Any *arg1 = NULL;
         MAMF0Any *arg2 = NULL;
         MAMF0Any *arg3 = NULL;
@@ -1025,6 +1028,16 @@ int MRtmpProtocol::responeAck()
     }
 
     return ret;
+}
+
+MRtmpMessage *MRtmpProtocol::reEncodeMetadata(MRtmpMessage *metadata)
+{
+//    MStream &stream = metadata->payload;
+//    if (stream.contains("onMetaData")) {
+
+//    }
+
+    return NULL;
 }
 
 MRtmpContext::MRtmpContext()

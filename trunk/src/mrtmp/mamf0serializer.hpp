@@ -3,7 +3,6 @@
 
 #include <MStream>
 
-#include "mamfvariant.hpp"
 #include "mamftypes.hpp"
 
 class MAMF0Serializer
@@ -29,8 +28,8 @@ public:
     static int readStrictArray(MStream &buffer, MAMF0StrictArray &var);
     static int writeStrictArray(MStream &buffer, MAMF0StrictArray &var);
 
-    static int readAMF3Object(MStream &buffer, MAMFVariant &variant);
-    static int writeAMF3Object(MStream &buffer, MAMFVariant &variant);
+    // static int readAMF3Object(MStream &buffer, MAMFVariant &variant);
+    // static int writeAMF3Object(MStream &buffer, MAMFVariant &variant);
 
     static int readBoolean(MStream &buffer, bool &var);
     static int writeBoolean(MStream &buffer, bool value);

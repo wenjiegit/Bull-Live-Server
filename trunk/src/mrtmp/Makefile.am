@@ -10,7 +10,6 @@ libmrtmp_a_SOURCES = \
 	mrtmphandshake.cpp \
 	mrtmpprotocol.cpp \
 	mamf0serializer.cpp \
-	mamfvariant.cpp \
 	mamftypes.cpp \
 	mrtmpsource.cpp \
 	mrtmppool.cpp \
@@ -24,7 +23,6 @@ noinst_HEADERS = \
 	mrtmphandshake.hpp \
 	mrtmpprotocol.hpp \
 	mamf0serializer.hpp \
-	mamfvariant.hpp \
 	mamftypes.hpp \
 	mrtmpsource.hpp \
 	mrtmppool.hpp \

@@ -265,6 +265,7 @@ int MAMF0Serializer::writeStrictArray(MStream &buffer, MAMF0StrictArray &var)
     return ret;
 }
 
+/*
 int MAMF0Serializer::readAMF3Object(MStream &buffer, MAMFVariant &variant)
 {
     return E_TYPE_NOT_SUPPORTED;
@@ -274,7 +275,7 @@ int MAMF0Serializer::writeAMF3Object(MStream &buffer, MAMFVariant &variant)
 {
     return E_TYPE_NOT_SUPPORTED;
 }
-
+*/
 int MAMF0Serializer::readBoolean(MStream &buffer, bool &var)
 {
     Check_Marker(AMF0_BOOLEAN);

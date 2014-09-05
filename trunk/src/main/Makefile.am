@@ -6,7 +6,7 @@ bls_LDFLAGS += -lz
 bls_LDADD  = ../mrtmp/libmrtmp.a
 bls_LDADD += ../mnetwork/libmnetwork.a
 bls_LDADD += ../mcore/libmcore.a
-bls_LDADD += -L@TP_LIBS@
+bls_LDADD += @TP_LIBS@
 bls_SOURCES = main.cpp
 
 all-am:
