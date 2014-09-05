@@ -30,6 +30,13 @@ Bull Live Server 简称 BLS ，旨在使用C++语言提供强大功能和高性�
 BLS 就是为了汲取上述软件的特点，做一个更好用的直播服务器，要免费，要开源，功能和性能不打折，<br/>
 代码要简洁、易懂。<br/>
 
+Code Line History
+================
+[0.1]&nbsp;&nbsp;2014-09-19&nbsp;&nbsp;&nbsp; line 10901<br/>
+
 history
 ================
-[0.1]&nbsp;&nbsp;2014-07-05&nbsp;&nbsp;&nbsp;init project
+[0.1]&nbsp;&nbsp;2014-09-19&nbsp;&nbsp;&nbsp;support fmle or flash pushlish stream.<br/>
+[0.1]&nbsp;&nbsp;2014-09-19&nbsp;&nbsp;&nbsp;support flash or vlc like play stream.<br/>
+[0.1]&nbsp;&nbsp;2014-09-19&nbsp;&nbsp;&nbsp;support amf0 serialize.<br/>
+[0.1]&nbsp;&nbsp;2014-07-05&nbsp;&nbsp;&nbsp;init project.<br/>
