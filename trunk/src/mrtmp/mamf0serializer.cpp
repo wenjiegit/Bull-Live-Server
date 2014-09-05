@@ -1,7 +1,6 @@
 
 /*
  * Copyright (C) wenjie.zhao
- * Copyright (C) www.17173.com
  */
 
 #include "mamf0serializer.hpp"
