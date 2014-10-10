@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
         rtmpServer.push_back(s);
     }
 
-    int childProcessCount = 2;
+    int childProcessCount = BlsConf::instance()->getWorkerCount();
     int &internalListenPort = BlsConf::instance()->m_rtmpInternalPort;
 
     for (int i = 0; i < childProcessCount; ++i) {
@@ -74,6 +74,9 @@ int main(int argc, char *argv[])
 
             continue;
         } else if (pid == 0) {
+            MString appName = MString().sprintf("%s:%d", "bls_worker", internalListenPort);
+            app.setProcTitle(appName);
+
            return childRun(app);
         }
     }
@@ -109,7 +112,6 @@ int childRun(MCoreApplication &app)
     }
 
     BlsConf::instance()->m_processRole = Process_Role_Child;
-    app.setProcTitle("bls_worker");
 
     return app.exec();
 }

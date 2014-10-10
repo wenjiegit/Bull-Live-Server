@@ -1300,7 +1300,7 @@ int MRtmpHandshake::use_complex_response(MTcpSocket &skt,char * _c1,bool encrypt
             RC4_encrypt(rc4_key_out,1536,buf);
         }
     }
-    log_trace("complex handshake read c2 success.");
+    log_info("complex handshake read c2 success.");
 
     return E_SUCCESS;
 }

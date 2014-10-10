@@ -7,15 +7,21 @@
 
 using namespace std;
 
+#define Gop_No_Gop          "no_gop"
+#define Gop_Fast_Gop        "fast_gop"
+#define Gop_Normal_Gop      "normal_gop"
+
+#define Mode_Remote         "remote"
+#define Mode_Local          "local"
+
+#define Min_Worker_Count    (1)
+#define Max_Worker_Count    (32)
+
 struct BlsHostInfo
 {
     MString addr;
     mint16 port;
 };
-
-#define Gop_No_Gop          "no_gop"
-#define Gop_Fast_Gop        "fast_gop"
-#define Gop_Normal_Gop      "normal_gop"
 
 struct BlsVhost
 {
@@ -28,9 +34,6 @@ struct BlsVhost
     MString mode;
     vector<BlsHostInfo> origins;
 };
-
-#define Mode_Remote "remote"
-#define Mode_Local  "local"
 
 class BlsConf : public MObject
 {
@@ -48,12 +51,15 @@ public:
     MString getMode(const MString &vhost);
     vector<BlsHostInfo> getOriginInfo(const MString &vhost);
 
+    inline const int getWorkerCount() const { return  m_workerCount;}
+
 private:
     bool init(const MString &confName);
 
 private:
     MHash<MString, BlsVhost> m_vhosts;
     vector<BlsHostInfo> m_listenerInfo;
+    int m_workerCount;
 };
 
 #endif // BLSCONF_HPP

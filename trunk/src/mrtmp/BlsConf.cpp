@@ -75,6 +75,23 @@ bool BlsConf::init(const MString &confName)
         m_listenerInfo.push_back(info);
     }
 
+    // worker count
+    MEE *rtmp_listen = root->get("worker_count");
+    if (!rtmp_listen) {
+        m_workerCount = Min_Worker_Count;
+        log_warn("No worker_count feild in conf file, reset to default: %d", Min_Worker_Count);
+    } else {
+        m_workerCount = rtmp_listen->arg0().toInt();
+
+        if (m_workerCount < Min_Worker_Count) {
+            log_warn("worker count range [%d-%d], but actual is %d, reset to %d", Min_Worker_Count, Max_Worker_Count, m_workerCount, Min_Worker_Count);
+            m_workerCount = Min_Worker_Count;
+        } else if (m_workerCount > Max_Worker_Count) {
+            log_warn("worker count range [%d-%d], but actual is %d, reset to %d", Min_Worker_Count, Max_Worker_Count, m_workerCount, Max_Worker_Count);
+            m_workerCount = Max_Worker_Count;
+        }
+    }
+
     // all vhost
     vector<MEE*> vhosts = root->getVector("vhost");
     for (int i = 0; i < vhosts.size(); ++i) {
