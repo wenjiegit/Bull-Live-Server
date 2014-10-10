@@ -28,6 +28,7 @@ public:
     MString url();
     MString body();
     MString method();       // request only
+    MString host();
 
     bool headerParseComplete();
     bool bodyParseComplete();

@@ -67,6 +67,11 @@ MString MHttpParser::method()
     return http_method_str((enum http_method)m_parser.method);
 }
 
+MString MHttpParser::host()
+{
+    return feild("Host");
+}
+
 bool MHttpParser::headerParseComplete()
 {
     return m_headerParseComplete;

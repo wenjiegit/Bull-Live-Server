@@ -18,26 +18,6 @@ MRtmpUrl::MRtmpUrl(const MString &url)
     parse();
 }
 
-bool MRtmpUrl::hostIsIp()
-{
-    int a,b,c,d;
-
-    MString ht = host();
-    if (ht.empty()) return false;
-
-    int ret = sscanf(ht.c_str(), "%d.%d.%d.%d", &a, &b, &c, &d);
-    if (ret == 4
-            && (a>=0 && a<=255)
-            && (b>=0 && b<=255)
-            && (c>=0 && c<=255)
-            && (d>=0 && d<=255))
-    {
-        return true;
-    }
-
-    return false;
-}
-
 void MRtmpUrl::setRtmpUrl(const MString &url)
 {
     setUrl(url);
@@ -66,7 +46,7 @@ void MRtmpUrl::parse()
         m_app = "/";
     }
 
-    if (!hostIsIp()) {
+    if (!stringIsIp(host())) {
         m_vhost = host();
     } else {
         MString vhost = queryByKey("vhost");

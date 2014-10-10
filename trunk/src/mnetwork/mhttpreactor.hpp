@@ -31,6 +31,8 @@ public:
     int post(const MString& path, const MString &data);
     MString get(const MString &urlStr);
 
+    static int readHttpHeader(MHttpParser &parser, MString &body, MTcpSocket &socket);
+
 protected:
     MTcpSocket *m_socket;
     MHttpParser *m_parser;

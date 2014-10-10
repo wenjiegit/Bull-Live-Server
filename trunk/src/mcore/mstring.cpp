@@ -160,17 +160,21 @@ bool MString::startWith(const char *str) const
 
 bool MString::endWith(const MString &str) const
 {
-    return find_last_of(str) == (size() - str.size());
+    if (size() < str.size()) return false;
+
+    MString ss = substr(size() - str.size(), str.size());
+
+    return ss == str;
 }
 
 bool MString::endWith(const string &str) const
 {
-    return find_last_of(str) == (size() - str.size());
+    return endWith(MString(str));
 }
 
 bool MString::endWith(const char *str) const
 {
-    return find_last_of(str) == (size() - strlen(str));
+    return endWith(MString(str));
 }
 
 MString &MString::replace(const MString &before, const MString &after, bool replaceAll)

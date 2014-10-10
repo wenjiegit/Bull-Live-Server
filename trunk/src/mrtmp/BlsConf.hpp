@@ -28,8 +28,10 @@ struct BlsVhost
     BlsVhost()
     {
         gopCache = Gop_Fast_Gop;
+        httpLiveFlvEnabled = false;
     }
 
+    bool httpLiveFlvEnabled;
     MString gopCache;
     MString mode;
     vector<BlsHostInfo> origins;
@@ -46,12 +48,17 @@ public:
 
     static BlsConf *instance(const MString &confName = "");
 
-    vector<BlsHostInfo> getListenInfo();
+    vector<BlsHostInfo> getRtmpListenInfo();
     MString getGopType(const MString &vhost);
     MString getMode(const MString &vhost);
     vector<BlsHostInfo> getOriginInfo(const MString &vhost);
 
     inline const int getWorkerCount() const { return  m_workerCount;}
+
+    // http flv live enabledl
+    bool httpLiveFlvEnabled(const MString &vhost);
+
+    vector<BlsHostInfo> getHttpLiveFlvListenInfo();
 
 private:
     bool init(const MString &confName);
@@ -60,6 +67,8 @@ private:
     MHash<MString, BlsVhost> m_vhosts;
     vector<BlsHostInfo> m_listenerInfo;
     int m_workerCount;
+
+    vector<BlsHostInfo> m_httpLiveFlvHosts;
 };
 
 #endif // BLSCONF_HPP

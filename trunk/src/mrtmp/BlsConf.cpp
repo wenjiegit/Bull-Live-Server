@@ -20,7 +20,7 @@ BlsConf *BlsConf::instance(const MString &confName)
     return th;
 }
 
-vector<BlsHostInfo> BlsConf::getListenInfo()
+vector<BlsHostInfo> BlsConf::getRtmpListenInfo()
 {
     return m_listenerInfo;
 }
@@ -56,6 +56,21 @@ vector<BlsHostInfo> BlsConf::getOriginInfo(const MString &vhost)
     return ret;
 }
 
+bool BlsConf::httpLiveFlvEnabled(const MString &vhost)
+{
+    if (m_vhosts.contains(vhost)) {
+        BlsVhost &host = m_vhosts[vhost];
+        return host.httpLiveFlvEnabled;
+    }
+
+    return false;
+}
+
+vector<BlsHostInfo> BlsConf::getHttpLiveFlvListenInfo()
+{
+    return m_httpLiveFlvHosts;
+}
+
 bool BlsConf::init(const MString &confName)
 {
     MConf *cf = new MConf(confName);
@@ -64,7 +79,7 @@ bool BlsConf::init(const MString &confName)
 
     m_rtmpInternalPort = 1961;
 
-    // listen
+    // rtmp listen
     MStringList args = root->get("rtmp_listen")->arguments();
     for (MStringList::iterator iter = args.begin(); iter != args.end(); ++iter) {
         MString &io = *iter;
@@ -72,7 +87,23 @@ bool BlsConf::init(const MString &confName)
         BlsHostInfo info;
         info.addr =  ip_ports.at(0);
         info.port =  ip_ports.at(1).toInt();
+
         m_listenerInfo.push_back(info);
+    }
+
+    // http listen
+    MEE *httpLiveFlv = root->get("http_live_flv_listen");
+    if (httpLiveFlv) {
+        MStringList args = httpLiveFlv->arguments();
+        for (MStringList::iterator iter = args.begin(); iter != args.end(); ++iter) {
+            MString &io = *iter;
+            MStringList ip_ports = io.split(":");
+            BlsHostInfo info;
+            info.addr =  ip_ports.at(0);
+            info.port =  ip_ports.at(1).toInt();
+
+            m_httpLiveFlvHosts.push_back(info);
+        }
     }
 
     // worker count
@@ -130,6 +161,15 @@ bool BlsConf::init(const MString &confName)
 
         if (vh.mode == Mode_Remote && vh.origins.empty()) {
             log_warn("when vhost mode is remote, origins must not be empty.");
+        }
+
+        // http live flv
+        MEE *liveFlv = ee->get("http_flv_live");
+        if (liveFlv) {
+            MEE *enabled = liveFlv->get("enabled");
+            if (enabled && enabled->arg0() == "on") {
+                vh.httpLiveFlvEnabled = true;
+            }
         }
 
         // other

@@ -80,17 +80,13 @@ int MHttpReactor::response(const MHttpResponseHeader &header,
 {
     // header
     MString headerString = header.toString();
-    if (m_socket->write(headerString.c_str(), headerString.length()) < 0) {
+
+    if (data)
+        headerString.append(data, length);
+
+    if (m_socket->write(headerString.data(), headerString.length()) < 0) {
         merrno = errno;
         return -1;
-    }
-
-    if (data) {
-        // body
-        if (m_socket->write(data, length) < 0) {
-            merrno = errno;
-            return -1;
-        }
     }
 
     return 0;
@@ -212,4 +208,47 @@ MString MHttpReactor::get(const MString &urlStr)
     body.append(left_body, leftBytes);
 
     return body;
+}
+
+int MHttpReactor::readHttpHeader(MHttpParser &parser, MString &body, MTcpSocket &socket)
+{
+    MString httpContent;
+    MElapsedTimer timer;
+
+    while (true) {
+        int bufSize = 2048;
+        char buf[bufSize];
+
+        int nread = socket.read(buf, bufSize);
+        if (nread <= 0) {
+            return -1;
+        }
+
+        httpContent.append(buf, nread);
+
+        int hasParsedCount = parser.parse(httpContent.data(), httpContent.length());
+        if (hasParsedCount < 0) {
+            return -2;
+        }
+
+        if (parser.headerParseComplete()) {
+            break;
+        }
+
+        if (timer.hasExpired(1000 * 10)) {     // timer elapsed 10 s
+            return -4;
+        }
+
+        if (httpContent.size() > MAX_HTTP_HEADER_LENGTH) {
+            return -5;
+        }
+    }
+
+    MString delim("\r\n\r\n");
+    size_t index = httpContent.find(delim);
+    if (index != MString::npos) {
+        body = httpContent.substr(index + delim.size());
+    }
+
+    return E_SUCCESS;
 }

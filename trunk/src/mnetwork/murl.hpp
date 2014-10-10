@@ -43,6 +43,8 @@ public:
 
     MString errorString();
 
+    static bool stringIsIp(const MString &str);
+
 public:
     int parse();
     int parseQuery();

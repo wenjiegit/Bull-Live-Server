@@ -4,11 +4,11 @@
 #include <MLoger>
 #include <MStream>
 
-static char flv_header[] = {'F', 'L', 'V',
+char flv_header[] = {'F', 'L', 'V',
                             0x01, 0x05, 0x00, 0x00, 0x00, 0x09,
                             0x00, 0x00, 0x00, 0x00};
 
-static MStream serialFlv(MRtmpMessage *msg)
+MStream serialFlv(MRtmpMessage *msg)
 {
     MStream stream;
 

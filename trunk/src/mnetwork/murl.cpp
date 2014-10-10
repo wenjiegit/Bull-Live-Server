@@ -139,6 +139,25 @@ MString MUrl::errorString()
     return m_errorString;
 }
 
+bool MUrl::stringIsIp(const MString &str)
+{
+    int a,b,c,d;
+
+    if (str.empty()) return false;
+
+    int ret = sscanf(str.c_str(), "%d.%d.%d.%d", &a, &b, &c, &d);
+    if (ret == 4
+            && (a>=0 && a<=255)
+            && (b>=0 && b<=255)
+            && (c>=0 && c<=255)
+            && (d>=0 && d<=255))
+    {
+        return true;
+    }
+
+    return false;
+}
+
 int MUrl::parse()
 {
     http_parser_url hpu;

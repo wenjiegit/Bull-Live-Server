@@ -21,7 +21,6 @@ public:
     inline MString vhost() { return m_vhost; }
     inline MString stream() { return m_stream; }
     inline MString tcUrl() { return m_tcUrl; }
-    bool hostIsIp();
 
     void setRtmpUrl(const MString &url);
     MString url();

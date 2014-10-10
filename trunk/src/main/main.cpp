@@ -8,6 +8,7 @@
 #include "BlsChildChannel.hpp"
 #include "BlsUtils.hpp"
 #include "BlsStatistics.hpp"
+#include "BlsHttpService.hpp"
 
 #include <unistd.h>
 #include <getopt.h>
@@ -38,16 +39,36 @@ int main(int argc, char *argv[])
 
     // master process
     vector<MRtmpServer *> rtmpServer;
-    vector<BlsHostInfo> infos = BlsConf::instance()->getListenInfo();
+    vector<BlsHostInfo> infos = BlsConf::instance()->getRtmpListenInfo();
     for (int i = 0; i < infos.size(); ++i) {
         BlsHostInfo &info = infos.at(i);
         MRtmpServer *s = new MRtmpServer;
         if (!s->listen(info.addr, info.port)) {
             log_error("listen %s:%d failed.", info.addr.c_str(), info.port);
             return -1;
+        } else {
+            log_trace("Bls Rtmp Server listen %s:%d success.", info.addr.c_str(), info.port);
         }
 
         rtmpServer.push_back(s);
+    }
+
+    // http service
+    vector<BlsHttpService *> httpServers;
+    vector<BlsHostInfo> httpInfos = BlsConf::instance()->getHttpLiveFlvListenInfo();
+
+    for (int i = 0; i < httpInfos.size(); ++i) {
+        BlsHostInfo &info = httpInfos.at(i);
+
+        BlsHttpService *httpService = new BlsHttpService;
+        if (!httpService->listen(info.addr, info.port)) {
+            log_error("listen %s:%d failed.", info.addr.c_str(), info.port);
+            return -1;
+        } else {
+            log_trace("Bls Http Server listen %s:%d success.", info.addr.c_str(), info.port);
+        }
+
+        httpServers.push_back(httpService);
     }
 
     int childProcessCount = BlsConf::instance()->getWorkerCount();
@@ -97,6 +118,12 @@ int main(int argc, char *argv[])
         s->close();
         // TODO check if we delete it ,app will crash.
         //s->deleteLater();
+    }
+
+    // close http service in master
+    for (unsigned int i = 0; i < httpServers.size(); ++i) {
+        BlsHttpService *server = httpServers.at(i);
+        server->close();
     }
 
     int ret = app.exec();
