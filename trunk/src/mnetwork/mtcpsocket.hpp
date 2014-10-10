@@ -18,11 +18,24 @@ class MTcpSocket;
 class MTcpSocket : public MObject
 {
 public:
+    enum {
+        ReadReady   = POLLIN,
+        WriteReady  = POLLOUT,
+        Error       = POLLPRI,
+    };
+
+public:
     MTcpSocket(MObject *parent = 0);
     MTcpSocket(int fd, MObject *parent = 0);
     MTcpSocket(st_netfd_t stfd, MObject *parent = 0);
 
     virtual ~MTcpSocket();
+
+    /*!
+    * used with MTcpSocket(MObject *parent = 0)
+    * to create fd.
+    */
+    int initSocket();
 
     int connectToHost(const MString &host, muint16 port);
     void close();
@@ -30,10 +43,13 @@ public:
     st_netfd_t stFD();
     int osFD();
 
+    int testFeature(mint32 type, mint64 timeout = 0);
+
     /*!
     * read a line of data.
     */
-    MString readLine();
+    int readLine(MString &line, const MString &delimer = "\n");
+    int readToLineCache();
 
     // micro seconds :  us
     void setRecvTimeout(muint64 recvTimeout);
@@ -68,6 +84,7 @@ private:
     MString m_recvBuffer;
     muint64 m_sendBytes;
     muint64 m_recvBytes;
+    MString m_line;
 };
 
 #endif // MSTTCPSOCKET_H

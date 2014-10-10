@@ -47,6 +47,10 @@ const char *mstrerror(int errnum)
         return "read error";
     case MERROR::E_URL_NO_TCURL:
         return "no tcurl set";
+    case MERROR::E_CONNECTION_FAILED:
+        return "conncet failed.";
+    case MERROR::E_SOCKET_CLOSE_NORMALLY:
+        return "socket close normally.";
 
     default:
         return strerror(errnum);

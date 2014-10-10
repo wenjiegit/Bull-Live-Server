@@ -19,17 +19,6 @@ MRtmpMessage::~MRtmpMessage()
 
 }
 
-
-int MRtmpMessage::decode()
-{
-    return E_SUCCESS;
-}
-
-int MRtmpMessage::encode()
-{
-    return E_SUCCESS;
-}
-
 MRtmpProtocol::MRtmpProtocol(MTcpSocket *socket, MObject *parent)
     : MObject(parent)
     , m_socket(socket)
@@ -366,6 +355,23 @@ int MRtmpProtocol::sendAny(const MRtmpMessageHeader &header, MAMF0Any *arg1, MAM
     msg->header.streamID = m_rtmpCtx.streamID;
 
     if ((ret = send_message(msg)) != E_SUCCESS) {
+        return ret;
+    }
+
+    return ret;
+}
+
+int MRtmpProtocol::sendNetStatusEvent(double transactionID, MRtmpNetStatusEvent *event)
+{
+    int ret = E_SUCCESS;
+
+    MRtmpMessageHeader header;
+    header.perfer_cid = RTMP_CID_OverConnection;
+    header.type = RTMP_MSG_AMF0CommandMessage;
+
+    MString cmdName = RTMP_AMF0_COMMAND_ON_STATUS;
+
+    if ((ret = sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, event)) != E_SUCCESS) {
         return ret;
     }
 
@@ -784,7 +790,7 @@ int MRtmpProtocol::on_recv_message(MRtmpMessage* msg)
         if ((ret = m_session->onMetadata(msg)) != E_SUCCESS) {
             return ret;
         }
-    }else if (msg->isAmf0Command() || msg->isAmf3Command()) {
+    } else if (msg->isAmf0Command() || msg->isAmf3Command()) {
         MAMF0Any *arg1 = NULL;
         MAMF0Any *arg2 = NULL;
         MAMF0Any *arg3 = NULL;
@@ -829,8 +835,6 @@ int MRtmpProtocol::on_recv_message(MRtmpMessage* msg)
         MString name = dynamic_cast<MAMF0ShortString *>(arg1)->var;
         double id = dynamic_cast<MAMF0Number *>(arg2)->var;
 
-        log_trace("command message name=\"%s\", id=%lf", name.c_str(), id);
-
         if ((ret = m_session->onCommand(msg, name, id, arg3, arg4, arg5, arg6)) != E_SUCCESS) {
             log_error("command invoke error. ret=%d", ret);
             return ret;
@@ -841,7 +845,8 @@ int MRtmpProtocol::on_recv_message(MRtmpMessage* msg)
             log_error("WindowAckledgementSize read 4 bytes failed. ret=%d", ret);
             return ret;
         }
-        log_trace("rtmp window ack size=%d", m_rtmpCtx.windowAcknowledgementSize);
+        log_info("rtmp window ack size=%d", m_rtmpCtx.windowAcknowledgementSize);
+
     } else if (msg->isSetChunkSize()) {
         if ((ret = stream.read4Bytes(m_rtmpCtx.inChunkSize)) != E_SUCCESS) {
             log_error("chunk size read 4 bytes failed. ret=%d", ret);
@@ -873,7 +878,7 @@ int MRtmpProtocol::on_recv_message(MRtmpMessage* msg)
             if ((ret = stream.read4Bytes(bufferLength)) != E_SUCCESS) {
                 return ret;
             }
-            log_trace("stream id = %d, set buffer length to %d ms", streamID, bufferLength);
+            log_info("stream id = %d, set buffer length to %d ms", streamID, bufferLength);
             m_rtmpCtx.bufferLength = bufferLength;
 
             break;
@@ -1023,8 +1028,6 @@ int MRtmpProtocol::responeAck()
         }
 
         m_rtmpCtx.ackedSize = recvBytes;
-
-        log_trace("Acknowledgement size %d", ackedSize);
     }
 
     return ret;
@@ -1076,4 +1079,19 @@ void MRtmpContext::setStreamName(const MString &name)
 MString MRtmpContext::url()
 {
     return rtmpUrl->url();
+}
+
+
+MRtmpNetStatusEvent::MRtmpNetStatusEvent(const MString &code, const MString &level)
+{
+    if (!level.isEmpty())
+        setValue(STATUS_LEVEL, new MAMF0ShortString(level));
+
+    if (!code.isEmpty())
+        setValue(STATUS_CODE, new MAMF0ShortString(code));
+}
+
+MRtmpNetStatusEvent::~MRtmpNetStatusEvent()
+{
+
 }

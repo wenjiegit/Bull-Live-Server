@@ -149,7 +149,7 @@ int MHttpReactor::post(const MString &path, const MString &data)
     return writeResponse(header);
 }
 
-// not support HTTP 1.1 CHUNKED -wenjie.zhao
+// not support HTTP 1.1 CHUNKED
 MString MHttpReactor::get(const MString &urlStr)
 {
     MUrl url(urlStr);
@@ -167,7 +167,6 @@ MString MHttpReactor::get(const MString &urlStr)
     }
     header.setRequest(HTTP_METHOD_GET, path, 1, 0);
     header.setHost(url.host(), url.port());
-    header.setServer("yqms 1.1");
     header.addValue("Connection", "close");
 
     if (writeResponse(header) != 0)

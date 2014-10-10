@@ -22,6 +22,7 @@ public:
     MHttpParser(int parserType);
 
     int parse(const char *data, unsigned int length);
+    int parse(const MString &data);
 
     MString feild(const MString &key);
     MString url();

@@ -13,16 +13,11 @@ MRtmpSource::MRtmpSource(const MString &url, MObject *parent)
     , m_audioSh(NULL)
     , m_metadata(NULL)
 {
-    m_sources[url] = this;
     m_url = url;
 }
 
 MRtmpSource::~MRtmpSource()
 {
-    m_sources.erase(m_url);
-    mFree(m_videoSh);
-    mFree(m_audioSh);
-    mFree(m_metadata);
 }
 
 int MRtmpSource::onVideo(MRtmpMessage &msg)
@@ -70,6 +65,22 @@ int MRtmpSource::onMetadata(MRtmpMessage &msg)
     return E_SUCCESS;
 }
 
+int MRtmpSource::onPublish()
+{
+    return E_SUCCESS;
+}
+
+int MRtmpSource::onUnPublish()
+{
+    // do clean
+    m_sources.erase(m_url);
+    mFree(m_videoSh);
+    mFree(m_audioSh);
+    mFree(m_metadata);
+
+    return E_SUCCESS;
+}
+
 void MRtmpSource::addPool(MRtmpPool *pool)
 {
     m_pools.push_back(pool);
@@ -87,7 +98,7 @@ void MRtmpSource::addPool(MRtmpPool *pool)
         pool->onMessage(*m_metadata);
     }
 
-    fastGop(pool);
+//    fastGop(pool);
 #if 0
     // push gop data
     list<MRtmpMessage>::iterator iter;
@@ -116,7 +127,10 @@ MRtmpSource *MRtmpSource::findSource(const MString &url)
         return m_sources[url];
     }
 
-    return NULL;
+    MRtmpSource *source = new MRtmpSource(url);
+    m_sources[url] = source;
+
+    return source;
 }
 
 void MRtmpSource::addToGop(MRtmpMessage &msg)
@@ -124,7 +138,6 @@ void MRtmpSource::addToGop(MRtmpMessage &msg)
     if (MFlashVideoInfo::videoIsKeyFrame(msg.payload)) {
         // clean gop
         m_gop.clear();
-        log_trace("MRtmpSource gop cleared");
     }
 
     m_gop.push_back(msg);

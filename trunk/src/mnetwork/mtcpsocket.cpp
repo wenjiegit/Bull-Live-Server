@@ -18,10 +18,8 @@
 
 MTcpSocket::MTcpSocket(MObject *parent)
     : MObject(parent)
+    , m_osHandle(-1)
 {
-    m_osHandle = socket(AF_INET, SOCK_STREAM, 0);
-    m_stHandle = st_netfd_open_socket(m_osHandle);
-
     init();
 }
 
@@ -52,6 +50,23 @@ MTcpSocket::~MTcpSocket()
     if (m_osHandle > 0) {
         ::close(m_osHandle);
     }
+}
+
+int MTcpSocket::initSocket()
+{
+    int ret = E_SUCCESS;
+
+    if (m_osHandle < 0) {
+        m_osHandle = socket(AF_INET, SOCK_STREAM, 0);
+        if (m_osHandle < 0) {
+            merrno = errno;
+            return m_osHandle;
+        }
+
+        m_stHandle = st_netfd_open_socket(m_osHandle);
+    }
+
+    return ret;
 }
 
 int MTcpSocket::connectToHost(const MString &host, muint16 port)
@@ -97,10 +112,59 @@ int MTcpSocket::osFD()
     return m_osHandle;
 }
 
-MString MTcpSocket::readLine()
+int MTcpSocket::testFeature(mint32 type, mint64 timeout)
 {
-    // TODO imp
-    return "not supported yet.";
+    int ret = st_netfd_poll(m_stHandle, type, timeout);
+    if (ret == 0) {
+        return E_SUCCESS;
+    }
+
+    return ret;
+}
+
+int MTcpSocket::readLine(MString &line, const MString &delimer)
+{
+    if (m_line.contains(delimer)) {
+        int index = m_line.find(delimer);
+        line = m_line.substr(0, index + delimer.size());
+        m_line.erase(0, index + delimer.size());
+
+        return E_SUCCESS;
+    } else {
+        int bufSize = 1024;
+        char buf[bufSize];
+
+        int readCount = 0;
+        if ((readCount = read(buf, bufSize)) <= 0) {
+            return -1;
+        }
+
+        m_line.append(buf, readCount);
+    }
+
+    // detect again
+    if (m_line.contains(delimer)) {
+        int index = m_line.find_first_of(delimer);
+        line = m_line.substr(0, index + delimer.size());
+        m_line.erase(0, index + delimer.size());
+        return E_SUCCESS;
+    }
+
+    return E_SUCCESS;
+}
+
+int MTcpSocket::readToLineCache()
+{
+    int bufSize = 1024;
+    char buf[bufSize];
+
+    int readCount = 0;
+    if ((readCount = read(buf, bufSize)) <= 0) {
+        return -1;
+    }
+
+    m_line.append(buf, readCount);
+    return E_SUCCESS;
 }
 
 void MTcpSocket::setRecvTimeout(muint64 recvTimeout)
@@ -134,7 +198,9 @@ mint64 MTcpSocket::readFully(char *data, mint64 maxSize)
     } else if (readCount == 0) {
         merrno = ECONNRESET;
     }
-    m_recvBytes += readCount;
+
+    if (readCount > 0)
+        m_recvBytes += readCount;
 
     return readCount;
 }
@@ -145,7 +211,9 @@ mint64 MTcpSocket::write(const char *data, mint64 maxSize)
     if (writeCount == -1) {
         merrno = errno;
     }
-    m_sendBytes += writeCount;
+
+    if (writeCount > 0)
+        m_sendBytes += writeCount;
 
     return writeCount;
 }

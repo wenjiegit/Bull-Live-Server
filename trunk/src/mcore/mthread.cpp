@@ -53,6 +53,9 @@ bool MThread::wait()
 void *MThread::entry(void *arg)
 {
     MThread *this_ptr = (MThread *)arg;
+
+    if (!this_ptr) return NULL;
+
     this_ptr->m_isRunning = true;
     this_ptr->run();
     this_ptr->m_isRunning = false;

@@ -20,6 +20,9 @@ public:
     int onAudio(MRtmpMessage &msg);
     int onMetadata(MRtmpMessage &msg);
 
+    int onPublish();
+    int onUnPublish();
+
     void addPool(MRtmpPool *pool);
     void removePool(MRtmpPool *pool);
 

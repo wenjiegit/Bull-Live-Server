@@ -47,11 +47,16 @@ void MUrl::setUrl(const MString &url)
 MString MUrl::url()
 {
     // url = scheme + path + query
-    MString ret = host() + path();
+    MString ret = MString().sprintf("%s:%d%s", host().c_str(), port(), path().c_str());
     ret.replace("//", "/");
     ret = scheme() + "://" + ret;
 
     return ret;
+}
+
+MString MUrl::fullUrl()
+{
+    return m_url;
 }
 
 MString MUrl::scheme()

@@ -81,6 +81,11 @@ public:
     MString baseName();
     static MString baseName(const MString &fileName);
 
+    /*!
+        return the file handle.
+    */
+    inline FILE *handle() { return fp; }
+
 private:
     MString m_fileName;
     FILE *fp;

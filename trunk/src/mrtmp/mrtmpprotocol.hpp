@@ -143,10 +143,12 @@ enum {
 #define STATUS_DESC                                 "description"
 #define STATUS_DETAILS                              "details"
 #define STATUS_CLIENT_ID                            "clientid"
+
 // status value
-#define STATUS_LEVEL_STATUS                           "status"
-// status error
-#define StatusLevelError                            "error"
+#define STATUS_LEVEL_STATUS                         "status"
+#define STATUS_LEVEL_WARNING                        "warning"
+#define STATUS_LEVEL_ERROR                          "error"
+
 // code value
 #define NetConnection_Connect_Success               "NetConnection.Connect.Success"
 #define NetConnection_Connect_Rejected              "NetConnection.Connect.Rejected"
@@ -158,6 +160,8 @@ enum {
 #define NetStream_Publish_Start                     "NetStream.Publish.Start"
 #define NetStream_Data_Start                        "NetStream.Data.Start"
 #define NetStream_Unpublish_Success                 "NetStream.Unpublish.Success"
+
+#define NetStream_Play_StreamNotFound               "NetStream.Play.StreamNotFound"
 
 // FMLE
 #define RTMP_AMF0_COMMAND_ON_FC_PUBLISH             "onFCPublish"
@@ -176,6 +180,16 @@ struct MRtmpMessageHeader
         streamID = 0;
         timestamp = 0;
         perfer_cid = 0;
+    }
+
+    MRtmpMessageHeader(mint8 tp, mint32 cid)
+        : type(tp)
+        , perfer_cid(cid)
+    {
+        payloadLength = 0;
+        timestampDelta = 0;
+        streamID = 0;
+        timestamp = 0;
     }
 
     mint8   type;
@@ -205,9 +219,6 @@ public:
     inline bool isSetPeerBandwidth() {return header.type == RTMP_MSG_SetPeerBandwidth;}
     inline bool isAggregate() {return header.type == RTMP_MSG_AggregateMessage;}
 
-    virtual int decode();
-    virtual int encode();
-
 public:
     MRtmpMessageHeader header;
     MStream payload;
@@ -230,6 +241,13 @@ struct MRtmpChunkStream
         msg = NULL;
         msg_count = 0;
     }
+};
+
+class MRtmpNetStatusEvent : public MAMF0Object
+{
+public:
+    MRtmpNetStatusEvent(const MString &code = "", const MString &level = "");
+    ~MRtmpNetStatusEvent();
 };
 
 class MRtmpProtocolAbstract
@@ -310,6 +328,7 @@ public:
 
     int sendAny(const MRtmpMessageHeader &header, MAMF0Any *arg1, MAMF0Any *arg2 = NULL, MAMF0Any *arg3 = NULL
             , MAMF0Any *arg4 = NULL, MAMF0Any *arg5 = NULL, MAMF0Any *arg6 = NULL);
+    int sendNetStatusEvent(double transactionID, MRtmpNetStatusEvent *event);
 
     MRtmpContext *getRtmpCtx();
 

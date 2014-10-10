@@ -26,6 +26,7 @@ public:
 
     void setUrl(const MString &url);
     MString url();
+    MString fullUrl();
 
     MString scheme();
     MString host();

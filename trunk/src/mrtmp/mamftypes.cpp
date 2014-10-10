@@ -16,6 +16,19 @@ MString MAMFObject::key(int index)
     return p.first;
 }
 
+MString MAMFObject::value(const MString &k)
+{
+    int index = indexOf(k);
+    if (index > 0) {
+        MAMF0Any *any = value(index);
+        MAMF0ShortString *str = dynamic_cast<MAMF0ShortString *>(any);
+        if (!str) return "";
+        return str->var;
+    }
+
+    return "";
+}
+
 int MAMFObject::indexOf(const MString &key)
 {
     for (unsigned int i = 0; i < values.size(); ++i) {

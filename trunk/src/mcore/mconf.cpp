@@ -97,6 +97,12 @@ int MEE::readToken(MString &line, int lineNo, MEE *mee)
     }
     mee->type = LINE;
 
+    // fix last ;
+    MString &bk = mee->args.back();
+    if (bk.endWith(";")) {
+        bk.erase(bk.size()-1, 1);
+    }
+
     return Read_LINE;
 }
 

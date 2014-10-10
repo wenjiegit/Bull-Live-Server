@@ -17,6 +17,9 @@ class MRtmpProtocol;
 class MRtmpMessage;
 class MRtmpSource;
 
+#define Role_Connection_Publish             0x01
+#define Role_Connection_Play                0x02
+
 class MRtmpConnection : public MThread, public MRtmpProtocolAbstract
 {
 public:
@@ -40,12 +43,14 @@ private:
     int playService();
     int publishService();
     int parseUrl(MAMF0Object *obj);
+    int closeConnection();
 
 private:
     MRtmpUrl m_url;
     MTcpSocket *m_socket;
     MRtmpProtocol *m_protocol;
     MRtmpSource *m_source;
+    int m_role;
 };
 
 #endif // MRTMPCONNECTION_HPP

@@ -32,6 +32,14 @@ int MHttpParser::parse(const char *data, unsigned int length)
     return parsedCount;
 }
 
+int MHttpParser::parse(const MString &data)
+{
+    const char *da = data.data();
+    unsigned int length = data.length();
+
+    return parse(da, length);
+}
+
 MString MHttpParser::feild(const MString &key)
 {
     map<MString, MString>::iterator iter;

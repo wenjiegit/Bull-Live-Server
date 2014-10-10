@@ -18,6 +18,7 @@
 MTcpServer::MTcpServer(MObject *parent)
     : MThread(parent)
     , m_port(-1)
+    , m_socket(NULL)
 {
 }
 
@@ -27,7 +28,12 @@ MTcpServer::~MTcpServer()
 
 bool MTcpServer::listen(const MString &address, muint16 port)
 {
-    int fd = m_socket.osFD();
+    m_socket = new MTcpSocket(this);
+    if (m_socket->initSocket() != E_SUCCESS) {
+        return false;
+    }
+
+    int fd = m_socket->osFD();
 
     int reuse_socket = 1;
     if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &reuse_socket, sizeof(int)) == -1) {
@@ -38,7 +44,7 @@ bool MTcpServer::listen(const MString &address, muint16 port)
     sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
-    if (address.isEmpty()) {
+    if (address == "any") {
         addr.sin_addr.s_addr = INADDR_ANY;
     } else {
         addr.sin_addr.s_addr = inet_addr(address.c_str());
@@ -53,19 +59,15 @@ bool MTcpServer::listen(const MString &address, muint16 port)
         merrno = errno;
         return false;
     }
-
     m_port = port;
     m_host = address;
-    if (address.isEmpty()) {
-        m_host = "any";
-    }
 
     return start() == E_SUCCESS;
 }
 
 void MTcpServer::close()
 {
-    m_socket.close();
+    m_socket->close();
     stop();
 }
 
@@ -87,7 +89,7 @@ int MTcpServer::newConnection(MTcpSocket *socket)
 
 int MTcpServer::run()
 {
-    st_netfd_t fd = m_socket.stFD();
+    st_netfd_t fd = m_socket->stFD();
     if (!fd) {
         return -1;
     }

@@ -71,10 +71,10 @@ public:
     ~MConf();
 
     inline MEE *root() { return m_root; }
+    bool parse(MString &cont);
 
 private:
     MString readFile(const MString &name);
-    bool parse(MString &cont);
 
     bool write();
 

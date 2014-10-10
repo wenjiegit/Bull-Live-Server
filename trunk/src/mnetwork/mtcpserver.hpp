@@ -17,7 +17,7 @@ public:
     MTcpServer(MObject * parent = 0);
     virtual ~MTcpServer();
 
-    bool listen(const MString & address = "",  muint16 port = 0);
+    bool listen(const MString & address,  muint16 port);
     void close();
 
     muint16 port();
@@ -29,7 +29,7 @@ protected:
     virtual int run();
 
 private:
-    MTcpSocket m_socket;
+    MTcpSocket *m_socket;
     muint16 m_port;
     MString m_host;
 };

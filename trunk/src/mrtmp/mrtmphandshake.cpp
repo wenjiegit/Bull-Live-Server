@@ -1204,7 +1204,7 @@ int MRtmpHandshake::use_complex_response(MTcpSocket &skt,char * _c1,bool encrypt
     if (!_random_initialized) {
         srand(0);
         _random_initialized = true;
-        log_trace("srand initialized the random.");
+        log_verbose("srand initialized the random.");
     }
 
     // decode c1
@@ -1361,7 +1361,7 @@ int MRtmpHandshake::handshake_with_server_use_complex(MTcpSocket & skt,bool rtmp
     c1.dump(&c0c1[1]);
 
     if ((ret = skt.write(c0c1, 1537)) < 0) {
-        log_warn("complex handshake send c0c1 failed. ret=%d", ret);
+        log_error("complex handshake send c0c1 failed. ret=%d", ret);
         return ret;
     }
 
@@ -1373,7 +1373,8 @@ int MRtmpHandshake::handshake_with_server_use_complex(MTcpSocket & skt,bool rtmp
         return ret;
     }
 
-    log_trace("version of rtmp is %d, version of flash player is %d.%d.%d.%d",s0s1[0],s0s1[5],s0s1[6],s0s1[7],s0s1[8]);
+    log_trace("version of rtmp is %d, version of flash player is %d.%d.%d.%d"
+              , s0s1[0], s0s1[5], s0s1[6], s0s1[7], s0s1[8]);
 
     c1s1 s1;
     // try schema0.
@@ -1449,43 +1450,42 @@ int MRtmpHandshake::handshake_with_server_use_simple(MTcpSocket & skt)
     memcpy(&c0c1[1],&t,4);
     memset(&c0c1[5],0,4);
 
-    if ((ret = skt.write(c0c1, 1537)) < 0) {
+    if (skt.write(c0c1, 1537) < 0) {
         log_warn("write c0c1 failed. ret=%d", ret);
-        return ret;
+        return -1;
     }
     log_verbose("write c0c1 success.");
 
     char* s0s1 = new char[1537];
     mAutoFreeArray(char, s0s1);
-    if ((ret = skt.readFully(s0s1, 1537)) <= 0) {
-        log_warn("simple handshake recv s0s1 failed. ret=%d", ret);
-        return ret;
+    if (skt.readFully(s0s1, 1537) <= 0) {
+        log_error("simple handshake recv s0s1 failed. ret=%d", ret);
+        return -1;
     }
     log_verbose("simple handshake recv s0s1 success.");
 
     // plain text required.
     if (s0s1[0] != 0x03) {
         ret = ERROR_RTMP_HANDSHAKE;
-        log_warn("handshake failed, plain text required. ret=%d", ret);
+        log_error("handshake failed, plain text required. ret=%d", ret);
         return ret;
     }
     char *c2 = &s0s1[1];
-    if ((ret = skt.write(c2, 1536)) != ERROR_SUCCESS) {
+    if (skt.write(c2, 1536) < 0) {
         log_warn("simple handshake write c2 failed. ret=%d", ret);
-        return ret;
+        return -1;
     }
 
     log_verbose("simple handshake write c2 success.");
 
     char* s2 = new char[1536];
     mAutoFreeArray(char, s2);
-    if ((ret = skt.readFully(s2, 1536)) <= 0) {
+    if (skt.readFully(s2, 1536) <= 0) {
         log_warn("simple handshake recv s2 failed. ret=%d", ret);
-        return ret;
+        return -1;
     }
 
     log_verbose("simple handshake recv s2 success.");
-
     log_trace("simple handshake success.");
 
     return ret;

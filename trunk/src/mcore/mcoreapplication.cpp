@@ -15,6 +15,7 @@ static bool loop_falg = true;
 MCoreApplication::MCoreApplication(int argc, char *argv[])
     : m_argc(argc)
     , m_argv(argv)
+    , m_userData(NULL)
 {
     if (st_set_eventsys(ST_EVENTSYS_ALT)) {
         _err_exit(-1, "st_set_eventsys error.");
@@ -112,6 +113,16 @@ void MCoreApplication::setProcTitle(const MString &title)
 
     // for ps -el
     // prctl(PR_SET_NAME, title.c_str());
+}
+
+void MCoreApplication::setUserData(void *data)
+{
+    m_userData = data;
+}
+
+void *MCoreApplication::userData()
+{
+    return m_userData;
 }
 
 MCoreApplication *mApp()

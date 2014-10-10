@@ -30,6 +30,8 @@ public:
     static void regTimer(MTimer *timer);
     static void removeTimer(MTimer *timer);
     void setProcTitle(const MString &title);
+    void setUserData(void *data);
+    void * userData();
 
 private:
     map<MObject*, bool> deleteLaterObjs;
@@ -38,6 +40,7 @@ private:
     int m_argc;
     char **m_argv;
     char *argvLast;
+    void *m_userData;
 };
 
 extern "C" {

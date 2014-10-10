@@ -9,6 +9,10 @@
 #include "mrtmpprotocol.hpp"
 #include "mrtmpsource.hpp"
 #include "mrtmppool.hpp"
+#include "BlsConf.hpp"
+#include "BlsChildChannel.hpp"
+#include "BlsUtils.hpp"
+#include "BlsBackSource.hpp"
 
 #include <MTcpSocket>
 #include <MLoger>
@@ -23,7 +27,7 @@ MRtmpConnection::MRtmpConnection(MObject *parent)
 
 MRtmpConnection::~MRtmpConnection()
 {
-    log_trace("------------------> MRtmpConnection destroy.");
+
 }
 
 int MRtmpConnection::run()
@@ -36,12 +40,25 @@ int MRtmpConnection::run()
 
     while (!RequestStop) {
         MRtmpMessage *msg = NULL;
-        if (m_protocol->recv_message(&msg) != E_SUCCESS)
-        {
+        int res = m_protocol->recv_message(&msg);
+        if (res == E_SOCKET_CLOSE_NORMALLY) {
+            break;
+        }
+
+        if (res != E_SUCCESS) {
             log_error("MRtmpConnection recv_message error.");
             break;
         }
+
         mMSleep(10);
+    }
+
+    if (m_role == Role_Connection_Publish) {
+        MString url = m_protocol->getRtmpCtx()->url();
+        g_cchannel->sendLine(Internal_CMD_RemoveHasBackSourceRes, url);
+        BlsBackSource::instance()->remove(url);
+
+        log_trace("remove url from master(url=%s)", url.c_str());
     }
 
     m_socket->close();
@@ -96,27 +113,21 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
         }
     } else if (name == "releaseStream") {
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
-        MRtmpMessageHeader header;
-        header.perfer_cid = RTMP_CID_OverConnection;
-        header.type = RTMP_MSG_AMF0CommandMessage;
+        MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
         if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, new MAMF0Undefined)) != E_SUCCESS) {
             return ret;
         }
     } else if (name == "FCPublish") {
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
-        MRtmpMessageHeader header;
-        header.perfer_cid = RTMP_CID_OverConnection;
-        header.type = RTMP_MSG_AMF0CommandMessage;
+        MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
         if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, new MAMF0Undefined)) != E_SUCCESS) {
             return ret;
         }
     } else if (name == "createStream") {
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
-        MRtmpMessageHeader header;
-        header.perfer_cid = RTMP_CID_OverConnection;
-        header.type = RTMP_MSG_AMF0CommandMessage;
+        MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
         if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID)
                                        , new MAMF0Null, new MAMF0Number(1))) != E_SUCCESS)
@@ -126,26 +137,20 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
         m_protocol->getRtmpCtx()->streamID = 1;
     } else if (name == "publish") {
         MString cmdName = "FCPublish";
-        MAMF0Object *obj = new MAMF0Object;
-        obj->setValue(STATUS_CODE, new MAMF0ShortString(NetStream_Publish_Start));
-        obj->setValue(STATUS_DESC, new MAMF0ShortString(NetStream_Publish_Start));
+        MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverStream);
 
-        MRtmpMessageHeader header;
-        header.perfer_cid = RTMP_CID_OverStream;
-        header.type = RTMP_MSG_AMF0CommandMessage;
+        MRtmpNetStatusEvent *obj = new MRtmpNetStatusEvent(NetStream_Publish_Start);
+        obj->setValue(STATUS_DESC, new MAMF0ShortString(NetStream_Publish_Start));
 
         if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, obj)) != E_SUCCESS) {
             return ret;
         }
 
-        cmdName = RTMP_AMF0_COMMAND_ON_STATUS;
-        MAMF0Object *obj1 = new MAMF0Object;
-        obj1->setValue(STATUS_LEVEL, new MAMF0ShortString(STATUS_LEVEL_STATUS));
-        obj1->setValue(STATUS_CODE, new MAMF0ShortString(NetStream_Publish_Start));
+        MRtmpNetStatusEvent *obj1 = new MRtmpNetStatusEvent(NetStream_Publish_Start, STATUS_LEVEL_STATUS);
         obj1->setValue(STATUS_DESC, new MAMF0ShortString(NetStream_Publish_Start));
         obj1->setValue(STATUS_CLIENT_ID, new MAMF0ShortString("ASAICiss"));
 
-        if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, obj1)) != E_SUCCESS) {
+        if ((ret = m_protocol->sendNetStatusEvent(transactionID, obj1)) != E_SUCCESS) {
             return ret;
         }
 
@@ -153,12 +158,18 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
         if (!str) {
             return E_AMF_TYPE_ERROR;
         }
+
         MRtmpContext *ctx = m_protocol->getRtmpCtx();
         ctx->setStreamName(str->var);
 
         MString url = ctx->rtmpUrl->url();
-        m_source = new MRtmpSource(url, this);
+        m_source = MRtmpSource::findSource(url);
+        m_role = Role_Connection_Publish;
+
         log_trace("start publish %s", url.c_str());
+
+        g_cchannel->sendLine(Internal_CMD_IHasBackSourced, url);
+        BlsBackSource::instance()->setHasBackSource(url);
 
     } else if (name == "FCUnpublish") {
         MString cmdName = "onFCUnpublish";
@@ -166,18 +177,14 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
         obj->setValue(STATUS_CODE, new MAMF0ShortString(NetStream_Unpublish_Success));
         obj->setValue(STATUS_DESC, new MAMF0ShortString(NetStream_Unpublish_Success));
 
-        MRtmpMessageHeader header;
-        header.perfer_cid = RTMP_CID_OverConnection;
-        header.type = RTMP_MSG_AMF0CommandMessage;
+        MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
         if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, obj)) != E_SUCCESS) {
             return ret;
         }
     } else if (name == "closeStream") {
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
-        MRtmpMessageHeader header;
-        header.perfer_cid = RTMP_CID_OverConnection;
-        header.type = RTMP_MSG_AMF0CommandMessage;
+        MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
         if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID)
                                        , new MAMF0Null, new MAMF0Undefined)) != E_SUCCESS)
@@ -198,9 +205,7 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
         m_protocol->getRtmpCtx()->streamID = 0;
     } else if (name == "deleteStream") {
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
-        MRtmpMessageHeader header;
-        header.perfer_cid = RTMP_CID_OverConnection;
-        header.type = RTMP_MSG_AMF0CommandMessage;
+        MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
         if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID)
                                        , new MAMF0Null, new MAMF0Null)) != E_SUCCESS)
@@ -208,7 +213,7 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
             return ret;
         }
     } else if (name == "play") {
-        if ((ret = m_protocol->setChunkSize(4096)) != E_SUCCESS) {
+        if ((ret = m_protocol->setChunkSize(40960)) != E_SUCCESS) {
             return ret;
         }
 
@@ -216,15 +221,10 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
             return ret;
         }
 
-        MRtmpMessageHeader header;
-        header.perfer_cid = RTMP_CID_OverConnection2;
-        header.type = RTMP_MSG_AMF0CommandMessage;
-
+        MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection2);
         MString cmdName = RTMP_AMF0_COMMAND_ON_STATUS;
 
-        MAMF0Object *obj = new MAMF0Object;
-        obj->setValue(STATUS_LEVEL, new MAMF0ShortString(STATUS_LEVEL_STATUS));
-        obj->setValue(STATUS_CODE, new MAMF0ShortString(NetStream_Play_Reset));
+        MRtmpNetStatusEvent *obj = new MRtmpNetStatusEvent(NetStream_Play_Reset, STATUS_LEVEL_STATUS);
         obj->setValue(STATUS_DESC, new MAMF0ShortString(NetStream_Play_Reset));
         obj->setValue(STATUS_DETAILS, new MAMF0ShortString(NetStream_Play_Reset));
         obj->setValue(STATUS_CLIENT_ID, new MAMF0ShortString("ASAICiss"));
@@ -258,19 +258,39 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
         MRtmpContext *ctx = m_protocol->getRtmpCtx();
         ctx->setStreamName(str->var);
         MString url = ctx->rtmpUrl->url();
-        while (true) {
-            MRtmpSource *source = MRtmpSource::findSource(url);
-            if (!source) {
-                mSleep(1);
-                continue;
-            }
 
-            m_source = source;
-            break;
+        MString vhost = ctx->rtmpUrl->vhost();
+        MString mode = BlsConf::instance()->getMode(vhost);
+        MString fullUrl = ctx->rtmpUrl->fullUrl();
+
+        bool hasBackSource = BlsBackSource::instance()->hasBackSource(fullUrl);
+        if (!hasBackSource) {
+            // TODO if fails ?
+            MString res;
+            g_cchannel->sendLineAndWaitResponse(Internal_CMD_WhoHasBackSource, url, res);
+            int port = getValue(res).toInt();
+
+            if (mode == Mode_Remote) {
+                if (port == 0) {
+                    // back source to local server
+                    BlsBackSource::instance()->add(ctx->rtmpUrl->vhost(), ctx->rtmpUrl->port(), ctx->rtmpUrl->app(), ctx->rtmpUrl->fullUrl());
+                    log_trace("begin back source to %s:%d pid=%d", ctx->rtmpUrl->vhost().c_str(), ctx->rtmpUrl->port(), getpid());
+                } else if (port > 0) {
+                    // back source to origin server
+                    BlsBackSource::instance()->add("127.0.0.1", port, ctx->rtmpUrl->app(), ctx->rtmpUrl->fullUrl());
+                    log_trace("begin back source to %s:%d pid=%d", "127.0.0.1", port, getpid());
+                }
+            } else if (mode == Mode_Local) {
+                BlsBackSource::instance()->add("127.0.0.1", port, ctx->rtmpUrl->app(), ctx->rtmpUrl->fullUrl());      // back source to origin server
+            }
         }
 
-        log_trace("start play : %s", url.c_str());
+        log_trace("start play : %s", fullUrl.c_str());
+
+        m_source = MRtmpSource::findSource(url);
+        m_role = Role_Connection_Play;
         playService();
+
     } else if (name == "_checkbw") {
         return ret;
     }
@@ -317,6 +337,12 @@ int MRtmpConnection::parseUrl(MAMF0Object *obj)
     return ret;
 }
 
+int MRtmpConnection::closeConnection()
+{
+    mMSleep(500);
+    return E_SOCKET_CLOSE_NORMALLY;
+}
+
 int MRtmpConnection::playService()
 {
     int ret = E_SUCCESS;
@@ -335,7 +361,7 @@ int MRtmpConnection::playService()
             }
         }
 
-        mMSleep(100);
+        mMSleep(50);
     }
 
     return ret;

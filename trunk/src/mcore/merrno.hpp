@@ -35,6 +35,8 @@ const int E_INVOKE_NO_METHOD    = 213;
 const int E_WRITE_ERROR         = 214;
 const int E_READ_ERROR          = 215;
 const int E_URL_NO_TCURL        = 216;
+const int E_CONNECTION_FAILED   = 217;
+const int E_SOCKET_CLOSE_NORMALLY= 218;
 }
 
 #endif // CMERRNO_HPP

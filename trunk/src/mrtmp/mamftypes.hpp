@@ -107,6 +107,7 @@ struct MAMFObject : public MAMF0Any
 
     MAMF0Any *value(int index);
     MString key(int index);
+    MString value(const MString &k);
     int indexOf(const MString &key);
     void setValue(const MString &key, MAMF0Any *any);
     void clear();
