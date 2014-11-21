@@ -9,6 +9,7 @@ _3rdParty="3rdparty"
 currentDir=`pwd`
 hpdir="http-parser-2.1"
 ssldir="openssl-1.0.1c"
+conhashdir="libconhash"
 
 function prepareST()
 {
@@ -24,7 +25,7 @@ function prepareST()
 # check http parser
 function prepareHttpParser()
 {
-    if ! test -f $_3rdParty/$hpdiar/libhttp_parser.a; then
+    if ! test -f $_3rdParty/$hpdir/libhttp_parser.a; then
         if test -d $_3rdParty/$hpdir; then
             rm -rf $_3rdParty/$hpdir
         fi
@@ -43,6 +44,19 @@ function prepareOpenSSL()
             rm -rf $_3rdParty/$ssldir
         fi
         cd $_3rdParty && unzip openssl-1.0.1c.zip && cd $ssldir && ./config && make
+        if test $? -ne 0; then
+            exit -1
+        fi
+    fi
+}
+
+function prepareConHash()
+{
+    if ! test -f $_3rdParty/$conhashdir/bin/libconhash.a; then
+        if test -d $_3rdParty/$conhashdir; then
+            rm -rf $_3rdParty/$conhashdir
+        fi
+        cd $_3rdParty && unzip libconhash.zip && cd $conhashdir && make
         if test $? -ne 0; then
             exit -1
         fi
@@ -73,6 +87,8 @@ cd $currentDir
 runCommand prepareHttpParser
 cd $currentDir
 runCommand prepareOpenSSL
+cd $currentDir
+runCommand prepareConHash
 cd $currentDir
 
 checkFile NEWS

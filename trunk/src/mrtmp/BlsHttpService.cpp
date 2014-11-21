@@ -10,7 +10,7 @@
 #include "mrtmppool.hpp"
 #include "mrtmpprotocol.hpp"
 
-#define HTTP_LIVE_FLV_SUFFIX            ".live.flv"
+#define HTTP_LIVE_FLV_SUFFIX            ".flv"
 #define HTTP_DYNAMIC_STEAMING_SUFFIX    ".f4m"
 #define HTTP_LIVE_STEAMING_SUFFIX       ".m3u8"
 
