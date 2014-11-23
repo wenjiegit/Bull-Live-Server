@@ -23,7 +23,9 @@ libmrtmp_a_SOURCES = \
 	BlsUtils.cpp \
 	BlsBackSource.cpp \
 	BlsStatistics.cpp \
-	BlsHttpService.cpp
+	BlsHttpService.cpp \
+	BlsRtmpPublisher.cpp \
+	BlsServerSelector.cpp
 
 noinst_HEADERS = \
 	mrtmpconnection.hpp \
@@ -45,7 +47,9 @@ noinst_HEADERS = \
 	BlsUtils.hpp \
 	BlsBackSource.hpp \
 	BlsStatistics.hpp \
-	BlsHttpService.hpp
+	BlsHttpService.hpp \
+	BlsRtmpPublisher.hpp \
+	BlsServerSelector.hpp
 
 all-am:
 	@echo -e "\\e[32m"

@@ -3,8 +3,9 @@
 
 #include <MString>
 
-#define Process_Role_Child      0x01
-#define Process_Role_Master     0x02
+#define Process_Role_Child          0x01
+#define Process_Role_Master         0x02
+#define Process_Role_BackSource     0x03
 
 // eg. key`Internal_CMD_Delimer`value
 #define Internal_CMD_Delimer                    ":::"

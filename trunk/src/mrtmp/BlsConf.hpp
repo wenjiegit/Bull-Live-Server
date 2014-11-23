@@ -54,6 +54,7 @@ public:
     vector<BlsHostInfo> getOriginInfo(const MString &vhost);
 
     inline const int getWorkerCount() const { return  m_workerCount;}
+    vector<BlsHostInfo> getBackSourceInfo();
 
     // http flv live enabledl
     bool httpLiveFlvEnabled(const MString &vhost);
@@ -67,6 +68,7 @@ private:
     MHash<MString, BlsVhost> m_vhosts;
     vector<BlsHostInfo> m_listenerInfo;
     int m_workerCount;
+    vector<BlsHostInfo> m_backSourceAddr;
 
     vector<BlsHostInfo> m_httpLiveFlvHosts;
 };

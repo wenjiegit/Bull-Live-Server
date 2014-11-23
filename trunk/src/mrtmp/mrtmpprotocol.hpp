@@ -326,6 +326,18 @@ public:
     int setAckSize(mint32 size);
     int setUCM(int type, int eventData1 = -1, int eventData2 = -1);
 
+    /*!
+        client method to tell server to create stream id.
+        the stream id will be retured in _result.
+    */
+    int createStream();
+
+    /*!
+        client method to tell server begin to publish @streamName
+        with @transactionId
+    */
+    int publishStream(double transactionId, const MString &streamName);
+
     int sendAny(const MRtmpMessageHeader &header, MAMF0Any *arg1, MAMF0Any *arg2 = NULL, MAMF0Any *arg3 = NULL
             , MAMF0Any *arg4 = NULL, MAMF0Any *arg5 = NULL, MAMF0Any *arg6 = NULL);
     int sendNetStatusEvent(double transactionID, MRtmpNetStatusEvent *event);

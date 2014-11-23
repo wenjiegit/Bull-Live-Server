@@ -56,6 +56,11 @@ vector<BlsHostInfo> BlsConf::getOriginInfo(const MString &vhost)
     return ret;
 }
 
+vector<BlsHostInfo> BlsConf::getBackSourceInfo()
+{
+    return m_backSourceAddr;
+}
+
 bool BlsConf::httpLiveFlvEnabled(const MString &vhost)
 {
     if (m_vhosts.contains(vhost)) {
@@ -104,6 +109,8 @@ bool BlsConf::init(const MString &confName)
 
             m_httpLiveFlvHosts.push_back(info);
         }
+    } else {
+        log_warn("can not find the http info, so disable the http flv mode.");
     }
 
     // worker count
@@ -120,6 +127,23 @@ bool BlsConf::init(const MString &confName)
         } else if (m_workerCount > Max_Worker_Count) {
             log_warn("worker count range [%d-%d], but actual is %d, reset to %d", Min_Worker_Count, Max_Worker_Count, m_workerCount, Max_Worker_Count);
             m_workerCount = Max_Worker_Count;
+        }
+    }
+
+    // back source addr
+    MEE *back_source = root->get("back_source_ports");
+    if (!back_source) {
+        log_error("back source ports are mandatory.");
+        mAssert(back_source);
+    } else {
+        MStringList args = back_source->arguments();
+        for (MStringList::iterator iter = args.begin(); iter != args.end(); ++iter) {
+            MString &port = *iter;
+            BlsHostInfo info;
+            info.addr =  "127.0.0.1";
+            info.port =  (muint16)port.toInt();
+
+            m_backSourceAddr.push_back(info);
         }
     }
 

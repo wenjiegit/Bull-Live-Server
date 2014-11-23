@@ -15,13 +15,15 @@
 
 #include "../../config.h"
 
+#include "BlsRtmpPublisher.hpp"
+
 static int childRun(MCoreApplication &app);
 static void printVersion();
 static void printHelp(int argc, char *argv[]);
 static int getOpt(int argc ,char* argv[]);
 
 static MString gs_confPath;
-
+#if 1
 int main(int argc, char *argv[])
 {
     if (getOpt(argc, argv) != E_SUCCESS) {
@@ -37,6 +39,32 @@ int main(int argc, char *argv[])
 
     BlsConf::instance(gs_confPath);
 
+    // create back source
+    vector<BlsHostInfo> back_source_infos = BlsConf::instance()->getBackSourceInfo();
+    for (int i = 0; i < back_source_infos.size(); ++i) {
+        BlsHostInfo &info = back_source_infos.at(i);
+
+        pid_t pid = fork();
+        if (pid > 0) {
+            continue;
+        } else if (pid == 0) {
+            MRtmpServer *s = new MRtmpServer;
+            if (!s->listen(info.addr, info.port)) {
+                log_error("listen %s:%d failed.", info.addr.c_str(), info.port);
+                return -1;
+            }
+            MString appName = MString().sprintf("bls_backsource:%d", info.port);
+            app.setProcTitle(appName);
+
+            log_trace("Bls(%d) back source listen %s:%d success.", (int)getpid(), info.addr.c_str(), info.port);
+            BlsConf::instance()->m_processRole = Process_Role_BackSource;
+
+            return app.exec();
+        } else {
+            log_error("fork error");
+        }
+    }
+
     // master process
     vector<MRtmpServer *> rtmpServer;
     vector<BlsHostInfo> infos = BlsConf::instance()->getRtmpListenInfo();
@@ -46,9 +74,9 @@ int main(int argc, char *argv[])
         if (!s->listen(info.addr, info.port)) {
             log_error("listen %s:%d failed.", info.addr.c_str(), info.port);
             return -1;
-        } else {
-            log_trace("Bls Rtmp Server listen %s:%d success.", info.addr.c_str(), info.port);
         }
+
+        log_trace("Bls(%d) Rtmp Server listen %s:%d success.", (int)getpid(), info.addr.c_str(), info.port);
 
         rtmpServer.push_back(s);
     }
@@ -64,38 +92,20 @@ int main(int argc, char *argv[])
         if (!httpService->listen(info.addr, info.port)) {
             log_error("listen %s:%d failed.", info.addr.c_str(), info.port);
             return -1;
-        } else {
-            log_trace("Bls Http Server listen %s:%d success.", info.addr.c_str(), info.port);
         }
+        log_trace("Bls(%d) Http Server listen %s:%d success.", (int)getpid(), info.addr.c_str(), info.port);
 
         httpServers.push_back(httpService);
     }
 
     int childProcessCount = BlsConf::instance()->getWorkerCount();
-    int &internalListenPort = BlsConf::instance()->m_rtmpInternalPort;
-
     for (int i = 0; i < childProcessCount; ++i) {
-
-        // open internal port
-        MRtmpServer *s = new MRtmpServer;
-
-        if (!s->listen("127.0.0.1", internalListenPort)) {
-            log_error("listen local %d failed.", internalListenPort);
-            return -1;
-        }
-
         pid_t pid = fork();
 
         if (pid > 0) {
-            s->close();
-
-            // TODO check if we delete it ,app will crash.
-            //s->deleteLater();
-            ++internalListenPort;
-
             continue;
         } else if (pid == 0) {
-            MString appName = MString().sprintf("%s:%d", "bls_worker", internalListenPort);
+            MString appName = "bls_worker";
             app.setProcTitle(appName);
 
            return childRun(app);
@@ -103,11 +113,11 @@ int main(int argc, char *argv[])
     }
 
     // crate master channle
-    BlsMasterChannel masterChannel;
-    if (!masterChannel.listen("127.0.0.1", 1940)) {
-        log_error("BlsMasterChannel listen failed.");
-        return -1;
-    }
+//    BlsMasterChannel masterChannel;
+//    if (!masterChannel.listen("127.0.0.1", 1940)) {
+//        log_error("BlsMasterChannel listen failed.");
+//        return -1;
+//    }
 
     BlsConf::instance()->m_processRole = Process_Role_Master;
     app.setProcTitle("bls_master");
@@ -130,13 +140,26 @@ int main(int argc, char *argv[])
 
     return ret;
 }
+#else
+int main(int argc, char *argv[])
+{
+    MCoreApplication app(argc, argv);
+
+    BlsRtmpPublisher publisher;
+    publisher.setUrl("rtmp://ble.ossrs.net/live/ble");
+    publisher.setHost("127.0.0.1", 1935);
+    publisher.start();
+
+    return app.exec();
+}
+#endif
 
 int childRun(MCoreApplication &app)
 {
-    BlsChildChannel childChannel;
-    if (childChannel.start() != E_SUCCESS) {
-        return -1;
-    }
+//    BlsChildChannel childChannel;
+//    if (childChannel.start() != E_SUCCESS) {
+//        return -1;
+//    }
 
     BlsConf::instance()->m_processRole = Process_Role_Child;
 

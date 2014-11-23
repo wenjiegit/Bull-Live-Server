@@ -2,7 +2,7 @@
 
 MAMF0Any *MAMFObject::value(int index)
 {
-    mAssert(index < values.size());
+    mAssert(index < (int)values.size());
 
     pair<MString, MAMF0Any *> &p = values.at(index);
     return p.second;
@@ -10,7 +10,7 @@ MAMF0Any *MAMFObject::value(int index)
 
 MString MAMFObject::key(int index)
 {
-    mAssert(index < values.size());
+    mAssert(index < (int)values.size());
 
     pair<MString, MAMF0Any *> &p = values.at(index);
     return p.first;
@@ -19,7 +19,7 @@ MString MAMFObject::key(int index)
 MString MAMFObject::value(const MString &k)
 {
     int index = indexOf(k);
-    if (index > 0) {
+    if (index >= 0) {
         MAMF0Any *any = value(index);
         MAMF0ShortString *str = dynamic_cast<MAMF0ShortString *>(any);
         if (!str) return "";
@@ -32,9 +32,8 @@ MString MAMFObject::value(const MString &k)
 int MAMFObject::indexOf(const MString &key)
 {
     for (unsigned int i = 0; i < values.size(); ++i) {
-        pair<MString, MAMF0Any *> &p = values.at(i);
-        const MString &k = p.first;
-        if (k == key) {
+        Amf0ObjectProperty &p = values.at(i);
+        if (p.first == key) {
             return i;
         }
     }
@@ -49,7 +48,7 @@ void MAMFObject::setValue(const MString &key, MAMF0Any *any)
 
 void MAMFObject::clear()
 {
-    for (int i = 0; i < values.size(); ++i) {
+    for (unsigned int i = 0; i < values.size(); ++i) {
         pair<MString, MAMF0Any *> &p = values.at(i);
         MAMF0Any *any = p.second;
         mFree(any);

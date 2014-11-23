@@ -51,6 +51,10 @@ const char *mstrerror(int errnum)
         return "conncet failed.";
     case MERROR::E_SOCKET_CLOSE_NORMALLY:
         return "socket close normally.";
+    case MERROR::E_STREAM_ID_TOO_SMALL:
+        return "stream id is too small, should > 0";
+    case MERROR::E_RTMP_PUBLISH_FAILED:
+        return "publish stream failed";
 
     default:
         return strerror(errnum);

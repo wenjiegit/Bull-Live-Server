@@ -330,6 +330,57 @@ int MRtmpProtocol::setUCM(int type, int eventData1, int eventData2)
     return ret;
 }
 
+int MRtmpProtocol::createStream()
+{
+    int ret = E_SUCCESS;
+
+    MRtmpMessage *msg = new MRtmpMessage;
+    mAutoFree(MRtmpMessage, msg);
+
+    MStream &stream = msg->payload;
+    MAMF0Serializer::writeShortString(stream, "createStream");
+    MAMF0Serializer::writeDouble(stream, 2);
+    MAMF0Serializer::writeNull(stream);
+
+    MRtmpMessageHeader &header = msg->header;
+    header.perfer_cid = RTMP_CID_ProtocolControl;
+    header.type = RTMP_MSG_AMF0CommandMessage;
+    header.payloadLength = msg->payload.size();
+    header.streamID = m_rtmpCtx.streamID;
+
+    if ((ret = send_message(msg)) != E_SUCCESS) {
+        return ret;
+    }
+
+    return ret;
+}
+
+int MRtmpProtocol::publishStream(double transactionId, const MString &streamName)
+{
+    int ret = E_SUCCESS;
+
+    MRtmpMessage *msg = new MRtmpMessage;
+    mAutoFree(MRtmpMessage, msg);
+
+    MStream &stream = msg->payload;
+    MAMF0Serializer::writeShortString(stream, "publish");
+    MAMF0Serializer::writeDouble(stream, transactionId);
+    MAMF0Serializer::writeNull(stream);
+    MAMF0Serializer::writeShortString(stream, streamName);
+
+    MRtmpMessageHeader &header = msg->header;
+    header.perfer_cid = RTMP_CID_OverConnection2;
+    header.type = RTMP_MSG_AMF0CommandMessage;
+    header.payloadLength = msg->payload.size();
+    header.streamID = m_rtmpCtx.streamID;
+
+    if ((ret = send_message(msg)) != E_SUCCESS) {
+        return ret;
+    }
+
+    return ret;
+}
+
 int MRtmpProtocol::sendAny(const MRtmpMessageHeader &header, MAMF0Any *arg1, MAMF0Any *arg2, MAMF0Any *arg3
                            , MAMF0Any *arg4, MAMF0Any *arg5, MAMF0Any *arg6)
 {
@@ -836,7 +887,7 @@ int MRtmpProtocol::on_recv_message(MRtmpMessage* msg)
         double id = dynamic_cast<MAMF0Number *>(arg2)->var;
 
         if ((ret = m_session->onCommand(msg, name, id, arg3, arg4, arg5, arg6)) != E_SUCCESS) {
-            log_error("command invoke error. ret=%d", ret);
+            log_error("command(%s) invoke error. ret=%d", name.c_str(), ret);
             return ret;
         }
 
