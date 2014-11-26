@@ -18,7 +18,6 @@ public:
 
     void setUrl(const MString &host, mint16 port, const MString &app, const MString &url);
 
-    int start();
     virtual int run();
 
     // call back functions
@@ -34,6 +33,8 @@ private:
     int connectApp();
     int createStream();
     int play(const MString &streamName);
+
+    int service();
 
 private:
     MTcpSocket *m_socket;

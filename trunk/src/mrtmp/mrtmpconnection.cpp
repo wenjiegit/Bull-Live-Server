@@ -263,34 +263,33 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
         MString fullUrl = ctx->rtmpUrl->fullUrl();
 
         int role = BlsConf::instance()->m_processRole;
-        if (role == Process_Role_BackSource) {
+        bool hasBackSource = BlsBackSource::instance()->hasBackSource(fullUrl);
 
+        if (role == Process_Role_BackSource) {
+            log_trace("i am here.");
         } else if (role == Process_Role_Child) {
             muint16 port = BlsServerSelector::instance()->lookUp(url);
-            log_trace("------------------- finded 127.0.0.1:%d", port);
+            if (!hasBackSource) {
+                // back source to local server
+                BlsBackSource::instance()->add("127.0.0.1", port, ctx->rtmpUrl->app(), ctx->rtmpUrl->fullUrl());
+
+//                if (mode == Mode_Remote) {
+//                    if (port == 0) {
+//                        // back source to local server
+//                        BlsBackSource::instance()->add(ctx->rtmpUrl->vhost(), ctx->rtmpUrl->port(), ctx->rtmpUrl->app(), ctx->rtmpUrl->fullUrl());
+//                        log_trace("begin back source to %s:%d pid=%d", ctx->rtmpUrl->vhost().c_str(), ctx->rtmpUrl->port(), getpid());
+//                    } else if (port > 0) {
+//                        // back source to origin server
+//                        BlsBackSource::instance()->add("127.0.0.1", port, ctx->rtmpUrl->app(), ctx->rtmpUrl->fullUrl());
+//                        log_trace("begin back source to %s:%d pid=%d", "127.0.0.1", port, getpid());
+//                    }
+//                } else if (mode == Mode_Local) {
+//                    BlsBackSource::instance()->add("127.0.0.1", port, ctx->rtmpUrl->app(), ctx->rtmpUrl->fullUrl());      // back source to origin server
+//                }
+            }
         } else {
             mAssert(false);
         }
-//        bool hasBackSource = BlsBackSource::instance()->hasBackSource(fullUrl);
-//        if (!hasBackSource) {
-//            // TODO if fails ?
-//            MString res;
-//            int port = getValue(res).toInt();
-
-//            if (mode == Mode_Remote) {
-//                if (port == 0) {
-//                    // back source to local server
-//                    BlsBackSource::instance()->add(ctx->rtmpUrl->vhost(), ctx->rtmpUrl->port(), ctx->rtmpUrl->app(), ctx->rtmpUrl->fullUrl());
-//                    log_trace("begin back source to %s:%d pid=%d", ctx->rtmpUrl->vhost().c_str(), ctx->rtmpUrl->port(), getpid());
-//                } else if (port > 0) {
-//                    // back source to origin server
-//                    BlsBackSource::instance()->add("127.0.0.1", port, ctx->rtmpUrl->app(), ctx->rtmpUrl->fullUrl());
-//                    log_trace("begin back source to %s:%d pid=%d", "127.0.0.1", port, getpid());
-//                }
-//            } else if (mode == Mode_Local) {
-//                BlsBackSource::instance()->add("127.0.0.1", port, ctx->rtmpUrl->app(), ctx->rtmpUrl->fullUrl());      // back source to origin server
-//            }
-//        }
 
         log_trace("start play : %s", fullUrl.c_str());
 

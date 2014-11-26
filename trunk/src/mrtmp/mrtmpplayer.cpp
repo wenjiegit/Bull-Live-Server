@@ -25,46 +25,35 @@ void MRtmpPlayer::setUrl(const MString &host, mint16 port, const MString &app, c
     m_url = url;
 }
 
-int MRtmpPlayer::start()
-{
-    int ret = E_SUCCESS;
-    m_socket = new MTcpSocket(this);
-    if ((ret = m_socket->initSocket()) != E_SUCCESS) {
-        log_error("MRtmpPlayer create socket error.");
-        return ret;
-    }
-
-    MRtmpUrl url(m_url);
-    if ((ret = m_socket->connectToHost(m_host, m_port)) != E_SUCCESS) {
-        log_error("MRtmpPlayer connect to %s failed.", url.host().c_str());
-        return ret;
-    }
-
-    m_protocol = new MRtmpProtocol(m_socket, this);
-    m_protocol->setSession(this);
-    m_source = MRtmpSource::findSource(url.url());
-
-    return MThread::start();
-}
-
 int MRtmpPlayer::run()
 {
     int ret = E_SUCCESS;
-    if ((ret = m_protocol->handshakeWithServer(false)) != E_SUCCESS) {
-        log_error("MRtmpPlayer handshake with server failed.");
-        return ret;
-    }
 
-    if ((ret = connectApp()) != E_SUCCESS) {
-        return ret;
-    }
+    mAssert(!m_url.empty());
+    mAssert(!m_host.empty());
+    mAssert(m_port > 0);
 
     while (!RequestStop) {
-        MRtmpMessage *msg = NULL;
-        if ((ret = m_protocol->recv_message(&msg)) != E_SUCCESS) {
-            return ret;
+        m_socket = new MTcpSocket(this);
+        mAutoFree(MTcpSocket, m_socket);
+
+        if ((ret = m_socket->initSocket()) != E_SUCCESS) {
+            log_error("MRtmpPlayer create socket error.");
+            continue;
         }
-        mMSleep(10);
+
+        if ((ret = m_socket->connectToHost(m_host, m_port)) != E_SUCCESS) {
+            log_error("MRtmpPlayer connect to %s:%d failed.", m_host.c_str(), m_port);
+            continue;
+        }
+
+        m_protocol = new MRtmpProtocol(m_socket, this);
+        m_protocol->setSession(this);
+
+        if ((ret = service()) != E_SUCCESS) {
+            log_error("MRtmpPlayer play error, ret=%d", ret);
+            continue;
+        }
     }
 
     return ret;
@@ -218,6 +207,34 @@ int MRtmpPlayer::play(const MString &streamName)
                                    , new MAMF0Null, new MAMF0ShortString(streamName))) != E_SUCCESS) {
         log_error("MRtmpPlayer play failed.");
         return ret;
+    }
+
+    return ret;
+}
+
+int MRtmpPlayer::service()
+{
+    int ret = E_SUCCESS;
+
+    if ((ret = m_protocol->handshakeWithServer(false)) != E_SUCCESS) {
+        log_error("MRtmpPlayer handshake with server failed.");
+        return ret;
+    }
+
+    if ((ret = connectApp()) != E_SUCCESS) {
+        return ret;
+    }
+
+    MRtmpUrl url(m_url);
+    m_source = MRtmpSource::findSource(url.url());
+
+    while (!RequestStop) {
+        MRtmpMessage *msg = NULL;
+        if ((ret = m_protocol->recv_message(&msg)) != E_SUCCESS) {
+            return ret;
+        }
+
+        mMSleep(10);
     }
 
     return ret;
