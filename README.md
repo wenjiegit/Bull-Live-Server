@@ -24,30 +24,45 @@ Bull Live Server 简称 BLS ，旨在使用C++语言提供强大功能和高性�
 <br/>
 6、FMS http://www.adobe.com<br/>
   现在叫AMS，功能和性能都不差，基本什么功能都有，毕竟是adobe自家的，但是license很昂贵！<br/>
-<br/>  
+<br/>
   <br/>
 比较了这么多，BLS要做什么？目标是什么？定位是什么?<br/>
 BLS 就是为了汲取上述软件的特点，做一个更好用的直播服务器，要免费，要开源，功能和性能不打折，<br/>
 代码要简洁、易懂。<br/>
 
+usage
+=====
+**Step 1**: get BLS
+
+> git clone https://github.com/wenjiegit/Bull-Live-Server.git&& cd
+> Bull-Live-Server/trunk
+
+**Step 2**: build BLS
+
+> ./autogen.sh && make
+
+**Step 3**: start BLS
+
+> ./bin/bls -f conf/bls.conf
+
 Plan
 ================
 [1]  support AMF0/AMF3<br/>
-[2]  support RTMP streaming ..OK<br/>
+*[2]  support RTMP streaming<br/>*
 [3]  support HLS<br/>
 [4]  support HDS<br/>
 [5]  support HTTP FLV streaming<br/>
 [6]  support transcode with ffmpeg<br/>
-[7]  support multi_process ..OK<br/>
-[8]  support nginx like configure file ..OK<br/>
+*[7]  support multi_process<br/>*
+*[8]  support nginx like configure file<br/>*
 [9]  support configure reload<br/>
-[10] support fast gop ..OK<br/>
+*[10] support fast gop<br/>*
 [11] support dvr(digital video record)<br/>
 [12] support fast hls.<br/>
 
 Code Line History
 ================
-[0.1]&nbsp;&nbsp;2014-09-19&nbsp;&nbsp;&nbsp; line 10901<br/>
+[0.1]&nbsp;&nbsp;2014-09-19 &nbsp;&nbsp;&nbsp; line 10901<br/>
 
 history
 ================
