@@ -30,9 +30,14 @@ public:
     int checkSameStream(const MString &url, bool &res);
 
     /*!
-        inform master the @url will be used.
+        inform master the @url will be published.
     */
-    int informStreamUsed(const MString &url);
+    int informStreamPublished(const MString &url);
+
+    /*!
+        inform master the @url will be unpublished.
+    */
+    int informStreamUnPublished(const MString &url);
 
 private:
     int clean();

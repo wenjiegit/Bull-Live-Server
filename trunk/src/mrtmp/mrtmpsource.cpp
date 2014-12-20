@@ -167,12 +167,17 @@ int MRtmpSource::acquire(const MString &url, bool &res)
     }
 
     if (!res) {
-        if ((ret = g_cchannel->informStreamUsed(url)) != E_SUCCESS) {
+        if ((ret = g_cchannel->informStreamPublished(url)) != E_SUCCESS) {
             return ret;
         }
     }
 
     return ret;
+}
+
+int MRtmpSource::release(const MString &url)
+{
+
 }
 
 void MRtmpSource::addToGop(MRtmpMessage &msg)

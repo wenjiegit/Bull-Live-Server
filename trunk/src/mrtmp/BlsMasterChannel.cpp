@@ -139,7 +139,7 @@ int BlsChild::processMsg(const BlsInternalMsg &msg)
         response.dump();
 
         return writeInternalMsg(response, m_socket);
-    } else if (header == MSG_STREAM_WILL_BE_USED){
+    } else if (header == MSG_STREAM_PUBLISHED){
         MString url = msg.body();
 
         BlsStreamManager::instance()->addStream(url);

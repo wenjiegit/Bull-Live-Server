@@ -19,7 +19,8 @@
 
 // msg types
 #define MSG_IF_EXIST_SAME_STREAM                ("_ExistSameStream")
-#define MSG_STREAM_WILL_BE_USED                 ("_StreamWillBeUsed")
+#define MSG_STREAM_PUBLISHED                    ("_StreamPublished")
+#define MSG_STREAM_UNPUBLISHED                  ("_StreamUnPublished")
 
 // ret msg type and result
 #define MSG_RESULT                              ("_Result")

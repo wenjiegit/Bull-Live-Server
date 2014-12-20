@@ -34,6 +34,11 @@ public:
     */
     int acquire(const MString &url, bool &res);
 
+    /*!
+        release @url stream
+    */
+    int release(const MString &url);
+
 private:
     void addToGop(MRtmpMessage &msg);
     int dispatch(MRtmpMessage &msg);

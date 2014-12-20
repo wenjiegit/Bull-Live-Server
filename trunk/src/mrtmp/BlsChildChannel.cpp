@@ -105,10 +105,19 @@ int BlsChildChannel::checkSameStream(const MString &url, bool &res)
     return ret;
 }
 
-int BlsChildChannel::informStreamUsed(const MString &url)
+int BlsChildChannel::informStreamPublished(const MString &url)
 {
     BlsInternalMsg msg;
-    msg.setHeader(MSG_STREAM_WILL_BE_USED);
+    msg.setHeader(MSG_STREAM_PUBLISHED);
+    msg.setBody(url);
+
+    return writeInternalMsg(msg, m_socket);
+}
+
+int BlsChildChannel::informStreamUnPublished(const MString &url)
+{
+    BlsInternalMsg msg;
+    msg.setHeader(MSG_STREAM_UNPUBLISHED);
     msg.setBody(url);
 
     return writeInternalMsg(msg, m_socket);
