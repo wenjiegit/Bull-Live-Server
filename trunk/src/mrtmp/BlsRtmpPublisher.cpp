@@ -3,6 +3,8 @@
 #include <MTcpSocket>
 
 #include "mrtmpurl.hpp"
+#include "mrtmpsource.hpp"
+#include "mrtmppool.hpp"
 
 BlsRtmpPublisher::BlsRtmpPublisher(MObject *parent)
     : MThread(parent)
@@ -51,8 +53,9 @@ int BlsRtmpPublisher::run()
 
         if ((ret = service()) != E_SUCCESS) {
             log_error("BlsRtmpPublisher publish error, ret=%d", ret);
-            continue;
         }
+
+        if (!RequestStop) mSleep(3);
     }
 
     return ret;
@@ -226,7 +229,25 @@ MString BlsRtmpPublisher::findCommand(double id)
 int BlsRtmpPublisher::publish()
 {
     int ret = E_SUCCESS;
-    log_warn("---------------> begin publish");
+
+    MRtmpUrl url(m_url);
+    MRtmpSource *source = MRtmpSource::findSource(url.url());
+    MRtmpPool *pool = new MRtmpPool(url.url());
+    source->addPool(pool);
+
+    while (!RequestStop) {
+        list<MRtmpMessage> msgs = pool->getMessage();
+
+        list<MRtmpMessage>::iterator iter;
+        for (iter = msgs.begin(); iter != msgs.end(); ++iter) {
+            MRtmpMessage &msg = *iter;
+            if ((ret = m_protocol->send_message(&msg)) != E_SUCCESS) {
+                return ret;
+            }
+        }
+
+        mMSleep(50);
+    }
 
     return ret;
 }

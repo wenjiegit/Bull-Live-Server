@@ -40,12 +40,13 @@ bool MThread::isRunning()
 
 bool MThread::wait()
 {
-    if (stid) {
-        st_thread_join(stid, NULL);
-    }
     while (isRunning()) {
         mMSleep(100);
     }
+
+//    if (stid) {
+//        st_thread_join(stid, NULL);
+//    }
 
     return true;
 }

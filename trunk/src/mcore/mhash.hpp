@@ -9,8 +9,8 @@ template<class K, class T>
 class MHash : public map<K, T>
 {
 public:
-    bool contains(K key) {
-        class MHash<K, T>::iterator iter = find(key);
+    bool contains(K key) const {
+        class MHash<K, T>::const_iterator iter = find(key);
         return iter != this->end();
     }
 };

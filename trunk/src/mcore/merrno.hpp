@@ -9,7 +9,12 @@
 
 extern "C" {
     const char *mstrerror(int errnum);
+    void setError(int err);
 }
+
+#define Return_Error(err) \
+    setError(err); \
+    return err;
 
 extern int merrno;
 
@@ -40,7 +45,8 @@ const int E_SOCKET_CLOSE_NORMALLY       = 218;
 
 const int E_STREAM_ID_TOO_SMALL         = 250;
 const int E_RTMP_PUBLISH_FAILED         = 251;
-
+const int E_STREAM_BADNAME              = 252;
+const int E_STREAM_FILE_EXIST           = 253;
 }
 
 #endif // CMERRNO_HPP

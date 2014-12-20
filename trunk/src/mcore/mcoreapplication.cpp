@@ -8,6 +8,7 @@
 
 #include <string.h>
 #include <sys/prctl.h>
+#include <libgen.h>
 
 static MCoreApplication *g_mApp = 0;
 static bool loop_falg = true;
@@ -123,6 +124,36 @@ void MCoreApplication::setUserData(void *data)
 void *MCoreApplication::userData()
 {
     return m_userData;
+}
+
+MString MCoreApplication::applicationDirPath()
+{
+    MString filePath = applicationFilePath();
+    if (filePath.empty()) {
+        return "";
+    }
+
+    char *path = const_cast<char*>(filePath.c_str());
+    return MString(dirname(path));
+}
+
+MString MCoreApplication::applicationFilePath()
+{
+#ifndef PATH_MAX_LEN
+#define PATH_MAX_LEN 2048
+#endif
+
+    char path[PATH_MAX_LEN];
+    memset(path, 0, PATH_MAX_LEN);
+
+    MString exePath = MString().sprintf("/proc/%d/exe", (int)getpid());
+
+    int len = readlink(exePath.c_str(), path, PATH_MAX_LEN);
+    if (len < 0 || len >= PATH_MAX_LEN) {
+        return "";
+    }
+
+    return MString(path);
 }
 
 MCoreApplication *mApp()

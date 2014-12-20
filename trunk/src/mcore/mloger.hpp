@@ -99,4 +99,8 @@ extern MLogerInterface *g_logCtx;
 #define log_error(msg, ...) \
     g_logCtx->error(__FILE__, __LINE__, __FUNCTION__, NULL, msg, ##__VA_ARGS__)
 
+#define log_error_with_errno(err, msg, ...) \
+    setError(err); \
+    g_logCtx->error(__FILE__, __LINE__, __FUNCTION__, NULL, msg, ##__VA_ARGS__)
+
 #endif // MLOGER_HPP

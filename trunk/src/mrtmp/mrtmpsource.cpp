@@ -2,6 +2,11 @@
 #include "mrtmppool.hpp"
 #include "mrtmpprotocol.hpp"
 #include "mflashvideoinfo.hpp"
+#include "BlsConf.hpp"
+#include "BlsServerSelector.hpp"
+#include "BlsChildChannel.hpp"
+#include "BlsUtils.hpp"
+#include "BlsRtmpPublisher.hpp"
 
 #include <MLoger>
 
@@ -14,6 +19,7 @@ MRtmpSource::MRtmpSource(const MString &url, MObject *parent)
     , m_metadata(NULL)
 {
     m_url = url;
+    m_publisher = NULL;
 }
 
 MRtmpSource::~MRtmpSource()
@@ -67,7 +73,20 @@ int MRtmpSource::onMetadata(MRtmpMessage &msg)
 
 int MRtmpSource::onPublish()
 {
-    return E_SUCCESS;
+    int ret = E_SUCCESS;
+
+    int role = BlsConf::instance()->processRole();
+    if (role == Process_Role_Child) {
+        m_publisher = new BlsRtmpPublisher;
+
+        int port = BlsServerSelector::instance()->lookUp(m_url);
+
+        m_publisher->setHost("127.0.0.1", port);
+        m_publisher->setUrl(m_url);
+        m_publisher->start();
+    }
+
+    return ret;
 }
 
 int MRtmpSource::onUnPublish()
@@ -77,6 +96,12 @@ int MRtmpSource::onUnPublish()
     mFree(m_videoSh);
     mFree(m_audioSh);
     mFree(m_metadata);
+
+    if (m_publisher &&m_publisher->isRunning()) {
+        m_publisher->stop();
+        m_publisher->wait();
+        mFree(m_publisher);
+    }
 
     return E_SUCCESS;
 }
@@ -131,6 +156,23 @@ MRtmpSource *MRtmpSource::findSource(const MString &url)
     m_sources[url] = source;
 
     return source;
+}
+
+int MRtmpSource::acquire(const MString &url, bool &res)
+{
+    int ret = E_SUCCESS;
+
+    if ((ret = g_cchannel->checkSameStream(url, res)) != E_SUCCESS) {
+        return ret;
+    }
+
+    if (!res) {
+        if ((ret = g_cchannel->informStreamUsed(url)) != E_SUCCESS) {
+            return ret;
+        }
+    }
+
+    return ret;
 }
 
 void MRtmpSource::addToGop(MRtmpMessage &msg)

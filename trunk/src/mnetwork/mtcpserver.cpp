@@ -62,13 +62,20 @@ bool MTcpServer::listen(const MString &address, muint16 port)
     m_port = port;
     m_host = address;
 
-    return start() == E_SUCCESS;
+    return true;
 }
 
 void MTcpServer::close()
 {
-    m_socket->close();
-    stop();
+    if (isRunning()) {
+        stop();
+        wait();
+    }
+
+    if (m_socket) {
+        m_socket->close();
+        mFree(m_socket);
+    }
 }
 
 muint16 MTcpServer::port()
@@ -93,6 +100,7 @@ int MTcpServer::run()
     if (!fd) {
         return -1;
     }
+
     while (!RequestStop) {
         st_netfd_t client = st_accept(fd, NULL, NULL, DEFAULT_ACCEPT_TIMEOUT);
         if (!client) {

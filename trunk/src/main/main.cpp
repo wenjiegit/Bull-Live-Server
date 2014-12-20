@@ -53,11 +53,13 @@ int main(int argc, char *argv[])
                 log_error("listen %s:%d failed.", info.addr.c_str(), info.port);
                 return -1;
             }
+            s->start();
+
             MString appName = MString().sprintf("bls_backsource:%d", info.port);
             app.setProcTitle(appName);
 
             log_trace("Bls(%d) back source listen %s:%d success.", (int)getpid(), info.addr.c_str(), info.port);
-            BlsConf::instance()->m_processRole = Process_Role_BackSource;
+            BlsConf::instance()->setProcessRole(Process_Role_BackSource);
 
             return app.exec();
         } else {
@@ -75,6 +77,7 @@ int main(int argc, char *argv[])
             log_error("listen %s:%d failed.", info.addr.c_str(), info.port);
             return -1;
         }
+        s->start();
 
         log_trace("Bls(%d) Rtmp Server listen %s:%d success.", (int)getpid(), info.addr.c_str(), info.port);
 
@@ -93,6 +96,8 @@ int main(int argc, char *argv[])
             log_error("listen %s:%d failed.", info.addr.c_str(), info.port);
             return -1;
         }
+        httpService->start();
+
         log_trace("Bls(%d) Http Server listen %s:%d success.", (int)getpid(), info.addr.c_str(), info.port);
 
         httpServers.push_back(httpService);
@@ -113,27 +118,33 @@ int main(int argc, char *argv[])
     }
 
     // crate master channle
-//    BlsMasterChannel masterChannel;
-//    if (!masterChannel.listen("127.0.0.1", 1940)) {
-//        log_error("BlsMasterChannel listen failed.");
-//        return -1;
-//    }
+    BlsMasterChannel masterChannel;
+    if (!masterChannel.listen("127.0.0.1", 1940)) {
+        log_error("BlsMasterChannel listen failed.");
+        return -1;
+    }
+    masterChannel.start();
 
-    BlsConf::instance()->m_processRole = Process_Role_Master;
+    log_trace("Bls(%d) master channel listen 127.0.0.1:1940 success.", (int)getpid());
+
+    BlsConf::instance()->setProcessRole(Process_Role_Master);
     app.setProcTitle("bls_master");
+
+    // give some time to let st to run.
+    mSleep(2);
 
     // close rtmp channel in master
     for (int i = 0; i < rtmpServer.size(); ++i) {
         MRtmpServer *s = rtmpServer.at(i);
         s->close();
-        // TODO check if we delete it ,app will crash.
-        //s->deleteLater();
+        mFree(s);
     }
 
     // close http service in master
     for (unsigned int i = 0; i < httpServers.size(); ++i) {
         BlsHttpService *server = httpServers.at(i);
         server->close();
+        mFree(server);
     }
 
     int ret = app.exec();
@@ -156,12 +167,13 @@ int main(int argc, char *argv[])
 
 int childRun(MCoreApplication &app)
 {
-//    BlsChildChannel childChannel;
-//    if (childChannel.start() != E_SUCCESS) {
-//        return -1;
-//    }
+    BlsChildChannel childChannel;
+    if (childChannel.init() != E_SUCCESS) {
+        return -1;
+    }
+    childChannel.start();
 
-    BlsConf::instance()->m_processRole = Process_Role_Child;
+    BlsConf::instance()->setProcessRole(Process_Role_Child);
 
     return app.exec();
 }

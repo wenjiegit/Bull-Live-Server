@@ -71,6 +71,9 @@ public:
 
     virtual mint64 writev(const iovec *iov, int iov_size);
 
+    // useful util
+    int readInt(int &value);
+
 private:
     void init();
 

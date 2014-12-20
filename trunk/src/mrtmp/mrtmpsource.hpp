@@ -9,6 +9,7 @@ using namespace std;
 
 class MRtmpMessage;
 class MRtmpPool;
+class BlsRtmpPublisher;
 
 class MRtmpSource : public MObject
 {
@@ -28,10 +29,16 @@ public:
 
     static MRtmpSource * findSource(const MString &url);
 
+    /*!
+        return whether the source is in use.
+    */
+    int acquire(const MString &url, bool &res);
+
 private:
     void addToGop(MRtmpMessage &msg);
     int dispatch(MRtmpMessage &msg);
     int fastGop(MRtmpPool *pool);
+    void release();
 
 private:
     list<MRtmpMessage> m_gop;
@@ -43,6 +50,9 @@ private:
     MRtmpMessage *m_audioSh;
     MRtmpMessage *m_metadata;
     MString m_url;
+    BlsRtmpPublisher *m_publisher;
+    bool m_isActive;
+    int m_lockFd;
 };
 
 #endif // MRTMPSOURCE_HPP

@@ -55,6 +55,10 @@ const char *mstrerror(int errnum)
         return "stream id is too small, should > 0";
     case MERROR::E_RTMP_PUBLISH_FAILED:
         return "publish stream failed";
+    case MERROR::E_STREAM_BADNAME:
+        return "NetStream.Publish.BadName";
+    case MERROR::E_STREAM_FILE_EXIST:
+        return "stream file exist";
 
     default:
         return strerror(errnum);
@@ -64,3 +68,9 @@ const char *mstrerror(int errnum)
 }
 
 int merrno = MERROR::E_SUCCESS;
+
+
+void setError(int err)
+{
+    merrno = err;
+}

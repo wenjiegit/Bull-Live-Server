@@ -15,19 +15,27 @@ public:
     BlsChildChannel(MObject *parent = 0);
     virtual ~BlsChildChannel();
 
-    int start();
+    int init();
     virtual int run();
-
-    int sendLineAndWaitResponse(const MString &commad, const MString &data, MString &response);
-    int sendLine(const MString &commad, const MString &data);
-    int send(const MString &data);
 
     // for write info to file
     virtual void timerA();
 
+    int readMsg();
+
+    /*!
+        used to check if exist the url between multi-process.
+        @url the url that will be checked.
+    */
+    int checkSameStream(const MString &url, bool &res);
+
+    /*!
+        inform master the @url will be used.
+    */
+    int informStreamUsed(const MString &url);
+
 private:
     int clean();
-    int processLine(const MString &line);
 
 private:
     MTcpSocket *m_socket;

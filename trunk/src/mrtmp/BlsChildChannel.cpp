@@ -27,10 +27,13 @@ BlsChildChannel::~BlsChildChannel()
     m_timer->stop();
 }
 
-int BlsChildChannel::start()
+int BlsChildChannel::init()
 {
-    mSleep(1);
+    // wait for master process running.
+    mSleep(5);
+
     int ret = E_SUCCESS;
+
     m_socket = new MTcpSocket(this);
     if ((ret = m_socket->initSocket()) != E_SUCCESS) {
         return ret;
@@ -39,63 +42,21 @@ int BlsChildChannel::start()
     if ((ret = m_socket->connectToHost("127.0.0.1", 1940)) != E_SUCCESS) {
         return ret;
     }
+    log_trace("connected to master success.");
 
     return MThread::start();
 }
 
 int BlsChildChannel::run()
 {
-    if (sendLine(Internal_CMD_PID, MString::number(getpid())) != E_SUCCESS) {
-        log_error("send to server failed.");
-        clean();
-    }
+//    while (!RequestStop) {
+//        int ret = m_socket->testFeature(MTcpSocket::ReadReady, ST_UTIME_NO_TIMEOUT);
+//        if ((ret = m_socket->readToLineCache()) != E_SUCCESS) {
+//            clean();
+//        }
 
-    int port = BlsConf::instance()->m_rtmpInternalPort;
-    if (sendLine(Internal_CMD_InternalPort, MString::number(port)) != E_SUCCESS) {
-        log_error("send to server failed.");
-        clean();
-    }
-    log_info("child %d run success.", (int)getpid());
-
-    while (!RequestStop) {
-        int ret = m_socket->testFeature(MTcpSocket::ReadReady, ST_UTIME_NO_TIMEOUT);
-        if ((ret = m_socket->readToLineCache()) != E_SUCCESS) {
-            clean();
-        }
-
-        mMSleep(500);
-    }
-
-    return E_SUCCESS;
-}
-
-int BlsChildChannel::sendLineAndWaitResponse(const MString &commad, const MString &data, MString &response)
-{
-    if (sendLine(commad, data) != E_SUCCESS) {
-        clean();
-        return -1;
-    }
-    mSleep(1);
-
-    if (m_socket->readLine(response) != E_SUCCESS) {
-        clean();
-        return E_SUCCESS;
-    }
-}
-
-int BlsChildChannel::sendLine(const MString &commad, const MString &data)
-{
-    MString line = commad + Internal_CMD_Delimer + data + "\n";
-
-    return send(line);
-}
-
-int BlsChildChannel::send(const MString &data)
-{
-    if ((m_socket->write(data)) != data.size()) {
-        log_error("write to master failed");
-        return -1;
-    }
+//        mMSleep(500);
+//    }
 
     return E_SUCCESS;
 }
@@ -104,21 +65,57 @@ void BlsChildChannel::timerA()
 {
     // TODO write connection info to file
     // eg. bitrate fps ...
-    static int pid = (int)getpid();
-    MString name = MString().sprintf("PID_%d_Listen_%d.info", pid, BlsConf::instance()->m_rtmpInternalPort);
-    MFile file(name);
-    if (file.open("w")) {
-        file.write("this is a text");
-        file.close();
+//    static int pid = (int)getpid();
+//    MString name = MString().sprintf("PID_%d_Listen_%d.info", pid, BlsConf::instance()->m_rtmpInternalPort);
+//    MFile file(name);
+//    if (file.open("w")) {
+//        file.write("this is a text");
+//        file.close();
+    //    }
+}
+
+int BlsChildChannel::checkSameStream(const MString &url, bool &res)
+{
+    int ret = E_SUCCESS;
+
+    // init to false.
+    res = false;
+
+    BlsInternalMsg msg;
+    msg.setHeader(MSG_IF_EXIST_SAME_STREAM);
+    msg.setBody(url);
+
+    if ((ret = writeInternalMsg(msg, m_socket)) != E_SUCCESS) {
+        log_error("check if exist stream write error, process will exit.");
+        clean();
+        return ret;
     }
+
+    BlsInternalMsg response;
+    if ((ret = readInternalMsg(response, m_socket)) != E_SUCCESS) {
+        log_error("check if exist stream read error, process will exit.");
+        clean();
+        return ret;
+    }
+
+    if (response.header() == MSG_RESULT && response.body() == MSG_RESULT_SUCESS) {
+        res = true;
+    }
+
+    return ret;
+}
+
+int BlsChildChannel::informStreamUsed(const MString &url)
+{
+    BlsInternalMsg msg;
+    msg.setHeader(MSG_STREAM_WILL_BE_USED);
+    msg.setBody(url);
+
+    return writeInternalMsg(msg, m_socket);
 }
 
 int BlsChildChannel::clean()
 {
+    log_error("process will exit, may be master process is freezed.");
     _exit(0);
-}
-
-int BlsChildChannel::processLine(const MString &line)
-{
-
 }

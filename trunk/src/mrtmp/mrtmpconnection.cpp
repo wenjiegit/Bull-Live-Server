@@ -24,6 +24,7 @@ MRtmpConnection::MRtmpConnection(MObject *parent)
     , m_protocol(NULL)
     , m_source(NULL)
 {
+
 }
 
 MRtmpConnection::~MRtmpConnection()
@@ -51,7 +52,7 @@ int MRtmpConnection::run()
             break;
         }
 
-        mMSleep(10);
+        mMSleep(0);
     }
 
     if (m_role == Role_Connection_Publish) {
@@ -136,6 +137,33 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
         }
         m_protocol->getRtmpCtx()->streamID = 1;
     } else if (name == "publish") {
+
+        // the stream name is the second arg.
+        MAMF0ShortString *str = dynamic_cast<MAMF0ShortString *>(arg2);
+        if (!str) {
+            return E_AMF_TYPE_ERROR;
+        }
+
+        MRtmpContext *ctx = m_protocol->getRtmpCtx();
+        ctx->setStreamName(str->var);
+
+        MString url = ctx->rtmpUrl->url();
+        m_source = MRtmpSource::findSource(url);
+
+        // if process is worker
+        // then check if has other client push the same stream.
+        int role = BlsConf::instance()->processRole();
+        if (role == Process_Role_Child) {
+            bool isUsed = false;
+            ret = m_source->acquire(url, isUsed);
+            mAssert(ret == E_SUCCESS);
+
+            if (isUsed) {
+                log_error_with_errno(E_STREAM_BADNAME, "stream is in used.");
+                return E_STREAM_BADNAME;
+            }
+        }
+
         MString cmdName = "FCPublish";
         MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverStream);
 
@@ -154,21 +182,17 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
             return ret;
         }
 
-        MAMF0ShortString *str = dynamic_cast<MAMF0ShortString *>(arg2);
-        if (!str) {
-            return E_AMF_TYPE_ERROR;
-        }
-
-        MRtmpContext *ctx = m_protocol->getRtmpCtx();
-        ctx->setStreamName(str->var);
-
-        MString url = ctx->rtmpUrl->url();
-        m_source = MRtmpSource::findSource(url);
         m_role = Role_Connection_Publish;
 
         log_trace("start publish %s", url.c_str());
 
         BlsBackSource::instance()->setHasBackSource(url);
+
+        // on_publish
+        if ((ret = m_source->onPublish()) != E_SUCCESS) {
+            log_error("on publish error. ret=%d", ret);
+            return ret;
+        }
 
     } else if (name == "FCUnpublish") {
         MString cmdName = "onFCUnpublish";
@@ -182,6 +206,15 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
             return ret;
         }
     } else if (name == "closeStream") {
+
+        log_warn("---------------->");
+        m_protocol->getRtmpCtx()->streamID = 0;
+        if (m_source) {
+            m_source->onUnPublish();
+        }
+        log_warn("---------------->--------");
+
+
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
         MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
@@ -201,7 +234,6 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
         if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, obj1)) != E_SUCCESS) {
             return ret;
         }
-        m_protocol->getRtmpCtx()->streamID = 0;
     } else if (name == "deleteStream") {
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
         MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
@@ -262,7 +294,7 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
         MString mode = BlsConf::instance()->getMode(vhost);
         MString fullUrl = ctx->rtmpUrl->fullUrl();
 
-        int role = BlsConf::instance()->m_processRole;
+        int role = BlsConf::instance()->processRole();
         bool hasBackSource = BlsBackSource::instance()->hasBackSource(fullUrl);
 
         if (role == Process_Role_BackSource) {
@@ -272,7 +304,7 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
             if (!hasBackSource) {
                 // back source to local server
                 BlsBackSource::instance()->add("127.0.0.1", port, ctx->rtmpUrl->app(), ctx->rtmpUrl->fullUrl());
-
+                log_trace("url %s back source to local server at %d", url.c_str(), port);
 //                if (mode == Mode_Remote) {
 //                    if (port == 0) {
 //                        // back source to local server
@@ -321,7 +353,7 @@ int MRtmpConnection::onMetadata(MRtmpMessage *msg)
 
 int MRtmpConnection::publishService()
 {
-
+    return E_SUCCESS;
 }
 
 int MRtmpConnection::parseUrl(MAMF0Object *obj)
@@ -367,7 +399,7 @@ int MRtmpConnection::playService()
             }
         }
 
-        mMSleep(50);
+        mMSleep(30);
     }
 
     return ret;

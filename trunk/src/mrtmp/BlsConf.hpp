@@ -48,6 +48,9 @@ public:
 
     static BlsConf *instance(const MString &confName = "");
 
+    inline void setProcessRole(int role) { m_processRole = role; }
+    inline int processRole() const { return m_processRole; }
+
     vector<BlsHostInfo> getRtmpListenInfo();
     MString getGopType(const MString &vhost);
     MString getMode(const MString &vhost);

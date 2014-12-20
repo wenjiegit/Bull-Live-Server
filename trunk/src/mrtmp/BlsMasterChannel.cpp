@@ -12,9 +12,53 @@
 #include "BlsUtils.hpp"
 #include "mrtmpurl.hpp"
 
-
 static MHash<int, BlsChild *> gs_childs;
 static MHash<MString, BlsChild *> gs_sources;
+
+class BlsStreamManager : public MObject
+{
+public:
+    BlsStreamManager();
+    ~BlsStreamManager();
+
+    static BlsStreamManager *instance();
+
+    void addStream(const MString &url);
+    bool contains(const MString &info) const;
+
+private:
+    MHash<MString, bool> m_pushedStreams;
+};
+
+BlsStreamManager::BlsStreamManager()
+{
+
+}
+
+BlsStreamManager::~BlsStreamManager()
+{
+
+}
+
+BlsStreamManager *BlsStreamManager::instance()
+{
+    static BlsStreamManager *ret = NULL;
+    if (!ret) {
+        ret = new BlsStreamManager;
+    }
+
+    return ret;
+}
+
+void BlsStreamManager::addStream(const MString &url)
+{
+    m_pushedStreams[url] = true;
+}
+
+bool BlsStreamManager::contains(const MString &info) const
+{
+    return m_pushedStreams.contains(info);
+}
 
 BlsMasterChannel::BlsMasterChannel(MObject *parent)
     : MTcpServer(parent)
@@ -44,40 +88,22 @@ BlsChild::BlsChild(MTcpSocket *socket, MObject *parent)
 
 BlsChild::~BlsChild()
 {
-    if (gs_childs.contains(m_pid)) {
-        gs_childs.erase(m_pid);
-    }
 
-    if (m_pid > 0) {
-        kill(m_pid, SIGKILL);
-        ::wait(NULL);
-    }
-
-    // clean from gs_sources
-    MHash<MString, BlsChild *>::iterator iter;
-    std::vector<MString> deleteKeys;
-    for (iter = gs_sources.begin(); iter != gs_sources.end(); ++iter) {
-        if (iter->second == this) deleteKeys.push_back(iter->first);
-    }
-
-    for (int i = 0; i < deleteKeys.size(); ++i) {
-        gs_sources.erase(deleteKeys.at(i));
-    }
 }
 
 int BlsChild::run()
 {
+    int ret = E_SUCCESS;
+
     while (!RequestStop) {
-        MString line;
-        if (m_socket->readLine(line) != E_SUCCESS) {
-            // TODO child exit ? or crash ?
-            // should kill child ?
+        BlsInternalMsg msg;
+        if ((ret = readInternalMsg(msg, m_socket)) != E_SUCCESS) {
+            log_error("read msg from child channel error");
             break;
         }
 
-        if (processCommand(line) != E_SUCCESS) {
-            // TODO child exit ? or crash ?
-            // should kill child ?
+        if ((ret = processMsg(msg)) != E_SUCCESS) {
+            log_error("process msg error");
             break;
         }
 
@@ -85,71 +111,39 @@ int BlsChild::run()
     }
 
     log_trace("BlsChild exit.");
+
     this->deleteLater();
 
     return E_SUCCESS;
 }
 
-int BlsChild::processCommand(MString &line)
+int BlsChild::processMsg(const BlsInternalMsg &msg)
 {
-    if (line.empty()) return E_SUCCESS;
+    int ret = E_SUCCESS;
 
-    if (line.endWith("\n")) {
-        line.erase(line.size()-1, 1);
-    }
-    log_trace("BlsMasterChannel get line %s", line.c_str());
+    MString header = msg.header();
+    BlsInternalMsg response;
 
-    MStringList temp = line.split(Internal_CMD_Delimer);
-    MString key = temp.at(0);
-    MString value = temp.at(1);
+    msg.dump();
 
-    if (key == Internal_CMD_PID) {
-        m_pid = value.toInt();
-        gs_childs[m_pid] = this;
-    } else if (key == Internal_CMD_InternalPort) {
-        m_internalPort = value.toInt();
-    } else if (key == Internal_CMD_WhoHasBackSource) {
-        MRtmpUrl rtmpUrl(value);
-        MString url = rtmpUrl.url();
+    if (header == MSG_IF_EXIST_SAME_STREAM) {
+        MString url = msg.body();
 
-        int port = 0;
-        if (gs_sources.contains(url)) {
-            port = gs_sources[url]->internalPort();
+        if (BlsStreamManager::instance()->contains(url)) {
+            response.setBody(MSG_RESULT_SUCESS);
+        } else {
+            response.setBody(MSG_RESULT_FAILED);
         }
+        response.setHeader(MSG_RESULT);
 
-        if (sendLine(Internal_CMD_WhoHasBackSourceRes, MString::number(port)) != E_SUCCESS) {
-            return -1;
-        }
+        response.dump();
 
-        log_trace("--%s:%d", url.c_str(), port);
+        return writeInternalMsg(response, m_socket);
+    } else if (header == MSG_STREAM_WILL_BE_USED){
+        MString url = msg.body();
 
-        if (port == 0) {
-            gs_sources[url] = this;
-        }
-    } else if (key == Internal_CMD_IHasBackSourced) {
-        log_warn("%s insert into backsource queue", value.c_str());
-        gs_sources[value] = this;
-    } else if (key == Internal_CMD_RemoveHasBackSourceRes) {
-        log_warn("%s removed from backsource queue", value.c_str());
-        gs_sources.erase(value);
+        BlsStreamManager::instance()->addStream(url);
     }
 
-    return E_SUCCESS;
-}
-
-int BlsChild::sendLine(const MString &commad, const MString &data)
-{
-    MString line = commad + Internal_CMD_Delimer + data + "\n";
-
-    return send(line);
-}
-
-int BlsChild::send(const MString &data)
-{
-    if ((m_socket->write(data)) != data.size()) {
-        log_error("write to master failed");
-        return -1;
-    }
-
-    return E_SUCCESS;
+    return ret;
 }

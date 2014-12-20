@@ -33,6 +33,9 @@ public:
     void setUserData(void *data);
     void * userData();
 
+    static MString applicationDirPath();
+    static MString applicationFilePath();
+
 private:
     map<MObject*, bool> deleteLaterObjs;
     map<MTimer*, bool> timerList;

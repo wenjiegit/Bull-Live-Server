@@ -5,6 +5,7 @@
 #include <MHash>
 
 class BlsChild;
+class BlsInternalMsg;
 
 class BlsMasterChannel : public MTcpServer
 {
@@ -23,14 +24,8 @@ public:
 
     virtual int run();
 
-    inline int internalPort() { return m_internalPort; }
-
-    int sendLine(const MString &commad, const MString &data);
-
-    int send(const MString &data);
-
 private:
-    int processCommand(MString &line);
+    int processMsg(const BlsInternalMsg &msg);
 
 private:
     MTcpSocket *m_socket;

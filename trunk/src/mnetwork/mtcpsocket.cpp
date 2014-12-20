@@ -234,6 +234,27 @@ mint64 MTcpSocket::writev(const iovec *iov, int iov_size)
     return writeCount;
 }
 
+int MTcpSocket::readInt(int &value)
+{
+    int ret = E_SUCCESS;
+
+    int size = sizeof(int);
+    char data[size];
+
+    int readCount = readFully(data, size);
+    if (readCount != size) {
+        return merrno;
+    }
+
+    char *pValue = (char *)&value;
+    pValue[0] = data[3];
+    pValue[1] = data[2];
+    pValue[2] = data[1];
+    pValue[3] = data[0];
+
+    return ret;
+}
+
 void MTcpSocket::init()
 {
     m_sendBytes = 0;
