@@ -33,15 +33,15 @@ BLS 就是为了汲取上述软件的特点，做一个更好用的直播服务�
 Plan
 ================
 [1]  support AMF0/AMF3<br/>
-[2]  support RTMP streaming<br/>
+[2]  support RTMP streaming <OK><br/>
 [3]  support HLS<br/>
 [4]  support HDS<br/>
 [5]  support HTTP FLV streaming<br/>
 [6]  support transcode with ffmpeg<br/>
-[7]  support multi_process<br/>
-[8]  support nginx like configure file<br/>
+[7]  support multi_process <OK><br/>
+[8]  support nginx like configure file <OK><br/>
 [9]  support configure reload<br/>
-[10] support fast gop<br/>
+[10] support fast gop <OK><br/>
 [11] support dvr(digital video record)<br/>
 [12] support fast hls.<br/>
 
@@ -51,6 +51,7 @@ Code Line History
 
 history
 ================
+[0.1]&nbsp;&nbsp;2014-12-20&nbsp;&nbsp;&nbsp;multi-process push supported.<br/>
 [0.1]&nbsp;&nbsp;2014-10-10&nbsp;&nbsp;&nbsp;support multiprocess.<br/>
 [0.1]&nbsp;&nbsp;2014-09-19&nbsp;&nbsp;&nbsp;support fmle or flash pushlish stream.<br/>
 [0.1]&nbsp;&nbsp;2014-09-19&nbsp;&nbsp;&nbsp;support flash or vlc like play stream.<br/>
