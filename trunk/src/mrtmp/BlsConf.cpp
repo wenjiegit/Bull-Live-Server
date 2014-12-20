@@ -1,5 +1,7 @@
 #include "BlsConf.hpp"
 
+#include "BlsUtils.hpp"
+
 #include <MConf>
 #include <MLoger>
 
@@ -202,4 +204,19 @@ bool BlsConf::init(const MString &confName)
     }
 
     return true;
+}
+
+bool processIsWorker()
+{
+    return BlsConf::instance()->processRole() == Process_Role_Worker;
+}
+
+bool processIsBackSource()
+{
+    return BlsConf::instance()->processRole() == Process_Role_BackSource;
+}
+
+bool processIsMaster()
+{
+    return BlsConf::instance()->processRole() == Process_Role_Master;
 }

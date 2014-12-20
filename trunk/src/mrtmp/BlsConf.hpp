@@ -76,4 +76,10 @@ private:
     vector<BlsHostInfo> m_httpLiveFlvHosts;
 };
 
+extern "C" {
+bool processIsWorker();
+bool processIsBackSource();
+bool processIsMaster();
+}
+
 #endif // BLSCONF_HPP

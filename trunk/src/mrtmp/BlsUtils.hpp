@@ -5,7 +5,7 @@
 #include <MTcpSocket>
 #include <MStream>
 
-#define Process_Role_Child          0x01
+#define Process_Role_Worker          0x01
 #define Process_Role_Master         0x02
 #define Process_Role_BackSource     0x03
 

@@ -25,6 +25,7 @@ public:
 
     void addStream(const MString &url);
     bool contains(const MString &info) const;
+    void removeStream(const MString &url);
 
 private:
     MHash<MString, bool> m_pushedStreams;
@@ -58,6 +59,11 @@ void BlsStreamManager::addStream(const MString &url)
 bool BlsStreamManager::contains(const MString &info) const
 {
     return m_pushedStreams.contains(info);
+}
+
+void BlsStreamManager::removeStream(const MString &url)
+{
+    m_pushedStreams.erase(url);
 }
 
 BlsMasterChannel::BlsMasterChannel(MObject *parent)
@@ -143,6 +149,9 @@ int BlsChild::processMsg(const BlsInternalMsg &msg)
         MString url = msg.body();
 
         BlsStreamManager::instance()->addStream(url);
+    } else if (header == MSG_STREAM_UNPUBLISHED) {
+        MString url = msg.body();
+        BlsStreamManager::instance()->removeStream(url);
     }
 
     return ret;

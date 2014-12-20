@@ -59,7 +59,9 @@ int MRtmpConnection::run()
         MString url = m_protocol->getRtmpCtx()->url();
         BlsBackSource::instance()->remove(url);
 
-        log_trace("remove url from master(url=%s)", url.c_str());
+        if (m_source) {
+            m_source->onUnPublish();
+        }
     }
 
     m_socket->close();
@@ -85,6 +87,7 @@ void MRtmpConnection::setSocket(MTcpSocket *socket)
 int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1
                                , MAMF0Any *arg2, MAMF0Any *arg3, MAMF0Any *arg4)
 {
+    log_warn("%s", name.c_str());
     // TODO refer check.
     // TODO set app msg to protocol
     int ret = E_SUCCESS;
@@ -153,7 +156,7 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
         // if process is worker
         // then check if has other client push the same stream.
         int role = BlsConf::instance()->processRole();
-        if (role == Process_Role_Child) {
+        if (role == Process_Role_Worker) {
             bool isUsed = false;
             ret = m_source->acquire(url, isUsed);
             mAssert(ret == E_SUCCESS);
@@ -299,7 +302,7 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
 
         if (role == Process_Role_BackSource) {
             log_trace("i am here.");
-        } else if (role == Process_Role_Child) {
+        } else if (role == Process_Role_Worker) {
             muint16 port = BlsServerSelector::instance()->lookUp(url);
             if (!hasBackSource) {
                 // back source to local server

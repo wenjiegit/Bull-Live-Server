@@ -173,7 +173,7 @@ int childRun(MCoreApplication &app)
     }
     childChannel.start();
 
-    BlsConf::instance()->setProcessRole(Process_Role_Child);
+    BlsConf::instance()->setProcessRole(Process_Role_Worker);
 
     return app.exec();
 }

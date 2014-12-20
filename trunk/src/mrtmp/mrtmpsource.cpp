@@ -76,7 +76,7 @@ int MRtmpSource::onPublish()
     int ret = E_SUCCESS;
 
     int role = BlsConf::instance()->processRole();
-    if (role == Process_Role_Child) {
+    if (role == Process_Role_Worker) {
         m_publisher = new BlsRtmpPublisher;
 
         int port = BlsServerSelector::instance()->lookUp(m_url);
@@ -91,6 +91,8 @@ int MRtmpSource::onPublish()
 
 int MRtmpSource::onUnPublish()
 {
+    int ret = E_SUCCESS;
+
     // do clean
     m_sources.erase(m_url);
     mFree(m_videoSh);
@@ -101,6 +103,12 @@ int MRtmpSource::onUnPublish()
         m_publisher->stop();
         m_publisher->wait();
         mFree(m_publisher);
+    }
+
+    if (processIsWorker()) {
+        if ((ret = release(m_url)) != E_SUCCESS) {
+            return ret;
+        }
     }
 
     return E_SUCCESS;
@@ -177,7 +185,13 @@ int MRtmpSource::acquire(const MString &url, bool &res)
 
 int MRtmpSource::release(const MString &url)
 {
+    int ret = E_SUCCESS;
 
+    if ((ret = g_cchannel->informStreamUnPublished(url)) != E_SUCCESS) {
+        return ret;
+    }
+
+    return ret;
 }
 
 void MRtmpSource::addToGop(MRtmpMessage &msg)
