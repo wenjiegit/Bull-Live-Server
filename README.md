@@ -63,6 +63,7 @@ Plan
 Code Line History
 ================
 [0.1]&nbsp;&nbsp;2014-09-19 &nbsp;&nbsp;&nbsp; line 10901<br/>
+[0.1]&nbsp;&nbsp;2014-12-21 &nbsp;&nbsp;&nbsp; line 13394, refine code structure.<br/>
 
 history
 ================

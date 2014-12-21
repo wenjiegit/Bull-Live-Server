@@ -28,6 +28,7 @@ Makefile
 http-parser-2.1
 openssl-1.0.1c
 st-1.9
+libconhash
 
 # automake
 .deps
