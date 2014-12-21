@@ -46,7 +46,8 @@ public:
     MStream encode() const;
 
     /*!
-        print msg.
+        print msg by format.
+        key:value
     */
     void dump() const;
 
@@ -57,20 +58,7 @@ private:
     MString m_body;
 };
 
-// eg. key`Internal_CMD_Delimer`value
-#define Internal_CMD_Delimer                    ":::"
-
-#define Internal_CMD_PID                        "PID"
-#define Internal_CMD_InternalPort               "InternalPort"
-#define Internal_CMD_WhoHasBackSource           "WhoHasBackSource"
-#define Internal_CMD_WhoHasBackSourceRes        "WhoHasBackSourceRes"
-#define Internal_CMD_IHasBackSourced            "IHasBackSourced"
-#define Internal_CMD_RemoveHasBackSourceRes     "RemoveHasBackSourceRes"
-
 extern "C" {
-MString getValue(MString &line);
-MString getKey(MString &line);
-
 int readInternalMsg(BlsInternalMsg &msg, MTcpSocket *socket);
 int writeInternalMsg(const BlsInternalMsg &msg, MTcpSocket *socket);
 }

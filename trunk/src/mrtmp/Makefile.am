@@ -11,8 +11,8 @@ libmrtmp_a_SOURCES = \
 	mrtmpprotocol.cpp \
 	mamf0serializer.cpp \
 	mamftypes.cpp \
-	mrtmpsource.cpp \
-	mrtmppool.cpp \
+	BlsRtmpSource.cpp \
+	BlsConsumer.cpp \
 	mflashvideoinfo.cpp \
 	mrtmptimestampcorrector.cpp \
 	mflvrecoder.cpp \
@@ -35,8 +35,8 @@ noinst_HEADERS = \
 	mrtmpprotocol.hpp \
 	mamf0serializer.hpp \
 	mamftypes.hpp \
-	mrtmpsource.hpp \
-	mrtmppool.hpp \
+	BlsRtmpSource.hpp \
+	BlsConsumer.hpp \
 	mflashvideoinfo.hpp \
 	mrtmptimestampcorrector.hpp \
 	mflvrecoder.hpp \

@@ -6,8 +6,8 @@
 #include <MHttpResponseHeader>
 #include <MStream>
 
-#include "mrtmpsource.hpp"
-#include "mrtmppool.hpp"
+#include "BlsRtmpSource.hpp"
+#include "BlsConsumer.hpp"
 #include "mrtmpprotocol.hpp"
 
 #define HTTP_LIVE_FLV_SUFFIX            ".flv"
@@ -112,8 +112,8 @@ int BlsHttpClient::sendHttpLiveFlv(const MString &url)
         return -1;
     }
 
-    MRtmpSource *source = MRtmpSource::findSource(url);
-    MRtmpPool *pool = new MRtmpPool(url);
+    BlsRtmpSource *source = BlsRtmpSource::findSource(url);
+    BlsConsumer *pool = new BlsConsumer(url);
     source->addPool(pool);
 
     while (true) {

@@ -8,14 +8,14 @@
 using namespace std;
 
 class MRtmpMessage;
-class MRtmpPool;
+class BlsConsumer;
 class BlsRtmpPublisher;
 
-class MRtmpSource : public MObject
+class BlsRtmpSource : public MObject
 {
 public:
-    MRtmpSource(const MString &url, MObject *parent = 0);
-    ~MRtmpSource();
+    BlsRtmpSource(const MString &url, MObject *parent = 0);
+    ~BlsRtmpSource();
 
     int onVideo(MRtmpMessage &msg);
     int onAudio(MRtmpMessage &msg);
@@ -24,10 +24,10 @@ public:
     int onPublish();
     int onUnPublish();
 
-    void addPool(MRtmpPool *pool);
-    void removePool(MRtmpPool *pool);
+    void addPool(BlsConsumer *pool);
+    void removePool(BlsConsumer *pool);
 
-    static MRtmpSource * findSource(const MString &url);
+    static BlsRtmpSource * findSource(const MString &url);
 
     /*!
         return whether the source is in use.
@@ -42,14 +42,14 @@ public:
 private:
     void addToGop(MRtmpMessage &msg);
     int dispatch(MRtmpMessage &msg);
-    int fastGop(MRtmpPool *pool);
+    int fastGop(BlsConsumer *pool);
     void release();
 
 private:
     list<MRtmpMessage> m_gop;
-    list<MRtmpPool *> m_pools;
+    list<BlsConsumer *> m_pools;
 
-    static MHash<MString, MRtmpSource*> m_sources;
+    static MHash<MString, BlsRtmpSource*> m_sources;
 
     MRtmpMessage *m_videoSh;
     MRtmpMessage *m_audioSh;

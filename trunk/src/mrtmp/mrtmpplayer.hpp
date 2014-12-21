@@ -8,7 +8,7 @@
 
 class MTcpSocket;
 class MRtmpProtocol;
-class MRtmpSource;
+class BlsRtmpSource;
 
 class MRtmpPlayer : public MThread, public MRtmpProtocolAbstract
 {
@@ -46,7 +46,7 @@ private:
 
     MHash<double, MString> m_commandList;
 
-    MRtmpSource *m_source;
+    BlsRtmpSource *m_source;
 };
 
 #endif // MRTMPPLAYER_HPP

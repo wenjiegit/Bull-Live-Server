@@ -7,8 +7,8 @@
 #include "mrtmpconnection.hpp"
 #include "mrtmphandshake.hpp"
 #include "mrtmpprotocol.hpp"
-#include "mrtmpsource.hpp"
-#include "mrtmppool.hpp"
+#include "BlsRtmpSource.hpp"
+#include "BlsConsumer.hpp"
 #include "BlsConf.hpp"
 #include "BlsChildChannel.hpp"
 #include "BlsUtils.hpp"
@@ -151,7 +151,7 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
         ctx->setStreamName(str->var);
 
         MString url = ctx->rtmpUrl->url();
-        m_source = MRtmpSource::findSource(url);
+        m_source = BlsRtmpSource::findSource(url);
 
         // if process is worker
         // then check if has other client push the same stream.
@@ -328,7 +328,7 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
 
         log_trace("start play : %s", fullUrl.c_str());
 
-        m_source = MRtmpSource::findSource(url);
+        m_source = BlsRtmpSource::findSource(url);
         m_role = Role_Connection_Play;
         playService();
 
@@ -389,7 +389,7 @@ int MRtmpConnection::playService()
     int ret = E_SUCCESS;
 
     MString url = m_protocol->getRtmpCtx()->url();
-    MRtmpPool *pool = new MRtmpPool(url, this);
+    BlsConsumer *pool = new BlsConsumer(url, this);
     m_source->addPool(pool);
     while (!RequestStop) {
         list<MRtmpMessage> msgs = pool->getMessage();

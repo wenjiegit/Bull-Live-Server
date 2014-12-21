@@ -48,33 +48,6 @@ void BlsInternalMsg::dump() const
     log_trace("msg header: %s  body: %s", m_header.c_str(), m_body.c_str());
 }
 
-MString getValue(MString &line)
-{
-    MStringList temp = line.split(Internal_CMD_Delimer);
-    if (line.endWith("\n")) {
-        line.erase(line.size()-1, 1);
-    }
-
-    MString ret;
-    if (temp.size() == 2) {
-        ret = temp.at(1);
-    }
-
-    return ret;
-}
-
-MString getKey(MString &line)
-{
-    MStringList temp = line.split(Internal_CMD_Delimer);
-
-    MString ret;
-    if (temp.size() == 2) {
-        ret = temp.at(0);
-    }
-
-    return "";
-}
-
 int readInternalMsg(BlsInternalMsg &msg, MTcpSocket *socket)
 {
     int ret = E_SUCCESS;

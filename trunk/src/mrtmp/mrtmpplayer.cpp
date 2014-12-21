@@ -4,7 +4,7 @@
 #include <MLoger>
 
 #include "mrtmpurl.hpp"
-#include "mrtmpsource.hpp"
+#include "BlsRtmpSource.hpp"
 
 MRtmpPlayer::MRtmpPlayer(MObject *parent)
     : MThread(parent)
@@ -226,7 +226,7 @@ int MRtmpPlayer::service()
     }
 
     MRtmpUrl url(m_url);
-    m_source = MRtmpSource::findSource(url.url());
+    m_source = BlsRtmpSource::findSource(url.url());
 
     while (!RequestStop) {
         MRtmpMessage *msg = NULL;

@@ -9,11 +9,11 @@ using namespace std;
 class MRtmpMessage;
 class MRtmpTimestampCorrector;
 
-class MRtmpPool : public MObject
+class BlsConsumer : public MObject
 {
 public:
-    MRtmpPool(const MString &url, MObject *parent = 0);
-    ~MRtmpPool();
+    BlsConsumer(const MString &url, MObject *parent = 0);
+    ~BlsConsumer();
 
     int onVideo(MRtmpMessage &msg);
     int onAudio(MRtmpMessage &msg);

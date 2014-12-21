@@ -1,11 +1,11 @@
-#include "mrtmppool.hpp"
+#include "BlsConsumer.hpp"
 #include "mrtmpprotocol.hpp"
 #include "mrtmptimestampcorrector.hpp"
-#include "mrtmpsource.hpp"
+#include "BlsRtmpSource.hpp"
 
 #include <MLoger>
 
-MRtmpPool::MRtmpPool(const MString &url, MObject *parent)
+BlsConsumer::BlsConsumer(const MString &url, MObject *parent)
     : MObject(parent)
     , m_corrector(new MRtmpTimestampCorrector(this))
     , m_url(url)
@@ -13,15 +13,15 @@ MRtmpPool::MRtmpPool(const MString &url, MObject *parent)
 
 }
 
-MRtmpPool::~MRtmpPool()
+BlsConsumer::~BlsConsumer()
 {
-    MRtmpSource *source = MRtmpSource::findSource(m_url);
+    BlsRtmpSource *source = BlsRtmpSource::findSource(m_url);
     if (source) {
         source->removePool(this);
     }
 }
 
-int MRtmpPool::onVideo(MRtmpMessage &msg)
+int BlsConsumer::onVideo(MRtmpMessage &msg)
 {
     m_corrector->correct(msg);
     m_msgs.push_back(msg);
@@ -29,7 +29,7 @@ int MRtmpPool::onVideo(MRtmpMessage &msg)
     return E_SUCCESS;
 }
 
-int MRtmpPool::onAudio(MRtmpMessage &msg)
+int BlsConsumer::onAudio(MRtmpMessage &msg)
 {
     m_corrector->correct(msg);
     m_msgs.push_back(msg);
@@ -37,7 +37,7 @@ int MRtmpPool::onAudio(MRtmpMessage &msg)
     return E_SUCCESS;
 }
 
-int MRtmpPool::onMetadata(MRtmpMessage &msg)
+int BlsConsumer::onMetadata(MRtmpMessage &msg)
 {
     m_corrector->correct(msg);
     m_msgs.push_back(msg);
@@ -45,7 +45,7 @@ int MRtmpPool::onMetadata(MRtmpMessage &msg)
     return E_SUCCESS;
 }
 
-int MRtmpPool::onMessage(MRtmpMessage &msg)
+int BlsConsumer::onMessage(MRtmpMessage &msg)
 {
     if (msg.isAudio()) {
         return onAudio(msg);
@@ -60,7 +60,7 @@ int MRtmpPool::onMessage(MRtmpMessage &msg)
     return E_SUCCESS;
 }
 
-list<MRtmpMessage> MRtmpPool::getMessage()
+list<MRtmpMessage> BlsConsumer::getMessage()
 {
     list<MRtmpMessage> ret = m_msgs;
     m_msgs.clear();

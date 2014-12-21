@@ -3,8 +3,8 @@
 #include <MTcpSocket>
 
 #include "mrtmpurl.hpp"
-#include "mrtmpsource.hpp"
-#include "mrtmppool.hpp"
+#include "BlsRtmpSource.hpp"
+#include "BlsConsumer.hpp"
 
 BlsRtmpPublisher::BlsRtmpPublisher(MObject *parent)
     : MThread(parent)
@@ -231,8 +231,8 @@ int BlsRtmpPublisher::publish()
     int ret = E_SUCCESS;
 
     MRtmpUrl url(m_url);
-    MRtmpSource *source = MRtmpSource::findSource(url.url());
-    MRtmpPool *pool = new MRtmpPool(url.url());
+    BlsRtmpSource *source = BlsRtmpSource::findSource(url.url());
+    BlsConsumer *pool = new BlsConsumer(url.url());
     source->addPool(pool);
 
     while (!RequestStop) {

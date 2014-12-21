@@ -15,7 +15,7 @@
 class MTcpSocket;
 class MRtmpProtocol;
 class MRtmpMessage;
-class MRtmpSource;
+class BlsRtmpSource;
 
 #define Role_Connection_Publish             0x01
 #define Role_Connection_Play                0x02
@@ -49,7 +49,7 @@ private:
     MRtmpUrl m_url;
     MTcpSocket *m_socket;
     MRtmpProtocol *m_protocol;
-    MRtmpSource *m_source;
+    BlsRtmpSource *m_source;
     int m_role;
 };
 

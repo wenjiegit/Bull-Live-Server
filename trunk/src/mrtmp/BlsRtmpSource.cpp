@@ -1,5 +1,5 @@
-#include "mrtmpsource.hpp"
-#include "mrtmppool.hpp"
+#include "BlsRtmpSource.hpp"
+#include "BlsConsumer.hpp"
 #include "mrtmpprotocol.hpp"
 #include "mflashvideoinfo.hpp"
 #include "BlsConf.hpp"
@@ -10,9 +10,9 @@
 
 #include <MLoger>
 
-MHash<MString, MRtmpSource*> MRtmpSource::m_sources;
+MHash<MString, BlsRtmpSource*> BlsRtmpSource::m_sources;
 
-MRtmpSource::MRtmpSource(const MString &url, MObject *parent)
+BlsRtmpSource::BlsRtmpSource(const MString &url, MObject *parent)
     : MObject(parent)
     , m_videoSh(NULL)
     , m_audioSh(NULL)
@@ -22,11 +22,11 @@ MRtmpSource::MRtmpSource(const MString &url, MObject *parent)
     m_publisher = NULL;
 }
 
-MRtmpSource::~MRtmpSource()
+BlsRtmpSource::~BlsRtmpSource()
 {
 }
 
-int MRtmpSource::onVideo(MRtmpMessage &msg)
+int BlsRtmpSource::onVideo(MRtmpMessage &msg)
 {
     dispatch(msg);
     addToGop(msg);
@@ -42,7 +42,7 @@ int MRtmpSource::onVideo(MRtmpMessage &msg)
     return E_SUCCESS;
 }
 
-int MRtmpSource::onAudio(MRtmpMessage &msg)
+int BlsRtmpSource::onAudio(MRtmpMessage &msg)
 {
     dispatch(msg);
     addToGop(msg);
@@ -58,7 +58,7 @@ int MRtmpSource::onAudio(MRtmpMessage &msg)
     return E_SUCCESS;
 }
 
-int MRtmpSource::onMetadata(MRtmpMessage &msg)
+int BlsRtmpSource::onMetadata(MRtmpMessage &msg)
 {
     dispatch(msg);
 
@@ -71,7 +71,7 @@ int MRtmpSource::onMetadata(MRtmpMessage &msg)
     return E_SUCCESS;
 }
 
-int MRtmpSource::onPublish()
+int BlsRtmpSource::onPublish()
 {
     int ret = E_SUCCESS;
 
@@ -89,7 +89,7 @@ int MRtmpSource::onPublish()
     return ret;
 }
 
-int MRtmpSource::onUnPublish()
+int BlsRtmpSource::onUnPublish()
 {
     int ret = E_SUCCESS;
 
@@ -114,7 +114,7 @@ int MRtmpSource::onUnPublish()
     return E_SUCCESS;
 }
 
-void MRtmpSource::addPool(MRtmpPool *pool)
+void BlsRtmpSource::addPool(BlsConsumer *pool)
 {
     m_pools.push_back(pool);
 
@@ -142,11 +142,11 @@ void MRtmpSource::addPool(MRtmpPool *pool)
 #endif
 }
 
-void MRtmpSource::removePool(MRtmpPool *pool)
+void BlsRtmpSource::removePool(BlsConsumer *pool)
 {
-    list<MRtmpPool *>::iterator iter;
+    list<BlsConsumer *>::iterator iter;
     for (iter = m_pools.begin(); iter != m_pools.end(); ++iter) {
-        MRtmpPool *rp = *iter;
+        BlsConsumer *rp = *iter;
         if (rp == pool) {
             m_pools.erase(iter);
             break;
@@ -154,19 +154,19 @@ void MRtmpSource::removePool(MRtmpPool *pool)
     }
 }
 
-MRtmpSource *MRtmpSource::findSource(const MString &url)
+BlsRtmpSource *BlsRtmpSource::findSource(const MString &url)
 {
     if (m_sources.contains(url)) {
         return m_sources[url];
     }
 
-    MRtmpSource *source = new MRtmpSource(url);
+    BlsRtmpSource *source = new BlsRtmpSource(url);
     m_sources[url] = source;
 
     return source;
 }
 
-int MRtmpSource::acquire(const MString &url, bool &res)
+int BlsRtmpSource::acquire(const MString &url, bool &res)
 {
     int ret = E_SUCCESS;
 
@@ -183,7 +183,7 @@ int MRtmpSource::acquire(const MString &url, bool &res)
     return ret;
 }
 
-int MRtmpSource::release(const MString &url)
+int BlsRtmpSource::release(const MString &url)
 {
     int ret = E_SUCCESS;
 
@@ -194,7 +194,7 @@ int MRtmpSource::release(const MString &url)
     return ret;
 }
 
-void MRtmpSource::addToGop(MRtmpMessage &msg)
+void BlsRtmpSource::addToGop(MRtmpMessage &msg)
 {
     if (MFlashVideoInfo::videoIsKeyFrame(msg.payload)) {
         // clean gop
@@ -204,18 +204,18 @@ void MRtmpSource::addToGop(MRtmpMessage &msg)
     m_gop.push_back(msg);
 }
 
-int MRtmpSource::dispatch(MRtmpMessage &msg)
+int BlsRtmpSource::dispatch(MRtmpMessage &msg)
 {
-    list<MRtmpPool *>::iterator iter;
+    list<BlsConsumer *>::iterator iter;
     for (iter = m_pools.begin(); iter != m_pools.end(); ++iter) {
-        MRtmpPool *rp = *iter;
+        BlsConsumer *rp = *iter;
         rp->onMessage(msg);
     }
 
     return E_SUCCESS;
 }
 
-int MRtmpSource::fastGop(MRtmpPool *pool)
+int BlsRtmpSource::fastGop(BlsConsumer *pool)
 {
     int ts = 0;
     int index = 0;
