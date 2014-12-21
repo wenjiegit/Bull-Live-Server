@@ -5,7 +5,7 @@
 #include <MHash>
 #include <MObject>
 
-#include "mamf0serializer.hpp"
+#include "BlsAMF0Serializer.hpp"
 
 // Protocol Control Messages
 
@@ -243,7 +243,7 @@ struct BlsRtmpChunkStream
     }
 };
 
-class BlsRtmpNetStatusEvent : public MAMF0Object
+class BlsRtmpNetStatusEvent : public BlsAMF0Object
 {
 public:
     BlsRtmpNetStatusEvent(const MString &code = "", const MString &level = "");
@@ -255,8 +255,8 @@ class BlsRtmpProtocolAbstract
 public:
     virtual ~BlsRtmpProtocolAbstract() {}
 
-    virtual int onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1
-                          , MAMF0Any *arg2 = NULL, MAMF0Any *arg3 = NULL, MAMF0Any *arg4 = NULL)
+    virtual int onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID, BlsAMF0Any *arg1
+                          , BlsAMF0Any *arg2 = NULL, BlsAMF0Any *arg3 = NULL, BlsAMF0Any *arg4 = NULL)
     {
         M_UNUSED(msg);
         M_UNUSED(name);
@@ -338,8 +338,8 @@ public:
     */
     int publishStream(double transactionId, const MString &streamName);
 
-    int sendAny(const BlsRtmpMessageHeader &header, MAMF0Any *arg1, MAMF0Any *arg2 = NULL, MAMF0Any *arg3 = NULL
-            , MAMF0Any *arg4 = NULL, MAMF0Any *arg5 = NULL, MAMF0Any *arg6 = NULL);
+    int sendAny(const BlsRtmpMessageHeader &header, BlsAMF0Any *arg1, BlsAMF0Any *arg2 = NULL, BlsAMF0Any *arg3 = NULL
+            , BlsAMF0Any *arg4 = NULL, BlsAMF0Any *arg5 = NULL, BlsAMF0Any *arg6 = NULL);
     int sendNetStatusEvent(double transactionID, BlsRtmpNetStatusEvent *event);
 
     BlsRtmpContext *getRtmpCtx();
@@ -360,8 +360,8 @@ private:
     BlsRtmpMessage *reEncodeMetadata(BlsRtmpMessage *metadata);
 
 private:
-    static int decodeAny(MStream &stream, MAMF0Any **arg1, MAMF0Any **arg2, MAMF0Any **arg3, MAMF0Any **arg4, MAMF0Any **arg5, MAMF0Any **arg6);
-    static int encodeAny(MStream &stream, MAMF0Any *arg1, MAMF0Any *arg2, MAMF0Any *arg3, MAMF0Any *arg4, MAMF0Any *arg5, MAMF0Any *arg6);
+    static int decodeAny(MStream &stream, BlsAMF0Any **arg1, BlsAMF0Any **arg2, BlsAMF0Any **arg3, BlsAMF0Any **arg4, BlsAMF0Any **arg5, BlsAMF0Any **arg6);
+    static int encodeAny(MStream &stream, BlsAMF0Any *arg1, BlsAMF0Any *arg2, BlsAMF0Any *arg3, BlsAMF0Any *arg4, BlsAMF0Any *arg5, BlsAMF0Any *arg6);
 
 private:
     MHash<int, BlsRtmpChunkStream*> m_chunks;

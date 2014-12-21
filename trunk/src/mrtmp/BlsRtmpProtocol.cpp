@@ -181,26 +181,26 @@ int BlsRtmpProtocol::onConnect(double id)
 {
     int ret = E_SUCCESS;
 
-    MAMF0ShortString *commandName = new MAMF0ShortString(RTMP_AMF0_COMMAND_RESULT);
-    MAMF0Number *transactionID = new MAMF0Number(id);
+    BlsAMF0ShortString *commandName = new BlsAMF0ShortString(RTMP_AMF0_COMMAND_RESULT);
+    BlsAMF0Number *transactionID = new BlsAMF0Number(id);
 
-    MAMF0Object *object = new MAMF0Object;
-    MAMF0Object *object_status = new MAMF0Object;
-    MAMF0EcmaArray *ecmaArray = new MAMF0EcmaArray;
+    BlsAMF0Object *object = new BlsAMF0Object;
+    BlsAMF0Object *object_status = new BlsAMF0Object;
+    BlsAMF0EcmaArray *ecmaArray = new BlsAMF0EcmaArray;
 
     // object
-    object->setValue("fmsVer", new MAMF0ShortString("FMS/4,5,0,297"));
-    object->setValue("capabilities", new MAMF0Number(127));
-    object->setValue("mode", new MAMF0Number(1));
+    object->setValue("fmsVer", new BlsAMF0ShortString("FMS/4,5,0,297"));
+    object->setValue("capabilities", new BlsAMF0Number(127));
+    object->setValue("mode", new BlsAMF0Number(1));
 
     // object_status
-    object_status->setValue(STATUS_LEVEL, new MAMF0ShortString("status"));
-    object_status->setValue(STATUS_CODE, new MAMF0ShortString(NetConnection_Connect_Success));
-    object_status->setValue(STATUS_DESC, new MAMF0ShortString(NetConnection_Connect_Success));
+    object_status->setValue(STATUS_LEVEL, new BlsAMF0ShortString("status"));
+    object_status->setValue(STATUS_CODE, new BlsAMF0ShortString(NetConnection_Connect_Success));
+    object_status->setValue(STATUS_DESC, new BlsAMF0ShortString(NetConnection_Connect_Success));
     // TODO fix object encoding 0 or 3
-    object_status->setValue("objectEncoding", new MAMF0Number(3));
+    object_status->setValue("objectEncoding", new BlsAMF0Number(3));
 
-    ecmaArray->setValue("version", new MAMF0ShortString("4,5,0,297"));
+    ecmaArray->setValue("version", new BlsAMF0ShortString("4,5,0,297"));
     object_status->setValue("data", ecmaArray);
 
 
@@ -270,7 +270,7 @@ int BlsRtmpProtocol::onBWDone()
     header.perfer_cid = RTMP_CID_OverConnection;
     header.type = RTMP_MSG_AMF0CommandMessage;
 
-    if ((ret = sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(0), new MAMF0Null)) != E_SUCCESS) {
+    if ((ret = sendAny(header, new BlsAMF0ShortString(cmdName), new BlsAMF0Number(0), new BlsAMF0Null)) != E_SUCCESS) {
         return ret;
     }
 
@@ -338,9 +338,9 @@ int BlsRtmpProtocol::createStream()
     mAutoFree(BlsRtmpMessage, msg);
 
     MStream &stream = msg->payload;
-    MAMF0Serializer::writeShortString(stream, "createStream");
-    MAMF0Serializer::writeDouble(stream, 2);
-    MAMF0Serializer::writeNull(stream);
+    BlsAMF0Serializer::writeShortString(stream, "createStream");
+    BlsAMF0Serializer::writeDouble(stream, 2);
+    BlsAMF0Serializer::writeNull(stream);
 
     BlsRtmpMessageHeader &header = msg->header;
     header.perfer_cid = RTMP_CID_ProtocolControl;
@@ -363,10 +363,10 @@ int BlsRtmpProtocol::publishStream(double transactionId, const MString &streamNa
     mAutoFree(BlsRtmpMessage, msg);
 
     MStream &stream = msg->payload;
-    MAMF0Serializer::writeShortString(stream, "publish");
-    MAMF0Serializer::writeDouble(stream, transactionId);
-    MAMF0Serializer::writeNull(stream);
-    MAMF0Serializer::writeShortString(stream, streamName);
+    BlsAMF0Serializer::writeShortString(stream, "publish");
+    BlsAMF0Serializer::writeDouble(stream, transactionId);
+    BlsAMF0Serializer::writeNull(stream);
+    BlsAMF0Serializer::writeShortString(stream, streamName);
 
     BlsRtmpMessageHeader &header = msg->header;
     header.perfer_cid = RTMP_CID_OverConnection2;
@@ -381,17 +381,17 @@ int BlsRtmpProtocol::publishStream(double transactionId, const MString &streamNa
     return ret;
 }
 
-int BlsRtmpProtocol::sendAny(const BlsRtmpMessageHeader &header, MAMF0Any *arg1, MAMF0Any *arg2, MAMF0Any *arg3
-                           , MAMF0Any *arg4, MAMF0Any *arg5, MAMF0Any *arg6)
+int BlsRtmpProtocol::sendAny(const BlsRtmpMessageHeader &header, BlsAMF0Any *arg1, BlsAMF0Any *arg2, BlsAMF0Any *arg3
+                           , BlsAMF0Any *arg4, BlsAMF0Any *arg5, BlsAMF0Any *arg6)
 {
     int ret = E_SUCCESS;
 
-    mAutoFree(MAMF0Any, arg1);
-    mAutoFree(MAMF0Any, arg2);
-    mAutoFree(MAMF0Any, arg3);
-    mAutoFree(MAMF0Any, arg4);
-    mAutoFree(MAMF0Any, arg5);
-    mAutoFree(MAMF0Any, arg6);
+    mAutoFree(BlsAMF0Any, arg1);
+    mAutoFree(BlsAMF0Any, arg2);
+    mAutoFree(BlsAMF0Any, arg3);
+    mAutoFree(BlsAMF0Any, arg4);
+    mAutoFree(BlsAMF0Any, arg5);
+    mAutoFree(BlsAMF0Any, arg6);
 
     BlsRtmpMessage *msg = new BlsRtmpMessage;
     mAutoFree(BlsRtmpMessage, msg);
@@ -422,7 +422,7 @@ int BlsRtmpProtocol::sendNetStatusEvent(double transactionID, BlsRtmpNetStatusEv
 
     MString cmdName = RTMP_AMF0_COMMAND_ON_STATUS;
 
-    if ((ret = sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, event)) != E_SUCCESS) {
+    if ((ret = sendAny(header, new BlsAMF0ShortString(cmdName), new BlsAMF0Number(transactionID), new BlsAMF0Null, event)) != E_SUCCESS) {
         return ret;
     }
 
@@ -842,12 +842,12 @@ int BlsRtmpProtocol::on_recv_message(BlsRtmpMessage* msg)
             return ret;
         }
     } else if (msg->isAmf0Command() || msg->isAmf3Command()) {
-        MAMF0Any *arg1 = NULL;
-        MAMF0Any *arg2 = NULL;
-        MAMF0Any *arg3 = NULL;
-        MAMF0Any *arg4 = NULL;
-        MAMF0Any *arg5 = NULL;
-        MAMF0Any *arg6 = NULL;
+        BlsAMF0Any *arg1 = NULL;
+        BlsAMF0Any *arg2 = NULL;
+        BlsAMF0Any *arg3 = NULL;
+        BlsAMF0Any *arg4 = NULL;
+        BlsAMF0Any *arg5 = NULL;
+        BlsAMF0Any *arg6 = NULL;
 
         if (msg->isAmf3Command()) {
             if ((ret = stream.skip(1)) != E_SUCCESS) {
@@ -870,12 +870,12 @@ int BlsRtmpProtocol::on_recv_message(BlsRtmpMessage* msg)
             return ret;
         }
 
-        mAutoFree(MAMF0Any, arg1);
-        mAutoFree(MAMF0Any, arg2);
-        mAutoFree(MAMF0Any, arg3);
-        mAutoFree(MAMF0Any, arg4);
-        mAutoFree(MAMF0Any, arg5);
-        mAutoFree(MAMF0Any, arg6);
+        mAutoFree(BlsAMF0Any, arg1);
+        mAutoFree(BlsAMF0Any, arg2);
+        mAutoFree(BlsAMF0Any, arg3);
+        mAutoFree(BlsAMF0Any, arg4);
+        mAutoFree(BlsAMF0Any, arg5);
+        mAutoFree(BlsAMF0Any, arg6);
 
         if (!arg1->isShortString() || !arg2->isNumber()) {
             ret = E_AMF_TYPE_ERROR;
@@ -883,8 +883,8 @@ int BlsRtmpProtocol::on_recv_message(BlsRtmpMessage* msg)
             return ret;
         }
 
-        MString name = dynamic_cast<MAMF0ShortString *>(arg1)->var;
-        double id = dynamic_cast<MAMF0Number *>(arg2)->var;
+        MString name = dynamic_cast<BlsAMF0ShortString *>(arg1)->var;
+        double id = dynamic_cast<BlsAMF0Number *>(arg2)->var;
 
         if ((ret = m_session->onCommand(msg, name, id, arg3, arg4, arg5, arg6)) != E_SUCCESS) {
             log_error("command(%s) invoke error. ret=%d", name.c_str(), ret);
@@ -948,47 +948,47 @@ int BlsRtmpProtocol::on_recv_message(BlsRtmpMessage* msg)
     return ret;
 }
 
-int BlsRtmpProtocol::decodeAny(MStream &stream, MAMF0Any **arg1, MAMF0Any **arg2, MAMF0Any **arg3, MAMF0Any **arg4, MAMF0Any **arg5, MAMF0Any **arg6)
+int BlsRtmpProtocol::decodeAny(MStream &stream, BlsAMF0Any **arg1, BlsAMF0Any **arg2, BlsAMF0Any **arg3, BlsAMF0Any **arg4, BlsAMF0Any **arg5, BlsAMF0Any **arg6)
 {
     int ret = E_SUCCESS;
 
     if (!stream.end()) {
-        if ((ret = MAMF0Serializer::read(stream, arg1)) != E_SUCCESS) {
+        if ((ret = BlsAMF0Serializer::read(stream, arg1)) != E_SUCCESS) {
             log_error("AMF0CommandMessage decode_any arg1 failed, ret=%d", ret);
             return ret;
         }
     }
 
     if (!stream.end()) {
-        if ((ret = MAMF0Serializer::read(stream, arg2)) != E_SUCCESS) {
+        if ((ret = BlsAMF0Serializer::read(stream, arg2)) != E_SUCCESS) {
             log_error("AMF0CommandMessage decode_any arg2 failed, ret=%d", ret);
             return ret;
         }
     }
 
     if (!stream.end()) {
-        if ((ret = MAMF0Serializer::read(stream, arg3)) != E_SUCCESS) {
+        if ((ret = BlsAMF0Serializer::read(stream, arg3)) != E_SUCCESS) {
             log_error("AMF0CommandMessage decode_any arg3 failed, ret=%d", ret);
             return ret;
         }
     }
 
     if (!stream.end()) {
-        if ((ret = MAMF0Serializer::read(stream, arg4)) != E_SUCCESS) {
+        if ((ret = BlsAMF0Serializer::read(stream, arg4)) != E_SUCCESS) {
             log_error("AMF0CommandMessage decode_any arg4 failed, ret=%d", ret);
             return ret;
         }
     }
 
     if (!stream.end()) {
-        if ((ret = MAMF0Serializer::read(stream, arg5)) != E_SUCCESS) {
+        if ((ret = BlsAMF0Serializer::read(stream, arg5)) != E_SUCCESS) {
             log_error("AMF0CommandMessage decode_any arg5 failed, ret=%d", ret);
             return ret;
         }
     }
 
     if (!stream.end()) {
-        if ((ret = MAMF0Serializer::read(stream, arg6)) != E_SUCCESS) {
+        if ((ret = BlsAMF0Serializer::read(stream, arg6)) != E_SUCCESS) {
             log_error("AMF0CommandMessage decode_any arg6 failed, ret=%d", ret);
             return ret;
         }
@@ -1001,42 +1001,42 @@ int BlsRtmpProtocol::decodeAny(MStream &stream, MAMF0Any **arg1, MAMF0Any **arg2
     return ret;
 }
 
-int BlsRtmpProtocol::encodeAny(MStream &stream, MAMF0Any *arg1, MAMF0Any *arg2, MAMF0Any *arg3, MAMF0Any *arg4, MAMF0Any *arg5, MAMF0Any *arg6)
+int BlsRtmpProtocol::encodeAny(MStream &stream, BlsAMF0Any *arg1, BlsAMF0Any *arg2, BlsAMF0Any *arg3, BlsAMF0Any *arg4, BlsAMF0Any *arg5, BlsAMF0Any *arg6)
 {
     int ret = E_SUCCESS;
 
     if (arg1) {
-        if ((ret = MAMF0Serializer::write(stream, arg1)) != E_SUCCESS) {
+        if ((ret = BlsAMF0Serializer::write(stream, arg1)) != E_SUCCESS) {
             return ret;
         }
     }
 
     if (arg2) {
-        if ((ret = MAMF0Serializer::write(stream, arg2)) != E_SUCCESS) {
+        if ((ret = BlsAMF0Serializer::write(stream, arg2)) != E_SUCCESS) {
             return ret;
         }
     }
 
     if (arg3) {
-        if ((ret = MAMF0Serializer::write(stream, arg3)) != E_SUCCESS) {
+        if ((ret = BlsAMF0Serializer::write(stream, arg3)) != E_SUCCESS) {
             return ret;
         }
     }
 
     if (arg4) {
-        if ((ret = MAMF0Serializer::write(stream, arg4)) != E_SUCCESS) {
+        if ((ret = BlsAMF0Serializer::write(stream, arg4)) != E_SUCCESS) {
             return ret;
         }
     }
 
     if (arg5) {
-        if ((ret = MAMF0Serializer::write(stream, arg5)) != E_SUCCESS) {
+        if ((ret = BlsAMF0Serializer::write(stream, arg5)) != E_SUCCESS) {
             return ret;
         }
     }
 
     if (arg6) {
-        if ((ret = MAMF0Serializer::write(stream, arg6)) != E_SUCCESS) {
+        if ((ret = BlsAMF0Serializer::write(stream, arg6)) != E_SUCCESS) {
             return ret;
         }
     }
@@ -1136,10 +1136,10 @@ MString BlsRtmpContext::url()
 BlsRtmpNetStatusEvent::BlsRtmpNetStatusEvent(const MString &code, const MString &level)
 {
     if (!level.isEmpty())
-        setValue(STATUS_LEVEL, new MAMF0ShortString(level));
+        setValue(STATUS_LEVEL, new BlsAMF0ShortString(level));
 
     if (!code.isEmpty())
-        setValue(STATUS_CODE, new MAMF0ShortString(code));
+        setValue(STATUS_CODE, new BlsAMF0ShortString(code));
 }
 
 BlsRtmpNetStatusEvent::~BlsRtmpNetStatusEvent()

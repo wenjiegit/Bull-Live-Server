@@ -84,8 +84,8 @@ void BlsRtmpConnection::setSocket(MTcpSocket *socket)
     m_protocol->setSession(this);
 }
 
-int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1
-                               , MAMF0Any *arg2, MAMF0Any *arg3, MAMF0Any *arg4)
+int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID, BlsAMF0Any *arg1
+                               , BlsAMF0Any *arg2, BlsAMF0Any *arg3, BlsAMF0Any *arg4)
 {
     log_warn("%s", name.c_str());
     // TODO refer check.
@@ -95,7 +95,7 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
     if (name == "connect") {
         if (!arg1->isAmf0Object()) return E_AMF_TYPE_ERROR;
 
-        MAMF0Object *obj = dynamic_cast<MAMF0Object *>(arg1);
+        BlsAMF0Object *obj = dynamic_cast<BlsAMF0Object *>(arg1);
         if ((ret = parseUrl(obj)) != E_SUCCESS) {
             return ret;
         }
@@ -119,22 +119,22 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
         BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
-        if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, new MAMF0Undefined)) != E_SUCCESS) {
+        if ((ret = m_protocol->sendAny(header, new BlsAMF0ShortString(cmdName), new BlsAMF0Number(transactionID), new BlsAMF0Null, new BlsAMF0Undefined)) != E_SUCCESS) {
             return ret;
         }
     } else if (name == "FCPublish") {
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
         BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
-        if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, new MAMF0Undefined)) != E_SUCCESS) {
+        if ((ret = m_protocol->sendAny(header, new BlsAMF0ShortString(cmdName), new BlsAMF0Number(transactionID), new BlsAMF0Null, new BlsAMF0Undefined)) != E_SUCCESS) {
             return ret;
         }
     } else if (name == "createStream") {
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
         BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
-        if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID)
-                                       , new MAMF0Null, new MAMF0Number(1))) != E_SUCCESS)
+        if ((ret = m_protocol->sendAny(header, new BlsAMF0ShortString(cmdName), new BlsAMF0Number(transactionID)
+                                       , new BlsAMF0Null, new BlsAMF0Number(1))) != E_SUCCESS)
         {
             return ret;
         }
@@ -142,7 +142,7 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
     } else if (name == "publish") {
 
         // the stream name is the second arg.
-        MAMF0ShortString *str = dynamic_cast<MAMF0ShortString *>(arg2);
+        BlsAMF0ShortString *str = dynamic_cast<BlsAMF0ShortString *>(arg2);
         if (!str) {
             return E_AMF_TYPE_ERROR;
         }
@@ -171,15 +171,15 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
         BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverStream);
 
         BlsRtmpNetStatusEvent *obj = new BlsRtmpNetStatusEvent(NetStream_Publish_Start);
-        obj->setValue(STATUS_DESC, new MAMF0ShortString(NetStream_Publish_Start));
+        obj->setValue(STATUS_DESC, new BlsAMF0ShortString(NetStream_Publish_Start));
 
-        if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, obj)) != E_SUCCESS) {
+        if ((ret = m_protocol->sendAny(header, new BlsAMF0ShortString(cmdName), new BlsAMF0Number(transactionID), new BlsAMF0Null, obj)) != E_SUCCESS) {
             return ret;
         }
 
         BlsRtmpNetStatusEvent *obj1 = new BlsRtmpNetStatusEvent(NetStream_Publish_Start, STATUS_LEVEL_STATUS);
-        obj1->setValue(STATUS_DESC, new MAMF0ShortString(NetStream_Publish_Start));
-        obj1->setValue(STATUS_CLIENT_ID, new MAMF0ShortString("ASAICiss"));
+        obj1->setValue(STATUS_DESC, new BlsAMF0ShortString(NetStream_Publish_Start));
+        obj1->setValue(STATUS_CLIENT_ID, new BlsAMF0ShortString("ASAICiss"));
 
         if ((ret = m_protocol->sendNetStatusEvent(transactionID, obj1)) != E_SUCCESS) {
             return ret;
@@ -199,13 +199,13 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
 
     } else if (name == "FCUnpublish") {
         MString cmdName = "onFCUnpublish";
-        MAMF0Object *obj = new MAMF0Object;
-        obj->setValue(STATUS_CODE, new MAMF0ShortString(NetStream_Unpublish_Success));
-        obj->setValue(STATUS_DESC, new MAMF0ShortString(NetStream_Unpublish_Success));
+        BlsAMF0Object *obj = new BlsAMF0Object;
+        obj->setValue(STATUS_CODE, new BlsAMF0ShortString(NetStream_Unpublish_Success));
+        obj->setValue(STATUS_DESC, new BlsAMF0ShortString(NetStream_Unpublish_Success));
 
         BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
-        if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, obj)) != E_SUCCESS) {
+        if ((ret = m_protocol->sendAny(header, new BlsAMF0ShortString(cmdName), new BlsAMF0Number(transactionID), new BlsAMF0Null, obj)) != E_SUCCESS) {
             return ret;
         }
     } else if (name == "closeStream") {
@@ -221,28 +221,28 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
         BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
-        if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID)
-                                       , new MAMF0Null, new MAMF0Undefined)) != E_SUCCESS)
+        if ((ret = m_protocol->sendAny(header, new BlsAMF0ShortString(cmdName), new BlsAMF0Number(transactionID)
+                                       , new BlsAMF0Null, new BlsAMF0Undefined)) != E_SUCCESS)
         {
             return ret;
         }
 
         cmdName = RTMP_AMF0_COMMAND_ON_STATUS;
-        MAMF0Object *obj1 = new MAMF0Object;
-        obj1->setValue(STATUS_LEVEL, new MAMF0ShortString(STATUS_LEVEL_STATUS));
-        obj1->setValue(STATUS_CODE, new MAMF0ShortString(NetStream_Unpublish_Success));
-        obj1->setValue(STATUS_DESC, new MAMF0ShortString(NetStream_Unpublish_Success));
-        obj1->setValue(STATUS_CLIENT_ID, new MAMF0ShortString("ASAICiss"));
+        BlsAMF0Object *obj1 = new BlsAMF0Object;
+        obj1->setValue(STATUS_LEVEL, new BlsAMF0ShortString(STATUS_LEVEL_STATUS));
+        obj1->setValue(STATUS_CODE, new BlsAMF0ShortString(NetStream_Unpublish_Success));
+        obj1->setValue(STATUS_DESC, new BlsAMF0ShortString(NetStream_Unpublish_Success));
+        obj1->setValue(STATUS_CLIENT_ID, new BlsAMF0ShortString("ASAICiss"));
 
-        if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, obj1)) != E_SUCCESS) {
+        if ((ret = m_protocol->sendAny(header, new BlsAMF0ShortString(cmdName), new BlsAMF0Number(transactionID), new BlsAMF0Null, obj1)) != E_SUCCESS) {
             return ret;
         }
     } else if (name == "deleteStream") {
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
         BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
-        if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID)
-                                       , new MAMF0Null, new MAMF0Null)) != E_SUCCESS)
+        if ((ret = m_protocol->sendAny(header, new BlsAMF0ShortString(cmdName), new BlsAMF0Number(transactionID)
+                                       , new BlsAMF0Null, new BlsAMF0Null)) != E_SUCCESS)
         {
             return ret;
         }
@@ -259,32 +259,32 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
         MString cmdName = RTMP_AMF0_COMMAND_ON_STATUS;
 
         BlsRtmpNetStatusEvent *obj = new BlsRtmpNetStatusEvent(NetStream_Play_Reset, STATUS_LEVEL_STATUS);
-        obj->setValue(STATUS_DESC, new MAMF0ShortString(NetStream_Play_Reset));
-        obj->setValue(STATUS_DETAILS, new MAMF0ShortString(NetStream_Play_Reset));
-        obj->setValue(STATUS_CLIENT_ID, new MAMF0ShortString("ASAICiss"));
+        obj->setValue(STATUS_DESC, new BlsAMF0ShortString(NetStream_Play_Reset));
+        obj->setValue(STATUS_DETAILS, new BlsAMF0ShortString(NetStream_Play_Reset));
+        obj->setValue(STATUS_CLIENT_ID, new BlsAMF0ShortString("ASAICiss"));
 
-        if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, obj)) != E_SUCCESS) {
+        if ((ret = m_protocol->sendAny(header, new BlsAMF0ShortString(cmdName), new BlsAMF0Number(transactionID), new BlsAMF0Null, obj)) != E_SUCCESS) {
             return ret;
         }
 
-        MAMF0Object *obj1 = new MAMF0Object;
-        obj1->setValue(STATUS_LEVEL, new MAMF0ShortString(STATUS_LEVEL_STATUS));
-        obj1->setValue(STATUS_CODE, new MAMF0ShortString(NetStream_Play_Start));
-        obj1->setValue(STATUS_DESC, new MAMF0ShortString(NetStream_Play_Start));
-        obj1->setValue(STATUS_DETAILS, new MAMF0ShortString(NetStream_Play_Start));
-        obj1->setValue(STATUS_CLIENT_ID, new MAMF0ShortString("ASAICiss"));
+        BlsAMF0Object *obj1 = new BlsAMF0Object;
+        obj1->setValue(STATUS_LEVEL, new BlsAMF0ShortString(STATUS_LEVEL_STATUS));
+        obj1->setValue(STATUS_CODE, new BlsAMF0ShortString(NetStream_Play_Start));
+        obj1->setValue(STATUS_DESC, new BlsAMF0ShortString(NetStream_Play_Start));
+        obj1->setValue(STATUS_DETAILS, new BlsAMF0ShortString(NetStream_Play_Start));
+        obj1->setValue(STATUS_CLIENT_ID, new BlsAMF0ShortString("ASAICiss"));
 
-        if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, obj1)) != E_SUCCESS) {
+        if ((ret = m_protocol->sendAny(header, new BlsAMF0ShortString(cmdName), new BlsAMF0Number(transactionID), new BlsAMF0Null, obj1)) != E_SUCCESS) {
             return ret;
         }
 
         header.type = RTMP_MSG_AMF0DataMessage;
         cmdName = RTMP_AMF0_DATA_SAMPLE_ACCESS;
-        if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Boolean(false), new MAMF0Boolean(false))) != E_SUCCESS) {
+        if ((ret = m_protocol->sendAny(header, new BlsAMF0ShortString(cmdName), new BlsAMF0Boolean(false), new BlsAMF0Boolean(false))) != E_SUCCESS) {
             return ret;
         }
 
-        MAMF0ShortString *str = dynamic_cast<MAMF0ShortString *>(arg2);
+        BlsAMF0ShortString *str = dynamic_cast<BlsAMF0ShortString *>(arg2);
         if (!str) {
             return E_AMF_TYPE_ERROR;
         }
@@ -359,7 +359,7 @@ int BlsRtmpConnection::publishService()
     return E_SUCCESS;
 }
 
-int BlsRtmpConnection::parseUrl(MAMF0Object *obj)
+int BlsRtmpConnection::parseUrl(BlsAMF0Object *obj)
 {
     int ret = E_SUCCESS;
 
@@ -368,8 +368,8 @@ int BlsRtmpConnection::parseUrl(MAMF0Object *obj)
         ret = E_URL_NO_TCURL;
         return ret;
     }
-    MAMF0Any *value = obj->value(index);
-    MAMF0ShortString *str = dynamic_cast<MAMF0ShortString *>(value);
+    BlsAMF0Any *value = obj->value(index);
+    BlsAMF0ShortString *str = dynamic_cast<BlsAMF0ShortString *>(value);
     if (!str) {
         return E_AMF_TYPE_ERROR;
     }

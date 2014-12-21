@@ -60,14 +60,14 @@ int BlsRtmpPlayer::run()
 }
 
 int BlsRtmpPlayer::onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID
-                           , MAMF0Any *arg1, MAMF0Any *arg2, MAMF0Any *arg3, MAMF0Any *arg4)
+                           , BlsAMF0Any *arg1, BlsAMF0Any *arg2, BlsAMF0Any *arg3, BlsAMF0Any *arg4)
 {
     int ret = E_SUCCESS;
 
     if (name == "_result") {
         MString command = findCommand(transactionID);
         if (command == RTMP_AMF0_COMMAND_CONNECT) {
-            MAMF0Object *obj = dynamic_cast<MAMF0Object *>(arg2);
+            BlsAMF0Object *obj = dynamic_cast<BlsAMF0Object *>(arg2);
             if (!obj) {
                 return E_AMF_TYPE_ERROR;
             }
@@ -82,7 +82,7 @@ int BlsRtmpPlayer::onCommand(BlsRtmpMessage *msg, const MString &name, double tr
             }
         } else if (command == RTMP_AMF0_COMMAND_CREATE_STREAM) {
             m_commandList.erase(transactionID);
-            MAMF0Number *streamID = dynamic_cast<MAMF0Number *>(arg2);
+            BlsAMF0Number *streamID = dynamic_cast<BlsAMF0Number *>(arg2);
             if (!streamID) {
                 return E_AMF_TYPE_ERROR;
             }
@@ -155,23 +155,23 @@ int BlsRtmpPlayer::connectApp()
     double  transactionID = 1;
     BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
-    MAMF0Object *obj = new MAMF0Object;
-    obj->setValue("app", new MAMF0ShortString("live"));
-    obj->setValue("flashVer", new MAMF0ShortString("WIN 14,0,0,125"));
-    obj->setValue("swfUrl", new MAMF0ShortString("http://www.cutv.com/demo/live_test.swf"));
+    BlsAMF0Object *obj = new BlsAMF0Object;
+    obj->setValue("app", new BlsAMF0ShortString("live"));
+    obj->setValue("flashVer", new BlsAMF0ShortString("WIN 14,0,0,125"));
+    obj->setValue("swfUrl", new BlsAMF0ShortString("http://www.cutv.com/demo/live_test.swf"));
 
     BlsRtmpUrl url(m_url);
 
-    obj->setValue("tcUrl", new MAMF0ShortString(url.tcUrl()));
-    obj->setValue("fpad", new MAMF0Boolean);
-    obj->setValue("capabilities", new MAMF0Number(239));
-    obj->setValue("audioCodecs", new MAMF0Number(3575));
-    obj->setValue("videoCodecs", new MAMF0Number(251));
-    obj->setValue("videoFunction", new MAMF0Number(1));
-    obj->setValue("pageUrl", new MAMF0ShortString("http://www.cutv.com/demo/live_test.swf"));
-    obj->setValue("objectEncoding", new MAMF0Number(3));
+    obj->setValue("tcUrl", new BlsAMF0ShortString(url.tcUrl()));
+    obj->setValue("fpad", new BlsAMF0Boolean);
+    obj->setValue("capabilities", new BlsAMF0Number(239));
+    obj->setValue("audioCodecs", new BlsAMF0Number(3575));
+    obj->setValue("videoCodecs", new BlsAMF0Number(251));
+    obj->setValue("videoFunction", new BlsAMF0Number(1));
+    obj->setValue("pageUrl", new BlsAMF0ShortString("http://www.cutv.com/demo/live_test.swf"));
+    obj->setValue("objectEncoding", new BlsAMF0Number(3));
 
-    if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(commandName), new MAMF0Number(transactionID), obj)) != E_SUCCESS) {
+    if ((ret = m_protocol->sendAny(header, new BlsAMF0ShortString(commandName), new BlsAMF0Number(transactionID), obj)) != E_SUCCESS) {
         log_error("MRtmpPlayer connectApp failed.");
         return ret;
     }
@@ -187,7 +187,7 @@ int BlsRtmpPlayer::createStream()
     double  transactionID = 1;
     BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
-    if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(commandName), new MAMF0Number(transactionID), new MAMF0Null)) != E_SUCCESS) {
+    if ((ret = m_protocol->sendAny(header, new BlsAMF0ShortString(commandName), new BlsAMF0Number(transactionID), new BlsAMF0Null)) != E_SUCCESS) {
         log_error("MRtmpPlayer connectApp failed.");
         return ret;
     }
@@ -203,8 +203,8 @@ int BlsRtmpPlayer::play(const MString &streamName)
     double  transactionID = 0;
     BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverStream2);
 
-    if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(commandName), new MAMF0Number(transactionID)
-                                   , new MAMF0Null, new MAMF0ShortString(streamName))) != E_SUCCESS) {
+    if ((ret = m_protocol->sendAny(header, new BlsAMF0ShortString(commandName), new BlsAMF0Number(transactionID)
+                                   , new BlsAMF0Null, new BlsAMF0ShortString(streamName))) != E_SUCCESS) {
         log_error("MRtmpPlayer play failed.");
         return ret;
     }

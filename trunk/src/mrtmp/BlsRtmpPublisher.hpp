@@ -17,8 +17,8 @@ public:
     void setUrl(const MString &url);
     void setHost(const MString &host, muint16 port);
 
-    virtual int onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1
-                          , MAMF0Any *arg2 = NULL, MAMF0Any *arg3 = NULL, MAMF0Any *arg4 = NULL);
+    virtual int onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID, BlsAMF0Any *arg1
+                          , BlsAMF0Any *arg2 = NULL, BlsAMF0Any *arg3 = NULL, BlsAMF0Any *arg4 = NULL);
 
 private:
     int service();

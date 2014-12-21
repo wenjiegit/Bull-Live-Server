@@ -72,7 +72,7 @@ void BlsRtmpPublisher::setHost(const MString &host, muint16 port)
     m_port = port;
 }
 
-int BlsRtmpPublisher::onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1, MAMF0Any *arg2, MAMF0Any *arg3, MAMF0Any *arg4)
+int BlsRtmpPublisher::onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID, BlsAMF0Any *arg1, BlsAMF0Any *arg2, BlsAMF0Any *arg3, BlsAMF0Any *arg4)
 {
     int ret = E_SUCCESS;
 
@@ -80,7 +80,7 @@ int BlsRtmpPublisher::onCommand(BlsRtmpMessage *msg, const MString &name, double
         MString command = findCommand(transactionID);
 
         if (command == RTMP_AMF0_COMMAND_CONNECT) {
-            MAMF0Object *obj = dynamic_cast<MAMF0Object *>(arg2);
+            BlsAMF0Object *obj = dynamic_cast<BlsAMF0Object *>(arg2);
 
             if (!obj) {
                 return E_AMF_TYPE_ERROR;
@@ -114,7 +114,7 @@ int BlsRtmpPublisher::onCommand(BlsRtmpMessage *msg, const MString &name, double
             m_commandList.erase(transactionID);
 
             // get stream id
-            MAMF0Number *streamID = dynamic_cast<MAMF0Number *>(arg2);
+            BlsAMF0Number *streamID = dynamic_cast<BlsAMF0Number *>(arg2);
             if (!streamID) {
                 return E_AMF_TYPE_ERROR;
             }
@@ -137,7 +137,7 @@ int BlsRtmpPublisher::onCommand(BlsRtmpMessage *msg, const MString &name, double
             }
         }
     } else if (name == RTMP_AMF0_COMMAND_ON_STATUS) {
-        MAMF0Object *obj = dynamic_cast<MAMF0Object *>(arg2);
+        BlsAMF0Object *obj = dynamic_cast<BlsAMF0Object *>(arg2);
 
         if (!obj) {
             log_error("BlsRtmpPublisher the four arg of onStatus Pkt must be amf object.");
@@ -193,21 +193,21 @@ int BlsRtmpPublisher::connectApp()
     BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
     BlsRtmpUrl url(m_url);
-    MAMF0Object *obj = new MAMF0Object;
+    BlsAMF0Object *obj = new BlsAMF0Object;
 
-    obj->setValue("app", new MAMF0ShortString("live"));
-    obj->setValue("flashVer", new MAMF0ShortString("WIN 14,0,0,125"));
-    obj->setValue("swfUrl", new MAMF0ShortString("http://www.cutv.com/demo/live_test.swf"));
-    obj->setValue("tcUrl", new MAMF0ShortString(url.tcUrl()));
-    obj->setValue("fpad", new MAMF0Boolean);
-    obj->setValue("capabilities", new MAMF0Number(239));
-    obj->setValue("audioCodecs", new MAMF0Number(3575));
-    obj->setValue("videoCodecs", new MAMF0Number(251));
-    obj->setValue("videoFunction", new MAMF0Number(1));
-    obj->setValue("pageUrl", new MAMF0ShortString("http://www.cutv.com/demo/live_test.swf"));
-    obj->setValue("objectEncoding", new MAMF0Number(0));
+    obj->setValue("app", new BlsAMF0ShortString("live"));
+    obj->setValue("flashVer", new BlsAMF0ShortString("WIN 14,0,0,125"));
+    obj->setValue("swfUrl", new BlsAMF0ShortString("http://www.cutv.com/demo/live_test.swf"));
+    obj->setValue("tcUrl", new BlsAMF0ShortString(url.tcUrl()));
+    obj->setValue("fpad", new BlsAMF0Boolean);
+    obj->setValue("capabilities", new BlsAMF0Number(239));
+    obj->setValue("audioCodecs", new BlsAMF0Number(3575));
+    obj->setValue("videoCodecs", new BlsAMF0Number(251));
+    obj->setValue("videoFunction", new BlsAMF0Number(1));
+    obj->setValue("pageUrl", new BlsAMF0ShortString("http://www.cutv.com/demo/live_test.swf"));
+    obj->setValue("objectEncoding", new BlsAMF0Number(0));
 
-    if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(commandName), new MAMF0Number(transactionID), obj)) != E_SUCCESS) {
+    if ((ret = m_protocol->sendAny(header, new BlsAMF0ShortString(commandName), new BlsAMF0Number(transactionID), obj)) != E_SUCCESS) {
         log_error("BlsRtmpPublisher connectApp failed.");
         return ret;
     }

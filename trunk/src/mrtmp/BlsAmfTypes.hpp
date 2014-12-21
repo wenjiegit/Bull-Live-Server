@@ -44,10 +44,10 @@ using namespace std;
 #include <MString>
 #include <MLoger>
 
-struct MAMF0Any
+struct BlsAMF0Any
 {
-    MAMF0Any() {}
-    virtual ~MAMF0Any() {}
+    BlsAMF0Any() {}
+    virtual ~BlsAMF0Any() {}
 
     inline bool isNumber()          { return type == AMF0_NUMBER; }
     inline bool isBoolean()         { return type == AMF0_BOOLEAN; }
@@ -62,115 +62,115 @@ struct MAMF0Any
     char type;
 };
 
-struct MAMF0Number : public MAMF0Any
+struct BlsAMF0Number : public BlsAMF0Any
 {
-    MAMF0Number(double v = 0.0)
+    BlsAMF0Number(double v = 0.0)
     {
         type = AMF0_NUMBER;
         var = v;
     }
-    virtual ~MAMF0Number() {}
+    virtual ~BlsAMF0Number() {}
 
     double var;
 };
 
-struct MAMF0Boolean : public MAMF0Any
+struct BlsAMF0Boolean : public BlsAMF0Any
 {
-    MAMF0Boolean(bool v = false)
+    BlsAMF0Boolean(bool v = false)
     {
         type = AMF0_BOOLEAN;
         var = v;
     }
-    virtual ~MAMF0Boolean() {}
+    virtual ~BlsAMF0Boolean() {}
 
     bool var;
 };
 
-struct MAMF0ShortString : public MAMF0Any
+struct BlsAMF0ShortString : public BlsAMF0Any
 {
-    MAMF0ShortString(const MString &v = "")
+    BlsAMF0ShortString(const MString &v = "")
     {
         type = AMF0_SHORT_STRING;
         var = v;
     }
-    virtual ~MAMF0ShortString() {}
+    virtual ~BlsAMF0ShortString() {}
 
     MString var;
 };
 
-typedef pair<MString, MAMF0Any *> Amf0ObjectProperty;
+typedef pair<MString, BlsAMF0Any *> BlsAmf0ObjectProperty;
 
-struct MAMFObject : public MAMF0Any
+struct BlsAMFObject : public BlsAMF0Any
 {
-    MAMFObject() {}
-    virtual ~MAMFObject() {clear();}
+    BlsAMFObject() {}
+    virtual ~BlsAMFObject() {clear();}
 
-    MAMF0Any *value(int index);
+    BlsAMF0Any *value(int index);
     MString key(int index);
     MString value(const MString &k);
     int indexOf(const MString &key);
-    void setValue(const MString &key, MAMF0Any *any);
+    void setValue(const MString &key, BlsAMF0Any *any);
     void clear();
 
-    vector<Amf0ObjectProperty> values;
+    vector<BlsAmf0ObjectProperty> values;
 };
 
-struct MAMF0Object : public MAMFObject
+struct BlsAMF0Object : public BlsAMFObject
 {
-    MAMF0Object()
+    BlsAMF0Object()
     {
         type = AMF0_OBJECT;
     }
-    virtual ~MAMF0Object() {clear();}
+    virtual ~BlsAMF0Object() {clear();}
 };
 
-struct MAMF0Null : public MAMF0Any
+struct BlsAMF0Null : public BlsAMF0Any
 {
-    MAMF0Null()
+    BlsAMF0Null()
     {
         type = AMF0_NULL;
     }
-    virtual ~MAMF0Null() {}
+    virtual ~BlsAMF0Null() {}
 };
 
-struct MAMF0Undefined : public MAMF0Any
+struct BlsAMF0Undefined : public BlsAMF0Any
 {
-    MAMF0Undefined()
+    BlsAMF0Undefined()
     {
         type = AMF0_UNDEFINED;
     }
-    virtual ~MAMF0Undefined() {}
+    virtual ~BlsAMF0Undefined() {}
 };
 
-struct MAMF0EcmaArray : public MAMFObject
+struct BlsAMF0EcmaArray : public BlsAMFObject
 {
-    MAMF0EcmaArray()
+    BlsAMF0EcmaArray()
     {
         type = AMF0_ECMA_ARRAY;
     }
-    virtual ~MAMF0EcmaArray() {clear();}
+    virtual ~BlsAMF0EcmaArray() {clear();}
 
     mint32 count;
 };
 
-struct MAMF0StrictArray : public MAMF0Any
+struct BlsAMF0StrictArray : public BlsAMF0Any
 {
-    MAMF0StrictArray()
+    BlsAMF0StrictArray()
     {
         type = AMF0_STRICT_ARRAY;
     }
-    virtual ~MAMF0StrictArray() {clear();}
+    virtual ~BlsAMF0StrictArray() {clear();}
 
     void clear();
 
-    vector<MAMF0Any *> values;
+    vector<BlsAMF0Any *> values;
     mint32 count;
 };
 
-struct MAMF3Object : public MAMFObject
+struct BlsAMF3Object : public BlsAMFObject
 {
-    MAMF3Object() {}
-    virtual ~MAMF3Object() {clear();}
+    BlsAMF3Object() {}
+    virtual ~BlsAMF3Object() {clear();}
 };
 
 #endif	// MAMFTYPES_HPP
