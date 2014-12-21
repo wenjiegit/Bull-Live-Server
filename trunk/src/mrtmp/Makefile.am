@@ -6,7 +6,7 @@ CXXFLAGS += -Wall
 libmrtmp_a_SOURCES = \
 	mrtmpconnection.cpp \
 	mrtmpurl.cpp \
-	mrtmpserver.cpp \
+	BlsRtmpServer.cpp \
 	mrtmphandshake.cpp \
 	mrtmpprotocol.cpp \
 	mamf0serializer.cpp \
@@ -17,7 +17,7 @@ libmrtmp_a_SOURCES = \
 	mrtmptimestampcorrector.cpp \
 	mflvrecoder.cpp \
 	BlsConf.cpp \
-	mrtmpplayer.cpp \
+	BlsRtmpPlayer.cpp \
 	BlsChildChannel.cpp \
 	BlsMasterChannel.cpp \
 	BlsUtils.cpp \
@@ -30,7 +30,7 @@ libmrtmp_a_SOURCES = \
 noinst_HEADERS = \
 	mrtmpconnection.hpp \
 	mrtmpurl.hpp \
-	mrtmpserver.hpp \
+	BlsRtmpServer.hpp \
 	mrtmphandshake.hpp \
 	mrtmpprotocol.hpp \
 	mamf0serializer.hpp \
@@ -41,7 +41,7 @@ noinst_HEADERS = \
 	mrtmptimestampcorrector.hpp \
 	mflvrecoder.hpp \
 	BlsConf.hpp \
-	mrtmpplayer.hpp \
+	BlsRtmpPlayer.hpp \
 	BlsChildChannel.hpp \
 	BlsMasterChannel.hpp \
 	BlsUtils.hpp \

@@ -1,4 +1,4 @@
-#include "mrtmpplayer.hpp"
+#include "BlsRtmpPlayer.hpp"
 
 #include <MTcpSocket>
 #include <MLoger>
@@ -6,18 +6,18 @@
 #include "mrtmpurl.hpp"
 #include "BlsRtmpSource.hpp"
 
-MRtmpPlayer::MRtmpPlayer(MObject *parent)
+BlsRtmpPlayer::BlsRtmpPlayer(MObject *parent)
     : MThread(parent)
 {
 
 }
 
-MRtmpPlayer::~MRtmpPlayer()
+BlsRtmpPlayer::~BlsRtmpPlayer()
 {
 
 }
 
-void MRtmpPlayer::setUrl(const MString &host, mint16 port, const MString &app, const MString &url)
+void BlsRtmpPlayer::setUrl(const MString &host, mint16 port, const MString &app, const MString &url)
 {
     m_host = host;
     m_port = port;
@@ -25,7 +25,7 @@ void MRtmpPlayer::setUrl(const MString &host, mint16 port, const MString &app, c
     m_url = url;
 }
 
-int MRtmpPlayer::run()
+int BlsRtmpPlayer::run()
 {
     int ret = E_SUCCESS;
 
@@ -59,7 +59,7 @@ int MRtmpPlayer::run()
     return ret;
 }
 
-int MRtmpPlayer::onCommand(MRtmpMessage *msg, const MString &name, double transactionID
+int BlsRtmpPlayer::onCommand(MRtmpMessage *msg, const MString &name, double transactionID
                            , MAMF0Any *arg1, MAMF0Any *arg2, MAMF0Any *arg3, MAMF0Any *arg4)
 {
     int ret = E_SUCCESS;
@@ -119,27 +119,27 @@ int MRtmpPlayer::onCommand(MRtmpMessage *msg, const MString &name, double transa
     return ret;
 }
 
-int MRtmpPlayer::onAudio(MRtmpMessage *msg)
+int BlsRtmpPlayer::onAudio(MRtmpMessage *msg)
 {
     m_source->onAudio(*msg);
 
     return E_SUCCESS;
 }
 
-int MRtmpPlayer::onVideo(MRtmpMessage *msg)
+int BlsRtmpPlayer::onVideo(MRtmpMessage *msg)
 {
     m_source->onVideo(*msg);
     return E_SUCCESS;
 }
 
-int MRtmpPlayer::onMetadata(MRtmpMessage *msg)
+int BlsRtmpPlayer::onMetadata(MRtmpMessage *msg)
 {
     m_source->onMetadata(*msg);
 
     return E_SUCCESS;
 }
 
-MString MRtmpPlayer::findCommand(double id)
+MString BlsRtmpPlayer::findCommand(double id)
 {
     if (m_commandList.contains(id)) {
         return m_commandList[id];
@@ -148,7 +148,7 @@ MString MRtmpPlayer::findCommand(double id)
     return "";
 }
 
-int MRtmpPlayer::connectApp()
+int BlsRtmpPlayer::connectApp()
 {
     int ret = E_SUCCESS;
     MString commandName = RTMP_AMF0_COMMAND_CONNECT;
@@ -180,7 +180,7 @@ int MRtmpPlayer::connectApp()
     return ret;
 }
 
-int MRtmpPlayer::createStream()
+int BlsRtmpPlayer::createStream()
 {
     int ret = E_SUCCESS;
     MString commandName = RTMP_AMF0_COMMAND_CREATE_STREAM;
@@ -196,7 +196,7 @@ int MRtmpPlayer::createStream()
     return ret;
 }
 
-int MRtmpPlayer::play(const MString &streamName)
+int BlsRtmpPlayer::play(const MString &streamName)
 {
     int ret = E_SUCCESS;
     MString commandName = RTMP_AMF0_COMMAND_PLAY;
@@ -212,7 +212,7 @@ int MRtmpPlayer::play(const MString &streamName)
     return ret;
 }
 
-int MRtmpPlayer::service()
+int BlsRtmpPlayer::service()
 {
     int ret = E_SUCCESS;
 

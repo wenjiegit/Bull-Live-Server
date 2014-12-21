@@ -1,21 +1,21 @@
-#include "mrtmpserver.hpp"
+#include "BlsRtmpServer.hpp"
 
 #include <MLoger>
 #include <MHostInfo>
 
 #include "mrtmpconnection.hpp"
 
-MRtmpServer::MRtmpServer(MObject *parent)
+BlsRtmpServer::BlsRtmpServer(MObject *parent)
     : MTcpServer(parent)
 {
 }
 
-MRtmpServer::~MRtmpServer()
+BlsRtmpServer::~BlsRtmpServer()
 {
 
 }
 
-int MRtmpServer::newConnection(MTcpSocket *socket)
+int BlsRtmpServer::newConnection(MTcpSocket *socket)
 {
     MStringList address = MHostInfo::getPeerInfo(socket->osFD()).address();
     if (!address.empty()) {

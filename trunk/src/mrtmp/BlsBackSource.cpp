@@ -1,7 +1,7 @@
 #include "BlsBackSource.hpp"
 
 #include "mrtmpurl.hpp"
-#include "mrtmpplayer.hpp"
+#include "BlsRtmpPlayer.hpp"
 
 BlsBackSource::BlsBackSource()
 {
@@ -24,7 +24,7 @@ void BlsBackSource::add(const MString &host, mint16 port, const MString &app, co
         return ;
     }
 
-    MRtmpPlayer *player = new MRtmpPlayer;
+    BlsRtmpPlayer *player = new BlsRtmpPlayer;
     player->setUrl(host, port, app, url);
     player->start();
 

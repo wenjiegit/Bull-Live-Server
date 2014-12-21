@@ -3,11 +3,11 @@
 
 #include <MTcpServer>
 
-class MRtmpServer : public MTcpServer
+class BlsRtmpServer : public MTcpServer
 {
 public:
-    MRtmpServer(MObject * parent = 0);
-    virtual ~MRtmpServer();
+    BlsRtmpServer(MObject * parent = 0);
+    virtual ~BlsRtmpServer();
 
     virtual int newConnection(MTcpSocket *socket);
 };

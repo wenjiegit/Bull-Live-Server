@@ -6,7 +6,7 @@
 
 #include "mrtmpurl.hpp"
 
-class MRtmpPlayer;
+class BlsRtmpPlayer;
 
 class BlsBackSource : public MObject
 {
@@ -24,7 +24,7 @@ private:
     struct SourcePair
     {
         MRtmpUrl url;
-        MRtmpPlayer *player;
+        BlsRtmpPlayer *player;
     };
 
     MHash<MString, SourcePair> m_sources;

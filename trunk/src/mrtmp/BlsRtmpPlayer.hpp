@@ -10,11 +10,11 @@ class MTcpSocket;
 class MRtmpProtocol;
 class BlsRtmpSource;
 
-class MRtmpPlayer : public MThread, public MRtmpProtocolAbstract
+class BlsRtmpPlayer : public MThread, public MRtmpProtocolAbstract
 {
 public:
-    MRtmpPlayer(MObject *parent = 0);
-    virtual ~MRtmpPlayer();
+    BlsRtmpPlayer(MObject *parent = 0);
+    virtual ~BlsRtmpPlayer();
 
     void setUrl(const MString &host, mint16 port, const MString &app, const MString &url);
 

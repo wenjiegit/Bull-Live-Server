@@ -1,9 +1,9 @@
 #include <iostream>
 #include <MCoreApplication>
 
-#include "mrtmpserver.hpp"
+#include "BlsRtmpServer.hpp"
 #include "BlsConf.hpp"
-#include "mrtmpplayer.hpp"
+#include "BlsRtmpPlayer.hpp"
 #include "BlsMasterChannel.hpp"
 #include "BlsChildChannel.hpp"
 #include "BlsUtils.hpp"
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
         if (pid > 0) {
             continue;
         } else if (pid == 0) {
-            MRtmpServer *s = new MRtmpServer;
+            BlsRtmpServer *s = new BlsRtmpServer;
             if (!s->listen(info.addr, info.port)) {
                 log_error("listen %s:%d failed.", info.addr.c_str(), info.port);
                 return -1;
@@ -68,11 +68,11 @@ int main(int argc, char *argv[])
     }
 
     // master process
-    vector<MRtmpServer *> rtmpServer;
+    vector<BlsRtmpServer *> rtmpServer;
     vector<BlsHostInfo> infos = BlsConf::instance()->getRtmpListenInfo();
     for (int i = 0; i < infos.size(); ++i) {
         BlsHostInfo &info = infos.at(i);
-        MRtmpServer *s = new MRtmpServer;
+        BlsRtmpServer *s = new BlsRtmpServer;
         if (!s->listen(info.addr, info.port)) {
             log_error("listen %s:%d failed.", info.addr.c_str(), info.port);
             return -1;
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
 
     // close rtmp channel in master
     for (int i = 0; i < rtmpServer.size(); ++i) {
-        MRtmpServer *s = rtmpServer.at(i);
+        BlsRtmpServer *s = rtmpServer.at(i);
         s->close();
         mFree(s);
     }
