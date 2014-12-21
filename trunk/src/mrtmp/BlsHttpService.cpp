@@ -8,7 +8,7 @@
 
 #include "BlsRtmpSource.hpp"
 #include "BlsConsumer.hpp"
-#include "mrtmpprotocol.hpp"
+#include "BlsRtmpProtocol.hpp"
 
 #define HTTP_LIVE_FLV_SUFFIX            ".flv"
 #define HTTP_DYNAMIC_STEAMING_SUFFIX    ".f4m"
@@ -17,7 +17,7 @@
 static char flv_header[] = {'F', 'L', 'V',
                             0x01, 0x05, 0x00, 0x00, 0x00, 0x09,
                             0x00, 0x00, 0x00, 0x00};
-extern MStream serialFlv(MRtmpMessage *msg);
+extern MStream serialFlv(BlsRtmpMessage *msg);
 
 BlsHttpService::BlsHttpService(MObject *parent)
     : MTcpServer(parent)
@@ -117,10 +117,10 @@ int BlsHttpClient::sendHttpLiveFlv(const MString &url)
     source->addPool(pool);
 
     while (true) {
-        list<MRtmpMessage> msgs = pool->getMessage();
-        list<MRtmpMessage>::iterator iter;
+        list<BlsRtmpMessage> msgs = pool->getMessage();
+        list<BlsRtmpMessage>::iterator iter;
         for (iter = msgs.begin(); iter != msgs.end(); ++iter) {
-            MRtmpMessage &msg = *iter;
+            BlsRtmpMessage &msg = *iter;
 
             // to FLV message
             MStream stream = serialFlv(&msg);

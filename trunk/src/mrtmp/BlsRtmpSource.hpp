@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class MRtmpMessage;
+class BlsRtmpMessage;
 class BlsConsumer;
 class BlsRtmpPublisher;
 
@@ -17,9 +17,9 @@ public:
     BlsRtmpSource(const MString &url, MObject *parent = 0);
     ~BlsRtmpSource();
 
-    int onVideo(MRtmpMessage &msg);
-    int onAudio(MRtmpMessage &msg);
-    int onMetadata(MRtmpMessage &msg);
+    int onVideo(BlsRtmpMessage &msg);
+    int onAudio(BlsRtmpMessage &msg);
+    int onMetadata(BlsRtmpMessage &msg);
 
     int onPublish();
     int onUnPublish();
@@ -40,20 +40,20 @@ public:
     int release(const MString &url);
 
 private:
-    void addToGop(MRtmpMessage &msg);
-    int dispatch(MRtmpMessage &msg);
+    void addToGop(BlsRtmpMessage &msg);
+    int dispatch(BlsRtmpMessage &msg);
     int fastGop(BlsConsumer *pool);
     void release();
 
 private:
-    list<MRtmpMessage> m_gop;
+    list<BlsRtmpMessage> m_gop;
     list<BlsConsumer *> m_pools;
 
     static MHash<MString, BlsRtmpSource*> m_sources;
 
-    MRtmpMessage *m_videoSh;
-    MRtmpMessage *m_audioSh;
-    MRtmpMessage *m_metadata;
+    BlsRtmpMessage *m_videoSh;
+    BlsRtmpMessage *m_audioSh;
+    BlsRtmpMessage *m_metadata;
     MString m_url;
     BlsRtmpPublisher *m_publisher;
     bool m_isActive;

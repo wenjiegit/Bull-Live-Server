@@ -1,5 +1,5 @@
 #include "BlsConsumer.hpp"
-#include "mrtmpprotocol.hpp"
+#include "BlsRtmpProtocol.hpp"
 #include "BlsTimestampCorrector.hpp"
 #include "BlsRtmpSource.hpp"
 
@@ -21,7 +21,7 @@ BlsConsumer::~BlsConsumer()
     }
 }
 
-int BlsConsumer::onVideo(MRtmpMessage &msg)
+int BlsConsumer::onVideo(BlsRtmpMessage &msg)
 {
     m_corrector->correct(msg);
     m_msgs.push_back(msg);
@@ -29,7 +29,7 @@ int BlsConsumer::onVideo(MRtmpMessage &msg)
     return E_SUCCESS;
 }
 
-int BlsConsumer::onAudio(MRtmpMessage &msg)
+int BlsConsumer::onAudio(BlsRtmpMessage &msg)
 {
     m_corrector->correct(msg);
     m_msgs.push_back(msg);
@@ -37,7 +37,7 @@ int BlsConsumer::onAudio(MRtmpMessage &msg)
     return E_SUCCESS;
 }
 
-int BlsConsumer::onMetadata(MRtmpMessage &msg)
+int BlsConsumer::onMetadata(BlsRtmpMessage &msg)
 {
     m_corrector->correct(msg);
     m_msgs.push_back(msg);
@@ -45,7 +45,7 @@ int BlsConsumer::onMetadata(MRtmpMessage &msg)
     return E_SUCCESS;
 }
 
-int BlsConsumer::onMessage(MRtmpMessage &msg)
+int BlsConsumer::onMessage(BlsRtmpMessage &msg)
 {
     if (msg.isAudio()) {
         return onAudio(msg);
@@ -60,9 +60,9 @@ int BlsConsumer::onMessage(MRtmpMessage &msg)
     return E_SUCCESS;
 }
 
-list<MRtmpMessage> BlsConsumer::getMessage()
+list<BlsRtmpMessage> BlsConsumer::getMessage()
 {
-    list<MRtmpMessage> ret = m_msgs;
+    list<BlsRtmpMessage> ret = m_msgs;
     m_msgs.clear();
 
     return ret;

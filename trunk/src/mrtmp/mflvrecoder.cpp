@@ -8,7 +8,7 @@ char flv_header[] = {'F', 'L', 'V',
                             0x01, 0x05, 0x00, 0x00, 0x00, 0x09,
                             0x00, 0x00, 0x00, 0x00};
 
-MStream serialFlv(MRtmpMessage *msg)
+MStream serialFlv(BlsRtmpMessage *msg)
 {
     MStream stream;
 
@@ -35,7 +35,7 @@ MStream serialFlv(MRtmpMessage *msg)
     return stream;
 }
 
-static int writeFlv(MRtmpMessage *msg, MFile *file)
+static int writeFlv(BlsRtmpMessage *msg, MFile *file)
 {
     MStream stream = serialFlv(msg);
     if (file->write(stream) != stream.size()) {
@@ -71,7 +71,7 @@ int MFlvRecoder::start()
     return E_SUCCESS;
 }
 
-int MFlvRecoder::onMessage(MRtmpMessage *msg)
+int MFlvRecoder::onMessage(BlsRtmpMessage *msg)
 {
     log_trace("recv message type %d size %d dts %d", msg->header.type, msg->payload.size(), msg->header.timestamp);
 
@@ -88,22 +88,22 @@ int MFlvRecoder::onMessage(MRtmpMessage *msg)
     return E_SUCCESS;
 }
 
-int MFlvRecoder::onVideo(MRtmpMessage *msg)
+int MFlvRecoder::onVideo(BlsRtmpMessage *msg)
 {
     return writeFlv(msg, m_file);
 }
 
-int MFlvRecoder::onAudio(MRtmpMessage *msg)
+int MFlvRecoder::onAudio(BlsRtmpMessage *msg)
 {
     return writeFlv(msg, m_file);
 }
 
-int MFlvRecoder::onMetadata(MRtmpMessage *msg)
+int MFlvRecoder::onMetadata(BlsRtmpMessage *msg)
 {
      return writeFlv(msg, m_file);
 }
 
-int MFlvRecoder::onOther(MRtmpMessage *msg)
+int MFlvRecoder::onOther(BlsRtmpMessage *msg)
 {
     log_trace("recv message type %d size %d", msg->header.type, msg->payload.size());
 

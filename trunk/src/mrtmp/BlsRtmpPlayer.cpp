@@ -47,7 +47,7 @@ int BlsRtmpPlayer::run()
             continue;
         }
 
-        m_protocol = new MRtmpProtocol(m_socket, this);
+        m_protocol = new BlsRtmpProtocol(m_socket, this);
         m_protocol->setSession(this);
 
         if ((ret = service()) != E_SUCCESS) {
@@ -59,7 +59,7 @@ int BlsRtmpPlayer::run()
     return ret;
 }
 
-int BlsRtmpPlayer::onCommand(MRtmpMessage *msg, const MString &name, double transactionID
+int BlsRtmpPlayer::onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID
                            , MAMF0Any *arg1, MAMF0Any *arg2, MAMF0Any *arg3, MAMF0Any *arg4)
 {
     int ret = E_SUCCESS;
@@ -119,20 +119,20 @@ int BlsRtmpPlayer::onCommand(MRtmpMessage *msg, const MString &name, double tran
     return ret;
 }
 
-int BlsRtmpPlayer::onAudio(MRtmpMessage *msg)
+int BlsRtmpPlayer::onAudio(BlsRtmpMessage *msg)
 {
     m_source->onAudio(*msg);
 
     return E_SUCCESS;
 }
 
-int BlsRtmpPlayer::onVideo(MRtmpMessage *msg)
+int BlsRtmpPlayer::onVideo(BlsRtmpMessage *msg)
 {
     m_source->onVideo(*msg);
     return E_SUCCESS;
 }
 
-int BlsRtmpPlayer::onMetadata(MRtmpMessage *msg)
+int BlsRtmpPlayer::onMetadata(BlsRtmpMessage *msg)
 {
     m_source->onMetadata(*msg);
 
@@ -153,7 +153,7 @@ int BlsRtmpPlayer::connectApp()
     int ret = E_SUCCESS;
     MString commandName = RTMP_AMF0_COMMAND_CONNECT;
     double  transactionID = 1;
-    MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
+    BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
     MAMF0Object *obj = new MAMF0Object;
     obj->setValue("app", new MAMF0ShortString("live"));
@@ -185,7 +185,7 @@ int BlsRtmpPlayer::createStream()
     int ret = E_SUCCESS;
     MString commandName = RTMP_AMF0_COMMAND_CREATE_STREAM;
     double  transactionID = 1;
-    MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
+    BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
     if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(commandName), new MAMF0Number(transactionID), new MAMF0Null)) != E_SUCCESS) {
         log_error("MRtmpPlayer connectApp failed.");
@@ -201,7 +201,7 @@ int BlsRtmpPlayer::play(const MString &streamName)
     int ret = E_SUCCESS;
     MString commandName = RTMP_AMF0_COMMAND_PLAY;
     double  transactionID = 0;
-    MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverStream2);
+    BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverStream2);
 
     if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(commandName), new MAMF0Number(transactionID)
                                    , new MAMF0Null, new MAMF0ShortString(streamName))) != E_SUCCESS) {
@@ -229,7 +229,7 @@ int BlsRtmpPlayer::service()
     m_source = BlsRtmpSource::findSource(url.url());
 
     while (!RequestStop) {
-        MRtmpMessage *msg = NULL;
+        BlsRtmpMessage *msg = NULL;
         if ((ret = m_protocol->recv_message(&msg)) != E_SUCCESS) {
             return ret;
         }

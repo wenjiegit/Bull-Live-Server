@@ -3,7 +3,7 @@
 
 #include <MObject>
 
-#include "mrtmpprotocol.hpp"
+#include "BlsRtmpProtocol.hpp"
 
 class MFile;
 
@@ -15,13 +15,13 @@ public:
     void setFileName(const MString &name);
     int start();
 
-    virtual int onMessage(MRtmpMessage *msg);
+    virtual int onMessage(BlsRtmpMessage *msg);
 
 private:
-    int onVideo(MRtmpMessage *msg);
-    int onAudio(MRtmpMessage *msg);
-    int onMetadata(MRtmpMessage *msg);
-    int onOther(MRtmpMessage *msg);
+    int onVideo(BlsRtmpMessage *msg);
+    int onAudio(BlsRtmpMessage *msg);
+    int onMetadata(BlsRtmpMessage *msg);
+    int onOther(BlsRtmpMessage *msg);
 
 private:
     MString m_fileName;

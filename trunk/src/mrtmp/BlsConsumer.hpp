@@ -6,7 +6,7 @@
 
 using namespace std;
 
-class MRtmpMessage;
+class BlsRtmpMessage;
 class BlsTimestampCorrector;
 
 class BlsConsumer : public MObject
@@ -15,16 +15,16 @@ public:
     BlsConsumer(const MString &url, MObject *parent = 0);
     ~BlsConsumer();
 
-    int onVideo(MRtmpMessage &msg);
-    int onAudio(MRtmpMessage &msg);
-    int onMetadata(MRtmpMessage &msg);
+    int onVideo(BlsRtmpMessage &msg);
+    int onAudio(BlsRtmpMessage &msg);
+    int onMetadata(BlsRtmpMessage &msg);
 
-    int onMessage(MRtmpMessage &msg);
+    int onMessage(BlsRtmpMessage &msg);
 
-    list<MRtmpMessage> getMessage();
+    list<BlsRtmpMessage> getMessage();
 
 private:
-    list<MRtmpMessage> m_msgs;
+    list<BlsRtmpMessage> m_msgs;
     BlsTimestampCorrector *m_corrector;
     MString m_url;
 };

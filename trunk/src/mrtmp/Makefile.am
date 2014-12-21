@@ -8,7 +8,7 @@ libmrtmp_a_SOURCES = \
 	BlsRtmpUrl.cpp \
 	BlsRtmpServer.cpp \
 	mrtmphandshake.cpp \
-	mrtmpprotocol.cpp \
+	BlsRtmpProtocol.cpp \
 	mamf0serializer.cpp \
 	mamftypes.cpp \
 	BlsRtmpSource.cpp \
@@ -32,7 +32,7 @@ noinst_HEADERS = \
 	BlsRtmpUrl.hpp \
 	BlsRtmpServer.hpp \
 	mrtmphandshake.hpp \
-	mrtmpprotocol.hpp \
+	BlsRtmpProtocol.hpp \
 	mamf0serializer.hpp \
 	mamftypes.hpp \
 	BlsRtmpSource.hpp \

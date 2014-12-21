@@ -1,4 +1,4 @@
-#include "mrtmpprotocol.hpp"
+#include "BlsRtmpProtocol.hpp"
 #include "mrtmphandshake.hpp"
 #include "BlsRtmpUrl.hpp"
 
@@ -9,30 +9,30 @@
 using namespace std;
 
 
-MRtmpMessage::MRtmpMessage()
+BlsRtmpMessage::BlsRtmpMessage()
 {
 
 }
 
-MRtmpMessage::~MRtmpMessage()
+BlsRtmpMessage::~BlsRtmpMessage()
 {
 
 }
 
-MRtmpProtocol::MRtmpProtocol(MTcpSocket *socket, MObject *parent)
+BlsRtmpProtocol::BlsRtmpProtocol(MTcpSocket *socket, MObject *parent)
     : MObject(parent)
     , m_socket(socket)
 {
 }
 
-int MRtmpProtocol::recv_message(MRtmpMessage **pmsg)
+int BlsRtmpProtocol::recv_message(BlsRtmpMessage **pmsg)
 {
     *pmsg = NULL;
 
     int ret = E_SUCCESS;
 
     while (true) {
-        MRtmpMessage* msg = NULL;
+        BlsRtmpMessage* msg = NULL;
 
         if ((ret = recv_interlaced_message(&msg)) != E_SUCCESS) {
             mFree(msg);
@@ -68,7 +68,7 @@ int MRtmpProtocol::recv_message(MRtmpMessage **pmsg)
     return ret;
 }
 
-int MRtmpProtocol::send_message(MRtmpMessage *msg)
+int BlsRtmpProtocol::send_message(BlsRtmpMessage *msg)
 {
     int ret = E_SUCCESS;
 
@@ -172,12 +172,12 @@ int MRtmpProtocol::send_message(MRtmpMessage *msg)
     return ret;
 }
 
-void MRtmpProtocol::setSession(MRtmpProtocolAbstract *session)
+void BlsRtmpProtocol::setSession(BlsRtmpProtocolAbstract *session)
 {
     m_session = session;
 }
 
-int MRtmpProtocol::onConnect(double id)
+int BlsRtmpProtocol::onConnect(double id)
 {
     int ret = E_SUCCESS;
 
@@ -204,7 +204,7 @@ int MRtmpProtocol::onConnect(double id)
     object_status->setValue("data", ecmaArray);
 
 
-    MRtmpMessageHeader header;
+    BlsRtmpMessageHeader header;
     header.perfer_cid = RTMP_CID_OverConnection;
     header.type = RTMP_MSG_AMF0CommandMessage;
 
@@ -215,16 +215,16 @@ int MRtmpProtocol::onConnect(double id)
     return ret;
 }
 
-int MRtmpProtocol::setChunkSize(int chunkSize)
+int BlsRtmpProtocol::setChunkSize(int chunkSize)
 {
     int ret = E_SUCCESS;
 
-    MRtmpMessage *msg = new MRtmpMessage;
-    mAutoFree(MRtmpMessage, msg);
+    BlsRtmpMessage *msg = new BlsRtmpMessage;
+    mAutoFree(BlsRtmpMessage, msg);
 
     msg->payload.write4Bytes(chunkSize);
 
-    MRtmpMessageHeader &header = msg->header;
+    BlsRtmpMessageHeader &header = msg->header;
     header.perfer_cid = RTMP_CID_ProtocolControl;
     header.type = RTMP_MSG_SetChunkSize;
     header.payloadLength = msg->payload.size();
@@ -238,17 +238,17 @@ int MRtmpProtocol::setChunkSize(int chunkSize)
     return ret;
 }
 
-int MRtmpProtocol::setPeerBandwidth(mint32 bandwidth, mint8 type)
+int BlsRtmpProtocol::setPeerBandwidth(mint32 bandwidth, mint8 type)
 {
     int ret = E_SUCCESS;
 
-    MRtmpMessage *msg = new MRtmpMessage;
-    mAutoFree(MRtmpMessage, msg);
+    BlsRtmpMessage *msg = new BlsRtmpMessage;
+    mAutoFree(BlsRtmpMessage, msg);
 
     msg->payload.write4Bytes(bandwidth);
     msg->payload.write1Bytes(type);
 
-    MRtmpMessageHeader &header = msg->header;
+    BlsRtmpMessageHeader &header = msg->header;
     header.perfer_cid = RTMP_CID_ProtocolControl;
     header.type = RTMP_MSG_SetPeerBandwidth;
     header.payloadLength = msg->payload.size();
@@ -261,12 +261,12 @@ int MRtmpProtocol::setPeerBandwidth(mint32 bandwidth, mint8 type)
     return ret;
 }
 
-int MRtmpProtocol::onBWDone()
+int BlsRtmpProtocol::onBWDone()
 {
     int ret = E_SUCCESS;
 
     MString cmdName = RTMP_AMF0_COMMAND_ON_BW_DONE;
-    MRtmpMessageHeader header;
+    BlsRtmpMessageHeader header;
     header.perfer_cid = RTMP_CID_OverConnection;
     header.type = RTMP_MSG_AMF0CommandMessage;
 
@@ -277,16 +277,16 @@ int MRtmpProtocol::onBWDone()
     return ret;
 }
 
-int MRtmpProtocol::setAckSize(mint32 size)
+int BlsRtmpProtocol::setAckSize(mint32 size)
 {
     int ret = E_SUCCESS;
 
-    MRtmpMessage *msg = new MRtmpMessage;
-    mAutoFree(MRtmpMessage, msg);
+    BlsRtmpMessage *msg = new BlsRtmpMessage;
+    mAutoFree(BlsRtmpMessage, msg);
 
     msg->payload.write4Bytes(size);
 
-    MRtmpMessageHeader &header = msg->header;
+    BlsRtmpMessageHeader &header = msg->header;
     header.perfer_cid = RTMP_CID_ProtocolControl;
     header.type = RTMP_MSG_WindowAcknowledgementSize;
     header.payloadLength = msg->payload.size();
@@ -300,12 +300,12 @@ int MRtmpProtocol::setAckSize(mint32 size)
 
 }
 
-int MRtmpProtocol::setUCM(int type, int eventData1, int eventData2)
+int BlsRtmpProtocol::setUCM(int type, int eventData1, int eventData2)
 {
     int ret = E_SUCCESS;
 
-    MRtmpMessage *msg = new MRtmpMessage;
-    mAutoFree(MRtmpMessage, msg);
+    BlsRtmpMessage *msg = new BlsRtmpMessage;
+    mAutoFree(BlsRtmpMessage, msg);
 
     msg->payload.write2Bytes(type);
 
@@ -317,7 +317,7 @@ int MRtmpProtocol::setUCM(int type, int eventData1, int eventData2)
         msg->payload.write4Bytes(eventData2);
     }
 
-    MRtmpMessageHeader &header = msg->header;
+    BlsRtmpMessageHeader &header = msg->header;
     header.perfer_cid = RTMP_CID_ProtocolControl;
     header.type = RTMP_MSG_UserControlMessage;
     header.payloadLength = msg->payload.size();
@@ -330,19 +330,19 @@ int MRtmpProtocol::setUCM(int type, int eventData1, int eventData2)
     return ret;
 }
 
-int MRtmpProtocol::createStream()
+int BlsRtmpProtocol::createStream()
 {
     int ret = E_SUCCESS;
 
-    MRtmpMessage *msg = new MRtmpMessage;
-    mAutoFree(MRtmpMessage, msg);
+    BlsRtmpMessage *msg = new BlsRtmpMessage;
+    mAutoFree(BlsRtmpMessage, msg);
 
     MStream &stream = msg->payload;
     MAMF0Serializer::writeShortString(stream, "createStream");
     MAMF0Serializer::writeDouble(stream, 2);
     MAMF0Serializer::writeNull(stream);
 
-    MRtmpMessageHeader &header = msg->header;
+    BlsRtmpMessageHeader &header = msg->header;
     header.perfer_cid = RTMP_CID_ProtocolControl;
     header.type = RTMP_MSG_AMF0CommandMessage;
     header.payloadLength = msg->payload.size();
@@ -355,12 +355,12 @@ int MRtmpProtocol::createStream()
     return ret;
 }
 
-int MRtmpProtocol::publishStream(double transactionId, const MString &streamName)
+int BlsRtmpProtocol::publishStream(double transactionId, const MString &streamName)
 {
     int ret = E_SUCCESS;
 
-    MRtmpMessage *msg = new MRtmpMessage;
-    mAutoFree(MRtmpMessage, msg);
+    BlsRtmpMessage *msg = new BlsRtmpMessage;
+    mAutoFree(BlsRtmpMessage, msg);
 
     MStream &stream = msg->payload;
     MAMF0Serializer::writeShortString(stream, "publish");
@@ -368,7 +368,7 @@ int MRtmpProtocol::publishStream(double transactionId, const MString &streamName
     MAMF0Serializer::writeNull(stream);
     MAMF0Serializer::writeShortString(stream, streamName);
 
-    MRtmpMessageHeader &header = msg->header;
+    BlsRtmpMessageHeader &header = msg->header;
     header.perfer_cid = RTMP_CID_OverConnection2;
     header.type = RTMP_MSG_AMF0CommandMessage;
     header.payloadLength = msg->payload.size();
@@ -381,7 +381,7 @@ int MRtmpProtocol::publishStream(double transactionId, const MString &streamName
     return ret;
 }
 
-int MRtmpProtocol::sendAny(const MRtmpMessageHeader &header, MAMF0Any *arg1, MAMF0Any *arg2, MAMF0Any *arg3
+int BlsRtmpProtocol::sendAny(const BlsRtmpMessageHeader &header, MAMF0Any *arg1, MAMF0Any *arg2, MAMF0Any *arg3
                            , MAMF0Any *arg4, MAMF0Any *arg5, MAMF0Any *arg6)
 {
     int ret = E_SUCCESS;
@@ -393,8 +393,8 @@ int MRtmpProtocol::sendAny(const MRtmpMessageHeader &header, MAMF0Any *arg1, MAM
     mAutoFree(MAMF0Any, arg5);
     mAutoFree(MAMF0Any, arg6);
 
-    MRtmpMessage *msg = new MRtmpMessage;
-    mAutoFree(MRtmpMessage, msg);
+    BlsRtmpMessage *msg = new BlsRtmpMessage;
+    mAutoFree(BlsRtmpMessage, msg);
 
     msg->header = header;
 
@@ -412,11 +412,11 @@ int MRtmpProtocol::sendAny(const MRtmpMessageHeader &header, MAMF0Any *arg1, MAM
     return ret;
 }
 
-int MRtmpProtocol::sendNetStatusEvent(double transactionID, MRtmpNetStatusEvent *event)
+int BlsRtmpProtocol::sendNetStatusEvent(double transactionID, BlsRtmpNetStatusEvent *event)
 {
     int ret = E_SUCCESS;
 
-    MRtmpMessageHeader header;
+    BlsRtmpMessageHeader header;
     header.perfer_cid = RTMP_CID_OverConnection;
     header.type = RTMP_MSG_AMF0CommandMessage;
 
@@ -429,12 +429,12 @@ int MRtmpProtocol::sendNetStatusEvent(double transactionID, MRtmpNetStatusEvent 
     return ret;
 }
 
-MRtmpContext *MRtmpProtocol::getRtmpCtx()
+BlsRtmpContext *BlsRtmpProtocol::getRtmpCtx()
 {
     return &m_rtmpCtx;
 }
 
-int MRtmpProtocol::handshakeWithClient()
+int BlsRtmpProtocol::handshakeWithClient()
 {
     int ret = E_SUCCESS;
     MRtmpHandshake hk;
@@ -447,7 +447,7 @@ int MRtmpProtocol::handshakeWithClient()
     return ret;
 }
 
-int MRtmpProtocol::handshakeWithServer(bool useComplex)
+int BlsRtmpProtocol::handshakeWithServer(bool useComplex)
 {
     int ret = E_SUCCESS;
 
@@ -471,7 +471,7 @@ int MRtmpProtocol::handshakeWithServer(bool useComplex)
     return ret;
 }
 
-int MRtmpProtocol::recv_interlaced_message(MRtmpMessage** pmsg)
+int BlsRtmpProtocol::recv_interlaced_message(BlsRtmpMessage** pmsg)
 {
     int ret = E_SUCCESS;
 
@@ -486,9 +486,9 @@ int MRtmpProtocol::recv_interlaced_message(MRtmpMessage** pmsg)
     log_verbose("read basic header success. fmt=%d, cid=%d, bh_size=%d", fmt, cid, bh_size);
 
     // get the cached chunk stream.
-    MRtmpChunkStream* chunk = NULL;
+    BlsRtmpChunkStream* chunk = NULL;
     if (!m_chunks.contains(cid)) {
-        chunk = m_chunks[cid] = new MRtmpChunkStream(cid);
+        chunk = m_chunks[cid] = new BlsRtmpChunkStream(cid);
         // set the perfer cid of chunk,
         // which will copy to the message received.
         chunk->header.perfer_cid = cid;
@@ -503,7 +503,7 @@ int MRtmpProtocol::recv_interlaced_message(MRtmpMessage** pmsg)
     }
 
     // read msg payload from chunk stream.
-    MRtmpMessage* msg = NULL;
+    BlsRtmpMessage* msg = NULL;
     int payload_size = 0;
     if ((ret = read_message_payload(chunk, bh_size, mh_size, payload_size, &msg)) != E_SUCCESS) {
         return ret;
@@ -518,7 +518,7 @@ int MRtmpProtocol::recv_interlaced_message(MRtmpMessage** pmsg)
     return ret;
 }
 
-int MRtmpProtocol::read_basic_header(char& fmt, int& cid, int& bh_size)
+int BlsRtmpProtocol::read_basic_header(char& fmt, int& cid, int& bh_size)
 {
     int ret = E_SUCCESS;
     m_chunkHeader.clear();
@@ -568,7 +568,7 @@ int MRtmpProtocol::read_basic_header(char& fmt, int& cid, int& bh_size)
     return 0;
 }
 
-int MRtmpProtocol::read_message_header(MRtmpChunkStream* chunk, char fmt, int bh_size, int& mh_size)
+int BlsRtmpProtocol::read_message_header(BlsRtmpChunkStream* chunk, char fmt, int bh_size, int& mh_size)
 {
 
     int ret = E_SUCCESS;
@@ -632,7 +632,7 @@ int MRtmpProtocol::read_message_header(MRtmpChunkStream* chunk, char fmt, int bh
     bool is_first_chunk_of_msg = false;
     if (!chunk->msg) {
         is_first_chunk_of_msg = true;
-        chunk->msg = new MRtmpMessage;
+        chunk->msg = new BlsRtmpMessage;
         log_verbose("create message for new chunk, fmt=%d, cid=%d", fmt, chunk->cid);
     }
 
@@ -774,7 +774,7 @@ int MRtmpProtocol::read_message_header(MRtmpChunkStream* chunk, char fmt, int bh
     return ret;
 }
 
-int MRtmpProtocol::read_message_payload(MRtmpChunkStream* chunk, int bh_size, int mh_size, int &payload_size, MRtmpMessage** pmsg)
+int BlsRtmpProtocol::read_message_payload(BlsRtmpChunkStream* chunk, int bh_size, int mh_size, int &payload_size, BlsRtmpMessage** pmsg)
 {
     int ret = E_SUCCESS;
 
@@ -818,7 +818,7 @@ int MRtmpProtocol::read_message_payload(MRtmpChunkStream* chunk, int bh_size, in
     return ret;
 }
 
-int MRtmpProtocol::on_recv_message(MRtmpMessage* msg)
+int BlsRtmpProtocol::on_recv_message(BlsRtmpMessage* msg)
 {
     int ret = E_SUCCESS;
 
@@ -826,7 +826,7 @@ int MRtmpProtocol::on_recv_message(MRtmpMessage* msg)
         return ret;
     }
 
-    mAutoFree(MRtmpMessage, msg);
+    mAutoFree(BlsRtmpMessage, msg);
     MStream &stream = msg->payload;
 
     if (msg->isAudio()) {
@@ -948,7 +948,7 @@ int MRtmpProtocol::on_recv_message(MRtmpMessage* msg)
     return ret;
 }
 
-int MRtmpProtocol::decodeAny(MStream &stream, MAMF0Any **arg1, MAMF0Any **arg2, MAMF0Any **arg3, MAMF0Any **arg4, MAMF0Any **arg5, MAMF0Any **arg6)
+int BlsRtmpProtocol::decodeAny(MStream &stream, MAMF0Any **arg1, MAMF0Any **arg2, MAMF0Any **arg3, MAMF0Any **arg4, MAMF0Any **arg5, MAMF0Any **arg6)
 {
     int ret = E_SUCCESS;
 
@@ -1001,7 +1001,7 @@ int MRtmpProtocol::decodeAny(MStream &stream, MAMF0Any **arg1, MAMF0Any **arg2, 
     return ret;
 }
 
-int MRtmpProtocol::encodeAny(MStream &stream, MAMF0Any *arg1, MAMF0Any *arg2, MAMF0Any *arg3, MAMF0Any *arg4, MAMF0Any *arg5, MAMF0Any *arg6)
+int BlsRtmpProtocol::encodeAny(MStream &stream, MAMF0Any *arg1, MAMF0Any *arg2, MAMF0Any *arg3, MAMF0Any *arg4, MAMF0Any *arg5, MAMF0Any *arg6)
 {
     int ret = E_SUCCESS;
 
@@ -1044,7 +1044,7 @@ int MRtmpProtocol::encodeAny(MStream &stream, MAMF0Any *arg1, MAMF0Any *arg2, MA
     return ret;
 }
 
-int MRtmpProtocol::fillStream(int size, MStream &stream)
+int BlsRtmpProtocol::fillStream(int size, MStream &stream)
 {
     char buf[size];
     if (m_socket->readFully(buf, size) != size) {
@@ -1055,7 +1055,7 @@ int MRtmpProtocol::fillStream(int size, MStream &stream)
     return 0;
 }
 
-int MRtmpProtocol::responeAck()
+int BlsRtmpProtocol::responeAck()
 {
     int ret = E_SUCCESS;
 
@@ -1063,12 +1063,12 @@ int MRtmpProtocol::responeAck()
     int ackedSize = recvBytes - m_rtmpCtx.ackedSize;
 
     if (m_rtmpCtx.windowAcknowledgementSize > 0 && ackedSize >= m_rtmpCtx.windowAcknowledgementSize) {
-        MRtmpMessage *msg = new MRtmpMessage;
-        mAutoFree(MRtmpMessage, msg);
+        BlsRtmpMessage *msg = new BlsRtmpMessage;
+        mAutoFree(BlsRtmpMessage, msg);
 
         msg->payload.write4Bytes(ackedSize);
 
-        MRtmpMessageHeader &header = msg->header;
+        BlsRtmpMessageHeader &header = msg->header;
         header.perfer_cid = RTMP_CID_ProtocolControl;
         header.type = RTMP_MSG_Acknowledgement;
         header.payloadLength = msg->payload.size();
@@ -1084,7 +1084,7 @@ int MRtmpProtocol::responeAck()
     return ret;
 }
 
-MRtmpMessage *MRtmpProtocol::reEncodeMetadata(MRtmpMessage *metadata)
+BlsRtmpMessage *BlsRtmpProtocol::reEncodeMetadata(BlsRtmpMessage *metadata)
 {
 //    MStream &stream = metadata->payload;
 //    if (stream.contains("onMetaData")) {
@@ -1094,7 +1094,7 @@ MRtmpMessage *MRtmpProtocol::reEncodeMetadata(MRtmpMessage *metadata)
     return NULL;
 }
 
-MRtmpContext::MRtmpContext()
+BlsRtmpContext::BlsRtmpContext()
     : windowAcknowledgementSize(2500000)
     , streamID(0)
     , outChunkSize(128)
@@ -1105,17 +1105,17 @@ MRtmpContext::MRtmpContext()
     rtmpUrl = new BlsRtmpUrl;
 }
 
-MRtmpContext::~MRtmpContext()
+BlsRtmpContext::~BlsRtmpContext()
 {
     mFree(rtmpUrl);
 }
 
-void MRtmpContext::setTcUrl(const MString &tu)
+void BlsRtmpContext::setTcUrl(const MString &tu)
 {
     tcUrl =  tu;
 }
 
-void MRtmpContext::setStreamName(const MString &name)
+void BlsRtmpContext::setStreamName(const MString &name)
 {
     MString url;
     if (tcUrl.endWith("/")) {
@@ -1127,13 +1127,13 @@ void MRtmpContext::setStreamName(const MString &name)
     rtmpUrl->setRtmpUrl(url);
 }
 
-MString MRtmpContext::url()
+MString BlsRtmpContext::url()
 {
     return rtmpUrl->url();
 }
 
 
-MRtmpNetStatusEvent::MRtmpNetStatusEvent(const MString &code, const MString &level)
+BlsRtmpNetStatusEvent::BlsRtmpNetStatusEvent(const MString &code, const MString &level)
 {
     if (!level.isEmpty())
         setValue(STATUS_LEVEL, new MAMF0ShortString(level));
@@ -1142,7 +1142,7 @@ MRtmpNetStatusEvent::MRtmpNetStatusEvent(const MString &code, const MString &lev
         setValue(STATUS_CODE, new MAMF0ShortString(code));
 }
 
-MRtmpNetStatusEvent::~MRtmpNetStatusEvent()
+BlsRtmpNetStatusEvent::~BlsRtmpNetStatusEvent()
 {
 
 }

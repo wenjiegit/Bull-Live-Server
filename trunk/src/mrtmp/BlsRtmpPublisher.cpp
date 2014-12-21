@@ -46,8 +46,8 @@ int BlsRtmpPublisher::run()
         }
         log_trace("BlsRtmpPublisher connect to %s:%d success.", m_host.c_str(), m_port);
 
-        m_protocol = new MRtmpProtocol(m_socket, this);
-        mAutoFree(MRtmpProtocol, m_protocol);
+        m_protocol = new BlsRtmpProtocol(m_socket, this);
+        mAutoFree(BlsRtmpProtocol, m_protocol);
 
         m_protocol->setSession(this);
 
@@ -72,7 +72,7 @@ void BlsRtmpPublisher::setHost(const MString &host, muint16 port)
     m_port = port;
 }
 
-int BlsRtmpPublisher::onCommand(MRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1, MAMF0Any *arg2, MAMF0Any *arg3, MAMF0Any *arg4)
+int BlsRtmpPublisher::onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1, MAMF0Any *arg2, MAMF0Any *arg3, MAMF0Any *arg4)
 {
     int ret = E_SUCCESS;
 
@@ -174,7 +174,7 @@ int BlsRtmpPublisher::service()
     }
 
     while (!RequestStop) {
-        MRtmpMessage *msg = NULL;
+        BlsRtmpMessage *msg = NULL;
         if ((ret = m_protocol->recv_message(&msg)) != E_SUCCESS) {
             return ret;
         }
@@ -190,7 +190,7 @@ int BlsRtmpPublisher::connectApp()
 
     MString commandName = RTMP_AMF0_COMMAND_CONNECT;
     double  transactionID = 1;
-    MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
+    BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
     BlsRtmpUrl url(m_url);
     MAMF0Object *obj = new MAMF0Object;
@@ -236,11 +236,11 @@ int BlsRtmpPublisher::publish()
     source->addPool(pool);
 
     while (!RequestStop) {
-        list<MRtmpMessage> msgs = pool->getMessage();
+        list<BlsRtmpMessage> msgs = pool->getMessage();
 
-        list<MRtmpMessage>::iterator iter;
+        list<BlsRtmpMessage>::iterator iter;
         for (iter = msgs.begin(); iter != msgs.end(); ++iter) {
-            MRtmpMessage &msg = *iter;
+            BlsRtmpMessage &msg = *iter;
             if ((ret = m_protocol->send_message(&msg)) != E_SUCCESS) {
                 return ret;
             }

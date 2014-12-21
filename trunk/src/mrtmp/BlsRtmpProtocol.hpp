@@ -170,9 +170,9 @@ enum {
 class MTcpSocket;
 class BlsRtmpUrl;
 
-struct MRtmpMessageHeader
+struct BlsRtmpMessageHeader
 {
-    MRtmpMessageHeader()
+    BlsRtmpMessageHeader()
     {
         type = 0;
         payloadLength = 0;
@@ -182,7 +182,7 @@ struct MRtmpMessageHeader
         perfer_cid = 0;
     }
 
-    MRtmpMessageHeader(mint8 tp, mint32 cid)
+    BlsRtmpMessageHeader(mint8 tp, mint32 cid)
         : type(tp)
         , perfer_cid(cid)
     {
@@ -200,11 +200,11 @@ struct MRtmpMessageHeader
     mint32  perfer_cid;
 };
 
-class MRtmpMessage
+class BlsRtmpMessage
 {
 public:
-    MRtmpMessage();
-    virtual ~MRtmpMessage();
+    BlsRtmpMessage();
+    virtual ~BlsRtmpMessage();
 
     inline bool isAudio() {return header.type == RTMP_MSG_AudioMessage;}
     inline bool isVideo() {return header.type == RTMP_MSG_VideoMessage;}
@@ -220,20 +220,20 @@ public:
     inline bool isAggregate() {return header.type == RTMP_MSG_AggregateMessage;}
 
 public:
-    MRtmpMessageHeader header;
+    BlsRtmpMessageHeader header;
     MStream payload;
 };
 
-struct MRtmpChunkStream
+struct BlsRtmpChunkStream
 {
     char                fmt;
     int                 cid;
-    MRtmpMessageHeader  header;
+    BlsRtmpMessageHeader  header;
     bool                hasExtendedTimestamp;
-    MRtmpMessage*       msg;
+    BlsRtmpMessage*       msg;
     muint32             msg_count;
 
-    MRtmpChunkStream(int _cid)
+    BlsRtmpChunkStream(int _cid)
     {
         fmt = -1;
         cid = _cid;
@@ -243,19 +243,19 @@ struct MRtmpChunkStream
     }
 };
 
-class MRtmpNetStatusEvent : public MAMF0Object
+class BlsRtmpNetStatusEvent : public MAMF0Object
 {
 public:
-    MRtmpNetStatusEvent(const MString &code = "", const MString &level = "");
-    ~MRtmpNetStatusEvent();
+    BlsRtmpNetStatusEvent(const MString &code = "", const MString &level = "");
+    ~BlsRtmpNetStatusEvent();
 };
 
-class MRtmpProtocolAbstract
+class BlsRtmpProtocolAbstract
 {
 public:
-    virtual ~MRtmpProtocolAbstract() {}
+    virtual ~BlsRtmpProtocolAbstract() {}
 
-    virtual int onCommand(MRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1
+    virtual int onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1
                           , MAMF0Any *arg2 = NULL, MAMF0Any *arg3 = NULL, MAMF0Any *arg4 = NULL)
     {
         M_UNUSED(msg);
@@ -268,30 +268,30 @@ public:
         return E_SUCCESS;
     }
 
-    virtual int onAudio(MRtmpMessage *msg)
+    virtual int onAudio(BlsRtmpMessage *msg)
     {
         M_UNUSED(msg);
         return E_SUCCESS;
     }
 
-    virtual int onVideo(MRtmpMessage *msg)
+    virtual int onVideo(BlsRtmpMessage *msg)
     {
         M_UNUSED(msg);
         return E_SUCCESS;
     }
 
-    virtual int onMetadata(MRtmpMessage *msg)
+    virtual int onMetadata(BlsRtmpMessage *msg)
     {
         M_UNUSED(msg);
         return E_SUCCESS;
     }
 };
 
-class MRtmpContext
+class BlsRtmpContext
 {
 public:
-    MRtmpContext();
-    ~MRtmpContext();
+    BlsRtmpContext();
+    ~BlsRtmpContext();
 
     void setTcUrl(const MString &tu);
     void setStreamName(const MString &name);
@@ -308,15 +308,15 @@ public:
     MString tcUrl;
 };
 
-class MRtmpProtocol : public MObject
+class BlsRtmpProtocol : public MObject
 {
 public:
-    MRtmpProtocol(MTcpSocket *socket, MObject *parent = 0);
+    BlsRtmpProtocol(MTcpSocket *socket, MObject *parent = 0);
 
-    int recv_message(MRtmpMessage **pmsg);
-    int send_message(MRtmpMessage *msg);
+    int recv_message(BlsRtmpMessage **pmsg);
+    int send_message(BlsRtmpMessage *msg);
 
-    void setSession(MRtmpProtocolAbstract *session);
+    void setSession(BlsRtmpProtocolAbstract *session);
 
     // rtmp functions
     int onConnect(double id);
@@ -338,38 +338,38 @@ public:
     */
     int publishStream(double transactionId, const MString &streamName);
 
-    int sendAny(const MRtmpMessageHeader &header, MAMF0Any *arg1, MAMF0Any *arg2 = NULL, MAMF0Any *arg3 = NULL
+    int sendAny(const BlsRtmpMessageHeader &header, MAMF0Any *arg1, MAMF0Any *arg2 = NULL, MAMF0Any *arg3 = NULL
             , MAMF0Any *arg4 = NULL, MAMF0Any *arg5 = NULL, MAMF0Any *arg6 = NULL);
-    int sendNetStatusEvent(double transactionID, MRtmpNetStatusEvent *event);
+    int sendNetStatusEvent(double transactionID, BlsRtmpNetStatusEvent *event);
 
-    MRtmpContext *getRtmpCtx();
+    BlsRtmpContext *getRtmpCtx();
 
     int handshakeWithClient();
     int handshakeWithServer(bool useComplex = false);
 
 private:
-    int recv_interlaced_message(MRtmpMessage** pmsg);
+    int recv_interlaced_message(BlsRtmpMessage** pmsg);
     int read_basic_header(char& fmt, int& cid, int& bh_size);
-    int read_message_header(MRtmpChunkStream* chunk, char fmt, int bh_size, int& mh_size);
-    int read_message_payload(MRtmpChunkStream* chunk, int bh_size, int mh_size, int& payload_size, MRtmpMessage** pmsg);
-    int on_recv_message(MRtmpMessage* msg);
+    int read_message_header(BlsRtmpChunkStream* chunk, char fmt, int bh_size, int& mh_size);
+    int read_message_payload(BlsRtmpChunkStream* chunk, int bh_size, int mh_size, int& payload_size, BlsRtmpMessage** pmsg);
+    int on_recv_message(BlsRtmpMessage* msg);
 
 private:
     int fillStream(int size, MStream &stream);
     int responeAck();
-    MRtmpMessage *reEncodeMetadata(MRtmpMessage *metadata);
+    BlsRtmpMessage *reEncodeMetadata(BlsRtmpMessage *metadata);
 
 private:
     static int decodeAny(MStream &stream, MAMF0Any **arg1, MAMF0Any **arg2, MAMF0Any **arg3, MAMF0Any **arg4, MAMF0Any **arg5, MAMF0Any **arg6);
     static int encodeAny(MStream &stream, MAMF0Any *arg1, MAMF0Any *arg2, MAMF0Any *arg3, MAMF0Any *arg4, MAMF0Any *arg5, MAMF0Any *arg6);
 
 private:
-    MHash<int, MRtmpChunkStream*> m_chunks;
+    MHash<int, BlsRtmpChunkStream*> m_chunks;
     MStream m_chunkHeader;
     MTcpSocket *m_socket;
-    MRtmpContext m_rtmpCtx;
+    BlsRtmpContext m_rtmpCtx;
 
-    MRtmpProtocolAbstract *m_session;
+    BlsRtmpProtocolAbstract *m_session;
 };
 
 #endif // MRTMPPROTOCOL_HPP

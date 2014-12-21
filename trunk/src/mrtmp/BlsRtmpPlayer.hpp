@@ -4,13 +4,13 @@
 #include <MThread>
 #include <MHash>
 
-#include "mrtmpprotocol.hpp"
+#include "BlsRtmpProtocol.hpp"
 
 class MTcpSocket;
-class MRtmpProtocol;
+class BlsRtmpProtocol;
 class BlsRtmpSource;
 
-class BlsRtmpPlayer : public MThread, public MRtmpProtocolAbstract
+class BlsRtmpPlayer : public MThread, public BlsRtmpProtocolAbstract
 {
 public:
     BlsRtmpPlayer(MObject *parent = 0);
@@ -21,12 +21,12 @@ public:
     virtual int run();
 
     // call back functions
-    int onCommand(MRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1
+    int onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1
                   , MAMF0Any *arg2 = NULL, MAMF0Any *arg3 = NULL, MAMF0Any *arg4 = NULL);
 
-    int onAudio(MRtmpMessage *msg);
-    int onVideo(MRtmpMessage *msg);
-    int onMetadata(MRtmpMessage *msg);
+    int onAudio(BlsRtmpMessage *msg);
+    int onVideo(BlsRtmpMessage *msg);
+    int onMetadata(BlsRtmpMessage *msg);
 
 private:
     MString findCommand(double id);
@@ -38,7 +38,7 @@ private:
 
 private:
     MTcpSocket *m_socket;
-    MRtmpProtocol *m_protocol;
+    BlsRtmpProtocol *m_protocol;
     MString m_url;
     MString m_host;
     mint16 m_port;

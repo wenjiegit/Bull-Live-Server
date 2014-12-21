@@ -10,17 +10,17 @@
 #include <MThread>
 
 #include "BlsRtmpUrl.hpp"
-#include "mrtmpprotocol.hpp"
+#include "BlsRtmpProtocol.hpp"
 
 class MTcpSocket;
-class MRtmpProtocol;
-class MRtmpMessage;
+class BlsRtmpProtocol;
+class BlsRtmpMessage;
 class BlsRtmpSource;
 
 #define Role_Connection_Publish             0x01
 #define Role_Connection_Play                0x02
 
-class MRtmpConnection : public MThread, public MRtmpProtocolAbstract
+class MRtmpConnection : public MThread, public BlsRtmpProtocolAbstract
 {
 public:
     MRtmpConnection(MObject *parent = 0);
@@ -32,12 +32,12 @@ public:
     void setSocket(MTcpSocket *socket);
 
     // call back functions
-    int onCommand(MRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1
+    int onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1
                   , MAMF0Any *arg2 = NULL, MAMF0Any *arg3 = NULL, MAMF0Any *arg4 = NULL);
 
-    int onAudio(MRtmpMessage *msg);
-    int onVideo(MRtmpMessage *msg);
-    int onMetadata(MRtmpMessage *msg);
+    int onAudio(BlsRtmpMessage *msg);
+    int onVideo(BlsRtmpMessage *msg);
+    int onMetadata(BlsRtmpMessage *msg);
 
 private:
     int playService();
@@ -48,7 +48,7 @@ private:
 private:
     BlsRtmpUrl m_url;
     MTcpSocket *m_socket;
-    MRtmpProtocol *m_protocol;
+    BlsRtmpProtocol *m_protocol;
     BlsRtmpSource *m_source;
     int m_role;
 };

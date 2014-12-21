@@ -1,5 +1,5 @@
 #include "BlsTimestampCorrector.hpp"
-#include "mrtmpprotocol.hpp"
+#include "BlsRtmpProtocol.hpp"
 
 #define CONST_MAX_JITTER_MS             500
 #define DEFAULT_FRAME_TIME_MS           40
@@ -12,7 +12,7 @@ BlsTimestampCorrector::BlsTimestampCorrector(MObject *parent)
 
 }
 
-int BlsTimestampCorrector::correct(MRtmpMessage &msg, int tba, int tbv)
+int BlsTimestampCorrector::correct(BlsRtmpMessage &msg, int tba, int tbv)
 {
     int ret = E_SUCCESS;
 

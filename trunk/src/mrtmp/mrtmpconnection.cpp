@@ -6,7 +6,7 @@
 
 #include "mrtmpconnection.hpp"
 #include "mrtmphandshake.hpp"
-#include "mrtmpprotocol.hpp"
+#include "BlsRtmpProtocol.hpp"
 #include "BlsRtmpSource.hpp"
 #include "BlsConsumer.hpp"
 #include "BlsConf.hpp"
@@ -41,7 +41,7 @@ int MRtmpConnection::run()
     }
 
     while (!RequestStop) {
-        MRtmpMessage *msg = NULL;
+        BlsRtmpMessage *msg = NULL;
         int res = m_protocol->recv_message(&msg);
         if (res == E_SOCKET_CLOSE_NORMALLY) {
             break;
@@ -80,11 +80,11 @@ void MRtmpConnection::setUrl(const MString &url)
 void MRtmpConnection::setSocket(MTcpSocket *socket)
 {
     m_socket = socket;
-    m_protocol = new MRtmpProtocol(socket, this);
+    m_protocol = new BlsRtmpProtocol(socket, this);
     m_protocol->setSession(this);
 }
 
-int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1
+int MRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1
                                , MAMF0Any *arg2, MAMF0Any *arg3, MAMF0Any *arg4)
 {
     log_warn("%s", name.c_str());
@@ -117,21 +117,21 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
         }
     } else if (name == "releaseStream") {
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
-        MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
+        BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
         if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, new MAMF0Undefined)) != E_SUCCESS) {
             return ret;
         }
     } else if (name == "FCPublish") {
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
-        MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
+        BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
         if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, new MAMF0Undefined)) != E_SUCCESS) {
             return ret;
         }
     } else if (name == "createStream") {
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
-        MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
+        BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
         if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID)
                                        , new MAMF0Null, new MAMF0Number(1))) != E_SUCCESS)
@@ -147,7 +147,7 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
             return E_AMF_TYPE_ERROR;
         }
 
-        MRtmpContext *ctx = m_protocol->getRtmpCtx();
+        BlsRtmpContext *ctx = m_protocol->getRtmpCtx();
         ctx->setStreamName(str->var);
 
         MString url = ctx->rtmpUrl->url();
@@ -168,16 +168,16 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
         }
 
         MString cmdName = "FCPublish";
-        MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverStream);
+        BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverStream);
 
-        MRtmpNetStatusEvent *obj = new MRtmpNetStatusEvent(NetStream_Publish_Start);
+        BlsRtmpNetStatusEvent *obj = new BlsRtmpNetStatusEvent(NetStream_Publish_Start);
         obj->setValue(STATUS_DESC, new MAMF0ShortString(NetStream_Publish_Start));
 
         if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, obj)) != E_SUCCESS) {
             return ret;
         }
 
-        MRtmpNetStatusEvent *obj1 = new MRtmpNetStatusEvent(NetStream_Publish_Start, STATUS_LEVEL_STATUS);
+        BlsRtmpNetStatusEvent *obj1 = new BlsRtmpNetStatusEvent(NetStream_Publish_Start, STATUS_LEVEL_STATUS);
         obj1->setValue(STATUS_DESC, new MAMF0ShortString(NetStream_Publish_Start));
         obj1->setValue(STATUS_CLIENT_ID, new MAMF0ShortString("ASAICiss"));
 
@@ -203,7 +203,7 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
         obj->setValue(STATUS_CODE, new MAMF0ShortString(NetStream_Unpublish_Success));
         obj->setValue(STATUS_DESC, new MAMF0ShortString(NetStream_Unpublish_Success));
 
-        MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
+        BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
         if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID), new MAMF0Null, obj)) != E_SUCCESS) {
             return ret;
@@ -219,7 +219,7 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
 
 
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
-        MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
+        BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
         if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID)
                                        , new MAMF0Null, new MAMF0Undefined)) != E_SUCCESS)
@@ -239,7 +239,7 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
         }
     } else if (name == "deleteStream") {
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
-        MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
+        BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
         if ((ret = m_protocol->sendAny(header, new MAMF0ShortString(cmdName), new MAMF0Number(transactionID)
                                        , new MAMF0Null, new MAMF0Null)) != E_SUCCESS)
@@ -255,10 +255,10 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
             return ret;
         }
 
-        MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection2);
+        BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection2);
         MString cmdName = RTMP_AMF0_COMMAND_ON_STATUS;
 
-        MRtmpNetStatusEvent *obj = new MRtmpNetStatusEvent(NetStream_Play_Reset, STATUS_LEVEL_STATUS);
+        BlsRtmpNetStatusEvent *obj = new BlsRtmpNetStatusEvent(NetStream_Play_Reset, STATUS_LEVEL_STATUS);
         obj->setValue(STATUS_DESC, new MAMF0ShortString(NetStream_Play_Reset));
         obj->setValue(STATUS_DETAILS, new MAMF0ShortString(NetStream_Play_Reset));
         obj->setValue(STATUS_CLIENT_ID, new MAMF0ShortString("ASAICiss"));
@@ -289,7 +289,7 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
             return E_AMF_TYPE_ERROR;
         }
 
-        MRtmpContext *ctx = m_protocol->getRtmpCtx();
+        BlsRtmpContext *ctx = m_protocol->getRtmpCtx();
         ctx->setStreamName(str->var);
         MString url = ctx->rtmpUrl->url();
 
@@ -344,12 +344,12 @@ int MRtmpConnection::onCommand(MRtmpMessage *msg, const MString &name, double tr
     return ret;
 }
 
-int MRtmpConnection::onVideo(MRtmpMessage *msg)
+int MRtmpConnection::onVideo(BlsRtmpMessage *msg)
 {
     return m_source->onVideo(*msg);
 }
 
-int MRtmpConnection::onMetadata(MRtmpMessage *msg)
+int MRtmpConnection::onMetadata(BlsRtmpMessage *msg)
 {
     return m_source->onMetadata(*msg);
 }
@@ -392,11 +392,11 @@ int MRtmpConnection::playService()
     BlsConsumer *pool = new BlsConsumer(url, this);
     m_source->addPool(pool);
     while (!RequestStop) {
-        list<MRtmpMessage> msgs = pool->getMessage();
+        list<BlsRtmpMessage> msgs = pool->getMessage();
 
-        list<MRtmpMessage>::iterator iter;
+        list<BlsRtmpMessage>::iterator iter;
         for (iter = msgs.begin(); iter != msgs.end(); ++iter) {
-            MRtmpMessage &msg = *iter;
+            BlsRtmpMessage &msg = *iter;
             if ((ret = m_protocol->send_message(&msg)) != E_SUCCESS) {
                 return ret;
             }
@@ -408,7 +408,7 @@ int MRtmpConnection::playService()
     return ret;
 }
 
-int MRtmpConnection::onAudio(MRtmpMessage *msg)
+int MRtmpConnection::onAudio(BlsRtmpMessage *msg)
 {
     return m_source->onAudio(*msg);
 }

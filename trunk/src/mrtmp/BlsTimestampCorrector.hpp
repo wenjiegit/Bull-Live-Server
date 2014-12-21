@@ -1,7 +1,7 @@
 #ifndef MRTMPTIMESTAMPCORRECTOR_HPP
 #define MRTMPTIMESTAMPCORRECTOR_HPP
 
-class MRtmpMessage;
+class BlsRtmpMessage;
 
 #include <MObject>
 
@@ -10,7 +10,7 @@ class BlsTimestampCorrector : public MObject
 public:
     BlsTimestampCorrector(MObject *parent = 0);
 
-    int correct(MRtmpMessage &msg, int tba = 0, int tbv = 0);
+    int correct(BlsRtmpMessage &msg, int tba = 0, int tbv = 0);
     mint64 getCurrentTime();
     void reset();
 

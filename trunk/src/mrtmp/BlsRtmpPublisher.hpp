@@ -4,9 +4,9 @@
 #include <MThread>
 #include <MHash>
 
-#include "mrtmpprotocol.hpp"
+#include "BlsRtmpProtocol.hpp"
 
-class BlsRtmpPublisher : public MThread, public MRtmpProtocolAbstract
+class BlsRtmpPublisher : public MThread, public BlsRtmpProtocolAbstract
 {
 public:
     BlsRtmpPublisher(MObject *parent = 0);
@@ -17,7 +17,7 @@ public:
     void setUrl(const MString &url);
     void setHost(const MString &host, muint16 port);
 
-    virtual int onCommand(MRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1
+    virtual int onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1
                           , MAMF0Any *arg2 = NULL, MAMF0Any *arg3 = NULL, MAMF0Any *arg4 = NULL);
 
 private:
@@ -28,7 +28,7 @@ private:
 
 private:
     MString m_url;
-    MRtmpProtocol *m_protocol;
+    BlsRtmpProtocol *m_protocol;
     MHash<double, MString> m_commandList;
     MTcpSocket *m_socket;
     MString m_host;

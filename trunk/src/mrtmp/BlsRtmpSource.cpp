@@ -1,6 +1,6 @@
 #include "BlsRtmpSource.hpp"
 #include "BlsConsumer.hpp"
-#include "mrtmpprotocol.hpp"
+#include "BlsRtmpProtocol.hpp"
 #include "mflashvideoinfo.hpp"
 #include "BlsConf.hpp"
 #include "BlsServerSelector.hpp"
@@ -26,14 +26,14 @@ BlsRtmpSource::~BlsRtmpSource()
 {
 }
 
-int BlsRtmpSource::onVideo(MRtmpMessage &msg)
+int BlsRtmpSource::onVideo(BlsRtmpMessage &msg)
 {
     dispatch(msg);
     addToGop(msg);
 
     if (MFlashVideoInfo::videoIsSequenceHeader(msg.payload)) {
         mFree(m_videoSh);
-        m_videoSh = new MRtmpMessage;
+        m_videoSh = new BlsRtmpMessage;
         *m_videoSh = msg;
 
         log_trace("video SH update.");
@@ -42,14 +42,14 @@ int BlsRtmpSource::onVideo(MRtmpMessage &msg)
     return E_SUCCESS;
 }
 
-int BlsRtmpSource::onAudio(MRtmpMessage &msg)
+int BlsRtmpSource::onAudio(BlsRtmpMessage &msg)
 {
     dispatch(msg);
     addToGop(msg);
 
     if (MFlashVideoInfo::audioIsSequenceHeader(msg.payload)) {
         mFree(m_audioSh);
-        m_audioSh = new MRtmpMessage;
+        m_audioSh = new BlsRtmpMessage;
         *m_audioSh = msg;
 
         log_trace("audio SH update.");
@@ -58,12 +58,12 @@ int BlsRtmpSource::onAudio(MRtmpMessage &msg)
     return E_SUCCESS;
 }
 
-int BlsRtmpSource::onMetadata(MRtmpMessage &msg)
+int BlsRtmpSource::onMetadata(BlsRtmpMessage &msg)
 {
     dispatch(msg);
 
     mFree(m_metadata);
-    m_metadata = new MRtmpMessage;
+    m_metadata = new BlsRtmpMessage;
     *m_metadata = msg;
 
     log_trace("metadata update.");
@@ -194,7 +194,7 @@ int BlsRtmpSource::release(const MString &url)
     return ret;
 }
 
-void BlsRtmpSource::addToGop(MRtmpMessage &msg)
+void BlsRtmpSource::addToGop(BlsRtmpMessage &msg)
 {
     if (MFlashVideoInfo::videoIsKeyFrame(msg.payload)) {
         // clean gop
@@ -204,7 +204,7 @@ void BlsRtmpSource::addToGop(MRtmpMessage &msg)
     m_gop.push_back(msg);
 }
 
-int BlsRtmpSource::dispatch(MRtmpMessage &msg)
+int BlsRtmpSource::dispatch(BlsRtmpMessage &msg)
 {
     list<BlsConsumer *>::iterator iter;
     for (iter = m_pools.begin(); iter != m_pools.end(); ++iter) {
@@ -219,9 +219,9 @@ int BlsRtmpSource::fastGop(BlsConsumer *pool)
 {
     int ts = 0;
     int index = 0;
-    list<MRtmpMessage>::iterator iter;
+    list<BlsRtmpMessage>::iterator iter;
     for (iter = m_gop.begin(); iter != m_gop.end(); ++iter) {
-        MRtmpMessage msg = *iter;
+        BlsRtmpMessage msg = *iter;
         if (!msg.isVideo()) continue;
 
         if (index % 4 != 0) continue;
