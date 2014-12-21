@@ -11,7 +11,7 @@ libmrtmp_a_SOURCES = \
 	BlsRtmpProtocol.cpp \
 	BlsAMF0Serializer.cpp \
 	BlsAMF3Serializer.cpp \
-	BlsAmfTypes.cpp \
+	BlsAMFTypes.cpp \
 	BlsRtmpSource.cpp \
 	BlsConsumer.cpp \
 	BlsFlvRecoder.cpp \
@@ -36,7 +36,7 @@ noinst_HEADERS = \
 	BlsRtmpProtocol.hpp \
 	BlsAMF0Serializer.hpp \
 	BlsAMF3Serializer.hpp \
-	BlsAmfTypes.hpp \
+	BlsAMFTypes.hpp \
 	BlsRtmpSource.hpp \
 	BlsConsumer.hpp \
 	BlsFlvRecoder.hpp \

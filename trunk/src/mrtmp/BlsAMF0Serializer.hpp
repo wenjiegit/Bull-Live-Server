@@ -3,7 +3,7 @@
 
 #include <MStream>
 
-#include "BlsAmfTypes.hpp"
+#include "BlsAMFTypes.hpp"
 
 class BlsAMF0Serializer
 {

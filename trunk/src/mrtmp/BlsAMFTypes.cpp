@@ -1,4 +1,4 @@
-#include "BlsAmfTypes.hpp"
+#include "BlsAMFTypes.hpp"
 
 BlsAMF0Any *BlsAMFObject::value(int index)
 {
