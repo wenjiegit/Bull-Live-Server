@@ -75,8 +75,7 @@ AC_CONFIG_FILES([Makefile
 				 src/Makefile
                  src/mcore/Makefile
                  src/mnetwork/Makefile
-                 src/mrtmp/Makefile
-                 src/main/Makefile
+                 src/bls/Makefile
                  include/Makefile
                  include/mcore/Makefile
                  include/mnetwork/Makefile])

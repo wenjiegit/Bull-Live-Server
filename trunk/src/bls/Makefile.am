@@ -1,9 +1,17 @@
 INCLUDES = -I@TP_INCLUDE@ -I@TOP_INCLUDE@
 
-# AUTOMAKE_OPTIONS = subdir-objects
-lib_LIBRARIES = libmrtmp.a
+bin_PROGRAMS = bls
+
+bls_LDFLAGS = -ldl
+bls_LDFLAGS += -lz
+bls_LDADD  = ../mnetwork/libmnetwork.a
+bls_LDADD += ../mcore/libmcore.a
+bls_LDADD += @TP_LIBS@
+bls_SOURCES = main.cpp
+
 CXXFLAGS += -Wall
-libmrtmp_a_SOURCES = \
+bls_SOURCES = \
+	main.cpp \
 	BlsRtmpConnection.cpp \
 	BlsRtmpUrl.cpp \
 	BlsRtmpServer.cpp \
@@ -55,5 +63,7 @@ noinst_HEADERS = \
 
 all-am:
 	@echo -e "\\e[32m"
-	@echo "build rtmp lib success."
+	@echo "build bls success."
 	@echo -e "\\e[0m"
+	mkdir -p ${top_builddir}/bin
+	cp -f bls ${top_builddir}/bin

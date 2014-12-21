@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
     // create back source
     vector<BlsHostInfo> back_source_infos = BlsConf::instance()->getBackSourceInfo();
-    for (int i = 0; i < back_source_infos.size(); ++i) {
+    for (unsigned int i = 0; i < back_source_infos.size(); ++i) {
         BlsHostInfo &info = back_source_infos.at(i);
 
         pid_t pid = fork();
@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
     // master process
     vector<BlsRtmpServer *> rtmpServer;
     vector<BlsHostInfo> infos = BlsConf::instance()->getRtmpListenInfo();
-    for (int i = 0; i < infos.size(); ++i) {
+    for (unsigned int i = 0; i < infos.size(); ++i) {
         BlsHostInfo &info = infos.at(i);
         BlsRtmpServer *s = new BlsRtmpServer;
         if (!s->listen(info.addr, info.port)) {
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
     vector<BlsHttpService *> httpServers;
     vector<BlsHostInfo> httpInfos = BlsConf::instance()->getHttpLiveFlvListenInfo();
 
-    for (int i = 0; i < httpInfos.size(); ++i) {
+    for (unsigned int i = 0; i < httpInfos.size(); ++i) {
         BlsHostInfo &info = httpInfos.at(i);
 
         BlsHttpService *httpService = new BlsHttpService;
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
     mSleep(2);
 
     // close rtmp channel in master
-    for (int i = 0; i < rtmpServer.size(); ++i) {
+    for (unsigned int i = 0; i < rtmpServer.size(); ++i) {
         BlsRtmpServer *s = rtmpServer.at(i);
         s->close();
         mFree(s);
