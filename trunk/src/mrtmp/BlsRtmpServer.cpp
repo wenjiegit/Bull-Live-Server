@@ -3,7 +3,7 @@
 #include <MLoger>
 #include <MHostInfo>
 
-#include "mrtmpconnection.hpp"
+#include "BlsRtmpConnection.hpp"
 
 BlsRtmpServer::BlsRtmpServer(MObject *parent)
     : MTcpServer(parent)
@@ -22,7 +22,7 @@ int BlsRtmpServer::newConnection(MTcpSocket *socket)
       MString ip = address.front();
       log_trace("a new connection from %s with pid %d", ip.c_str(), (int)getpid());
     }
-    MRtmpConnection *conn = new MRtmpConnection;
+    BlsRtmpConnection *conn = new BlsRtmpConnection;
     socket->setParent(conn);
     conn->setSocket(socket);
     conn->start();

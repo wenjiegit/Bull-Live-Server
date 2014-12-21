@@ -4,18 +4,18 @@ INCLUDES = -I@TP_INCLUDE@ -I@TOP_INCLUDE@
 lib_LIBRARIES = libmrtmp.a
 CXXFLAGS += -Wall
 libmrtmp_a_SOURCES = \
-	mrtmpconnection.cpp \
+	BlsRtmpConnection.cpp \
 	BlsRtmpUrl.cpp \
 	BlsRtmpServer.cpp \
-	mrtmphandshake.cpp \
+	BlsRtmpHandshake.cpp \
 	BlsRtmpProtocol.cpp \
 	mamf0serializer.cpp \
 	mamftypes.cpp \
 	BlsRtmpSource.cpp \
 	BlsConsumer.cpp \
-	mflashvideoinfo.cpp \
+	BlsFlvRecoder.cpp \
+	BlsFlashVideoInfo.cpp \
 	BlsTimestampCorrector.cpp \
-	mflvrecoder.cpp \
 	BlsConf.cpp \
 	BlsRtmpPlayer.cpp \
 	BlsChildChannel.cpp \
@@ -28,18 +28,18 @@ libmrtmp_a_SOURCES = \
 	BlsServerSelector.cpp
 
 noinst_HEADERS = \
-	mrtmpconnection.hpp \
+	BlsRtmpConnection.hpp \
 	BlsRtmpUrl.hpp \
 	BlsRtmpServer.hpp \
-	mrtmphandshake.hpp \
+	BlsRtmpHandshake.hpp \
 	BlsRtmpProtocol.hpp \
 	mamf0serializer.hpp \
 	mamftypes.hpp \
 	BlsRtmpSource.hpp \
 	BlsConsumer.hpp \
-	mflashvideoinfo.hpp \
+	BlsFlvRecoder.hpp \
+	BlsFlashVideoInfo.hpp \
 	BlsTimestampCorrector.hpp \
-	mflvrecoder.hpp \
 	BlsConf.hpp \
 	BlsRtmpPlayer.hpp \
 	BlsChildChannel.hpp \

@@ -1,4 +1,4 @@
-#include "mrtmphandshake.hpp"
+#include "BlsRtmpHandshake.hpp"
 
 #include <time.h>
 #include <stdlib.h>
@@ -1123,15 +1123,15 @@ void c1s1::destroy_blocks()
     }
 }
 
-MRtmpHandshake::MRtmpHandshake()
+BlsRtmpHandshake::BlsRtmpHandshake()
 {
 }
 
-MRtmpHandshake::~MRtmpHandshake()
+BlsRtmpHandshake::~BlsRtmpHandshake()
 {
 }
 
-int MRtmpHandshake::handshake_with_client(MTcpSocket & skt)
+int BlsRtmpHandshake::handshake_with_client(MTcpSocket & skt)
 {
     int ret = ERROR_SUCCESS;
 
@@ -1196,7 +1196,7 @@ int MRtmpHandshake::handshake_with_client(MTcpSocket & skt)
     return ret;
 }
 
-int MRtmpHandshake::use_complex_response(MTcpSocket &skt,char * _c1,bool encrypted)
+int BlsRtmpHandshake::use_complex_response(MTcpSocket &skt,char * _c1,bool encrypted)
 {
     int ret = ERROR_SUCCESS;
 
@@ -1305,7 +1305,7 @@ int MRtmpHandshake::use_complex_response(MTcpSocket &skt,char * _c1,bool encrypt
     return E_SUCCESS;
 }
 
-int MRtmpHandshake::use_simple_response(MTcpSocket & skt,char* c0c1)
+int BlsRtmpHandshake::use_simple_response(MTcpSocket & skt,char* c0c1)
 {
     int ret = ERROR_SUCCESS;
 
@@ -1338,7 +1338,7 @@ int MRtmpHandshake::use_simple_response(MTcpSocket & skt,char* c0c1)
     return 0;
 }
 
-int MRtmpHandshake::handshake_with_server_use_complex(MTcpSocket & skt,bool rtmpe,bool swf)
+int BlsRtmpHandshake::handshake_with_server_use_complex(MTcpSocket & skt,bool rtmpe,bool swf)
 {
     int ret = ERROR_SUCCESS;
 
@@ -1435,7 +1435,7 @@ int MRtmpHandshake::handshake_with_server_use_complex(MTcpSocket & skt,bool rtmp
     return ret;
 }
 
-int MRtmpHandshake::handshake_with_server_use_simple(MTcpSocket & skt)
+int BlsRtmpHandshake::handshake_with_server_use_simple(MTcpSocket & skt)
 {
     int ret = ERROR_SUCCESS;
 

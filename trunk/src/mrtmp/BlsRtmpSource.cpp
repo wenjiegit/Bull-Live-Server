@@ -1,7 +1,7 @@
 #include "BlsRtmpSource.hpp"
 #include "BlsConsumer.hpp"
 #include "BlsRtmpProtocol.hpp"
-#include "mflashvideoinfo.hpp"
+#include "BlsFlashVideoInfo.hpp"
 #include "BlsConf.hpp"
 #include "BlsServerSelector.hpp"
 #include "BlsChildChannel.hpp"
@@ -31,7 +31,7 @@ int BlsRtmpSource::onVideo(BlsRtmpMessage &msg)
     dispatch(msg);
     addToGop(msg);
 
-    if (MFlashVideoInfo::videoIsSequenceHeader(msg.payload)) {
+    if (BlsFlashVideoInfo::videoIsSequenceHeader(msg.payload)) {
         mFree(m_videoSh);
         m_videoSh = new BlsRtmpMessage;
         *m_videoSh = msg;
@@ -47,7 +47,7 @@ int BlsRtmpSource::onAudio(BlsRtmpMessage &msg)
     dispatch(msg);
     addToGop(msg);
 
-    if (MFlashVideoInfo::audioIsSequenceHeader(msg.payload)) {
+    if (BlsFlashVideoInfo::audioIsSequenceHeader(msg.payload)) {
         mFree(m_audioSh);
         m_audioSh = new BlsRtmpMessage;
         *m_audioSh = msg;
@@ -196,7 +196,7 @@ int BlsRtmpSource::release(const MString &url)
 
 void BlsRtmpSource::addToGop(BlsRtmpMessage &msg)
 {
-    if (MFlashVideoInfo::videoIsKeyFrame(msg.payload)) {
+    if (BlsFlashVideoInfo::videoIsKeyFrame(msg.payload)) {
         // clean gop
         m_gop.clear();
     }

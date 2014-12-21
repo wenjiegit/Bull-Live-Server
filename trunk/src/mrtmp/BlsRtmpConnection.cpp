@@ -4,8 +4,8 @@
  */
 
 
-#include "mrtmpconnection.hpp"
-#include "mrtmphandshake.hpp"
+#include "BlsRtmpConnection.hpp"
+#include "BlsRtmpHandshake.hpp"
 #include "BlsRtmpProtocol.hpp"
 #include "BlsRtmpSource.hpp"
 #include "BlsConsumer.hpp"
@@ -18,7 +18,7 @@
 #include <MTcpSocket>
 #include <MLoger>
 
-MRtmpConnection::MRtmpConnection(MObject *parent)
+BlsRtmpConnection::BlsRtmpConnection(MObject *parent)
     : MThread(parent)
     , m_socket(NULL)
     , m_protocol(NULL)
@@ -27,12 +27,12 @@ MRtmpConnection::MRtmpConnection(MObject *parent)
 
 }
 
-MRtmpConnection::~MRtmpConnection()
+BlsRtmpConnection::~BlsRtmpConnection()
 {
 
 }
 
-int MRtmpConnection::run()
+int BlsRtmpConnection::run()
 {
     int ret = E_SUCCESS;
 
@@ -72,19 +72,19 @@ int MRtmpConnection::run()
     return E_SUCCESS;
 }
 
-void MRtmpConnection::setUrl(const MString &url)
+void BlsRtmpConnection::setUrl(const MString &url)
 {
     m_url.setRtmpUrl(url);
 }
 
-void MRtmpConnection::setSocket(MTcpSocket *socket)
+void BlsRtmpConnection::setSocket(MTcpSocket *socket)
 {
     m_socket = socket;
     m_protocol = new BlsRtmpProtocol(socket, this);
     m_protocol->setSession(this);
 }
 
-int MRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1
+int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, double transactionID, MAMF0Any *arg1
                                , MAMF0Any *arg2, MAMF0Any *arg3, MAMF0Any *arg4)
 {
     log_warn("%s", name.c_str());
@@ -344,22 +344,22 @@ int MRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, double 
     return ret;
 }
 
-int MRtmpConnection::onVideo(BlsRtmpMessage *msg)
+int BlsRtmpConnection::onVideo(BlsRtmpMessage *msg)
 {
     return m_source->onVideo(*msg);
 }
 
-int MRtmpConnection::onMetadata(BlsRtmpMessage *msg)
+int BlsRtmpConnection::onMetadata(BlsRtmpMessage *msg)
 {
     return m_source->onMetadata(*msg);
 }
 
-int MRtmpConnection::publishService()
+int BlsRtmpConnection::publishService()
 {
     return E_SUCCESS;
 }
 
-int MRtmpConnection::parseUrl(MAMF0Object *obj)
+int BlsRtmpConnection::parseUrl(MAMF0Object *obj)
 {
     int ret = E_SUCCESS;
 
@@ -378,13 +378,13 @@ int MRtmpConnection::parseUrl(MAMF0Object *obj)
     return ret;
 }
 
-int MRtmpConnection::closeConnection()
+int BlsRtmpConnection::closeConnection()
 {
     mMSleep(500);
     return E_SOCKET_CLOSE_NORMALLY;
 }
 
-int MRtmpConnection::playService()
+int BlsRtmpConnection::playService()
 {
     int ret = E_SUCCESS;
 
@@ -408,7 +408,7 @@ int MRtmpConnection::playService()
     return ret;
 }
 
-int MRtmpConnection::onAudio(BlsRtmpMessage *msg)
+int BlsRtmpConnection::onAudio(BlsRtmpMessage *msg)
 {
     return m_source->onAudio(*msg);
 }

@@ -81,7 +81,7 @@ enum FlashSoundAACPacketType
     FlashSoundAAC_Raw                       = 1,
 };
 
-class MFlashVideoInfo : public MObject
+class BlsFlashVideoInfo : public MObject
 {
 public:
     static FlashVideoFrameType      getFrameType(const MString &data);

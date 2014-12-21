@@ -1,4 +1,4 @@
-#include "mflvrecoder.hpp"
+#include "BlsFlvRecoder.hpp"
 
 #include <MFile>
 #include <MLoger>
@@ -46,17 +46,17 @@ static int writeFlv(BlsRtmpMessage *msg, MFile *file)
     return E_SUCCESS;
 }
 
-MFlvRecoder::MFlvRecoder(MObject *parent)
+BlsFlvRecoder::BlsFlvRecoder(MObject *parent)
     : MObject(parent)
 {
 }
 
-void MFlvRecoder::setFileName(const MString &name)
+void BlsFlvRecoder::setFileName(const MString &name)
 {
     m_fileName = name;
 }
 
-int MFlvRecoder::start()
+int BlsFlvRecoder::start()
 {
     m_file = new MFile(m_fileName);
     if (!m_file->open("w")) {
@@ -71,7 +71,7 @@ int MFlvRecoder::start()
     return E_SUCCESS;
 }
 
-int MFlvRecoder::onMessage(BlsRtmpMessage *msg)
+int BlsFlvRecoder::onMessage(BlsRtmpMessage *msg)
 {
     log_trace("recv message type %d size %d dts %d", msg->header.type, msg->payload.size(), msg->header.timestamp);
 
@@ -88,22 +88,22 @@ int MFlvRecoder::onMessage(BlsRtmpMessage *msg)
     return E_SUCCESS;
 }
 
-int MFlvRecoder::onVideo(BlsRtmpMessage *msg)
+int BlsFlvRecoder::onVideo(BlsRtmpMessage *msg)
 {
     return writeFlv(msg, m_file);
 }
 
-int MFlvRecoder::onAudio(BlsRtmpMessage *msg)
+int BlsFlvRecoder::onAudio(BlsRtmpMessage *msg)
 {
     return writeFlv(msg, m_file);
 }
 
-int MFlvRecoder::onMetadata(BlsRtmpMessage *msg)
+int BlsFlvRecoder::onMetadata(BlsRtmpMessage *msg)
 {
      return writeFlv(msg, m_file);
 }
 
-int MFlvRecoder::onOther(BlsRtmpMessage *msg)
+int BlsFlvRecoder::onOther(BlsRtmpMessage *msg)
 {
     log_trace("recv message type %d size %d", msg->header.type, msg->payload.size());
 

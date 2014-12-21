@@ -3,11 +3,11 @@
 
 class MTcpSocket;
 
-class MRtmpHandshake
+class BlsRtmpHandshake
 {
 public:
-    MRtmpHandshake();
-    virtual ~MRtmpHandshake();
+    BlsRtmpHandshake();
+    virtual ~BlsRtmpHandshake();
 public:
     virtual int handshake_with_client(MTcpSocket& skt);
     /*

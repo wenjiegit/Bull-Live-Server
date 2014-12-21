@@ -1,5 +1,5 @@
 #include "BlsRtmpProtocol.hpp"
-#include "mrtmphandshake.hpp"
+#include "BlsRtmpHandshake.hpp"
 #include "BlsRtmpUrl.hpp"
 
 #include <MLoger>
@@ -437,7 +437,7 @@ BlsRtmpContext *BlsRtmpProtocol::getRtmpCtx()
 int BlsRtmpProtocol::handshakeWithClient()
 {
     int ret = E_SUCCESS;
-    MRtmpHandshake hk;
+    BlsRtmpHandshake hk;
     if ((ret = hk.handshake_with_client(*m_socket)) != 0) {
         log_error("handshake with client failed. ret=%d", ret);
         return ret;
@@ -451,7 +451,7 @@ int BlsRtmpProtocol::handshakeWithServer(bool useComplex)
 {
     int ret = E_SUCCESS;
 
-    MRtmpHandshake hk;
+    BlsRtmpHandshake hk;
     if (useComplex) {
         if ((ret = hk.handshake_with_server_use_complex(*m_socket, false, false)) != E_SUCCESS) {
             log_error("complex handshake with server failed. ret=%d", ret);

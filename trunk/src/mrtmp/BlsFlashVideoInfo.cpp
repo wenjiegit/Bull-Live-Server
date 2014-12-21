@@ -1,8 +1,8 @@
-#include "mflashvideoinfo.hpp"
+#include "BlsFlashVideoInfo.hpp"
 
 #include <MLoger>
 
-FlashVideoFrameType MFlashVideoInfo::getFrameType(const MString &data)
+FlashVideoFrameType BlsFlashVideoInfo::getFrameType(const MString &data)
 {
     const char *dt = data.data();
     unsigned char type = dt[0] >> 4 & 0x0F;
@@ -25,7 +25,7 @@ FlashVideoFrameType MFlashVideoInfo::getFrameType(const MString &data)
     return FlashVideo_Invalid;
 }
 
-FlashVideoCodecID MFlashVideoInfo::getCodecID(const MString &data)
+FlashVideoCodecID BlsFlashVideoInfo::getCodecID(const MString &data)
 {
     const char *dt = data.data();
     unsigned char type = dt[0] & 0x0F;
@@ -49,7 +49,7 @@ FlashVideoCodecID MFlashVideoInfo::getCodecID(const MString &data)
     return FlashVideoCodecID_Invalid;
 }
 
-FlashVideoAVCPacketType MFlashVideoInfo::getAVCPacketType(const MString &data)
+FlashVideoAVCPacketType BlsFlashVideoInfo::getAVCPacketType(const MString &data)
 {
     FlashVideoCodecID codecID = getCodecID(data);
     if (codecID != FlashVideoCodecID_AVC) {
@@ -71,7 +71,7 @@ FlashVideoAVCPacketType MFlashVideoInfo::getAVCPacketType(const MString &data)
     return FlashVideoAVC_Invalid;
 }
 
-FlashSoundFormat MFlashVideoInfo::getSoundFormat(const MString &data)
+FlashSoundFormat BlsFlashVideoInfo::getSoundFormat(const MString &data)
 {
     const char *dt = data.data();
     unsigned char type = dt[0] >> 4 & 0x0F;
@@ -112,7 +112,7 @@ FlashSoundFormat MFlashVideoInfo::getSoundFormat(const MString &data)
     return FlashSoundFormat_Invalid;
 }
 
-FlashSoundRate MFlashVideoInfo::getSoundRate(const MString &data)
+FlashSoundRate BlsFlashVideoInfo::getSoundRate(const MString &data)
 {
     const char *dt = data.data();
     unsigned char type = dt[0] >> 2 & 0x03;
@@ -133,7 +133,7 @@ FlashSoundRate MFlashVideoInfo::getSoundRate(const MString &data)
     return FlashSoundRate_Invalid;
 }
 
-FlashSoundSize MFlashVideoInfo::getSoundSize(const MString &data)
+FlashSoundSize BlsFlashVideoInfo::getSoundSize(const MString &data)
 {
     const char *dt = data.data();
     unsigned char type = dt[0] >> 1 & 0x01;
@@ -150,7 +150,7 @@ FlashSoundSize MFlashVideoInfo::getSoundSize(const MString &data)
     return FlashSoundSize_Invalid;
 }
 
-FlashSoundChannel MFlashVideoInfo::getSoundChannel(const MString &data)
+FlashSoundChannel BlsFlashVideoInfo::getSoundChannel(const MString &data)
 {
     const char *dt = data.data();
     unsigned char type = dt[0] & 0x01;
@@ -167,7 +167,7 @@ FlashSoundChannel MFlashVideoInfo::getSoundChannel(const MString &data)
     return FlashSoundChannel_Invalid;
 }
 
-FlashSoundAACPacketType MFlashVideoInfo::getAACPacketType(const MString &data)
+FlashSoundAACPacketType BlsFlashVideoInfo::getAACPacketType(const MString &data)
 {
     FlashSoundFormat sf = getSoundFormat(data);
     if (sf != FlashSoundFormat_AAC) {
@@ -189,32 +189,32 @@ FlashSoundAACPacketType MFlashVideoInfo::getAACPacketType(const MString &data)
     return FlashSoundAAC_Invalid;
 }
 
-bool MFlashVideoInfo::videoIsKeyFrame(const MString &data)
+bool BlsFlashVideoInfo::videoIsKeyFrame(const MString &data)
 {
     return getFrameType(data) == FlashVideo_KeyFrame;
 }
 
-bool MFlashVideoInfo::videoIsSequenceHeader(const MString &data)
+bool BlsFlashVideoInfo::videoIsSequenceHeader(const MString &data)
 {
     return getAVCPacketType(data) == FlashVideoAVC_Sequence_Header;
 }
 
-bool MFlashVideoInfo::audioIsSequenceHeader(const MString &data)
+bool BlsFlashVideoInfo::audioIsSequenceHeader(const MString &data)
 {
     return getAACPacketType(data) == FlashSoundAAC_Sequence_Header;
 }
 
-bool MFlashVideoInfo::videoIsH264(const MString &data)
+bool BlsFlashVideoInfo::videoIsH264(const MString &data)
 {
     return getCodecID(data) == FlashVideoCodecID_AVC;
 }
 
-bool MFlashVideoInfo::audioIsAAC(const MString &data)
+bool BlsFlashVideoInfo::audioIsAAC(const MString &data)
 {
     return getSoundFormat(data) == FlashSoundFormat_AAC;
 }
 
-bool MFlashVideoInfo::audioIsNellymoser(const MString &data)
+bool BlsFlashVideoInfo::audioIsNellymoser(const MString &data)
 {
     return getSoundFormat(data) == FlashSoundFormat_Nellymoser;
 }

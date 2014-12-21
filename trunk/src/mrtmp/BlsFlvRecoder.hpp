@@ -7,10 +7,10 @@
 
 class MFile;
 
-class MFlvRecoder : public MObject
+class BlsFlvRecoder : public MObject
 {
 public:
-    MFlvRecoder(MObject *parent = 0);
+    BlsFlvRecoder(MObject *parent = 0);
 
     void setFileName(const MString &name);
     int start();

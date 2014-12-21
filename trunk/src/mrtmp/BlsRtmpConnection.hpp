@@ -20,11 +20,11 @@ class BlsRtmpSource;
 #define Role_Connection_Publish             0x01
 #define Role_Connection_Play                0x02
 
-class MRtmpConnection : public MThread, public BlsRtmpProtocolAbstract
+class BlsRtmpConnection : public MThread, public BlsRtmpProtocolAbstract
 {
 public:
-    MRtmpConnection(MObject *parent = 0);
-    virtual ~MRtmpConnection();
+    BlsRtmpConnection(MObject *parent = 0);
+    virtual ~BlsRtmpConnection();
 
     int run();
 
