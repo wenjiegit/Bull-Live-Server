@@ -1,10 +1,10 @@
-#include "mrtmptimestampcorrector.hpp"
+#include "BlsTimestampCorrector.hpp"
 #include "mrtmpprotocol.hpp"
 
 #define CONST_MAX_JITTER_MS             500
 #define DEFAULT_FRAME_TIME_MS           40
 
-MRtmpTimestampCorrector::MRtmpTimestampCorrector(MObject *parent)
+BlsTimestampCorrector::BlsTimestampCorrector(MObject *parent)
     : MObject(parent)
     , m_lastPktCorrectTime(0)
     , m_lastPktTime(0)
@@ -12,7 +12,7 @@ MRtmpTimestampCorrector::MRtmpTimestampCorrector(MObject *parent)
 
 }
 
-int MRtmpTimestampCorrector::correct(MRtmpMessage &msg, int tba, int tbv)
+int BlsTimestampCorrector::correct(MRtmpMessage &msg, int tba, int tbv)
 {
     int ret = E_SUCCESS;
 
@@ -47,12 +47,12 @@ int MRtmpTimestampCorrector::correct(MRtmpMessage &msg, int tba, int tbv)
     return ret;
 }
 
-mint64 MRtmpTimestampCorrector::getCurrentTime()
+mint64 BlsTimestampCorrector::getCurrentTime()
 {
     return m_lastPktCorrectTime;
 }
 
-void MRtmpTimestampCorrector::reset()
+void BlsTimestampCorrector::reset()
 {
     m_lastPktCorrectTime = m_lastPktTime = 0;
 }

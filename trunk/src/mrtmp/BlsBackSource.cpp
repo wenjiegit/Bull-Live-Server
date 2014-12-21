@@ -1,6 +1,6 @@
 #include "BlsBackSource.hpp"
 
-#include "mrtmpurl.hpp"
+#include "BlsRtmpUrl.hpp"
 #include "BlsRtmpPlayer.hpp"
 
 BlsBackSource::BlsBackSource()
@@ -19,7 +19,7 @@ BlsBackSource *BlsBackSource::instance()
 
 void BlsBackSource::add(const MString &host, mint16 port, const MString &app, const MString &url)
 {
-    MRtmpUrl rtmpUrl(url);
+    BlsRtmpUrl rtmpUrl(url);
     if (m_sources.contains(rtmpUrl.url())) {
         return ;
     }
@@ -35,22 +35,22 @@ void BlsBackSource::add(const MString &host, mint16 port, const MString &app, co
     m_sources[rtmpUrl.url()] = pair;
 }
 
-void BlsBackSource::remove(const MRtmpUrl &url)
+void BlsBackSource::remove(const BlsRtmpUrl &url)
 {
-    MRtmpUrl rtmpUrl(url);
+    BlsRtmpUrl rtmpUrl(url);
     m_sources.erase(rtmpUrl.url());
 }
 
 bool BlsBackSource::hasBackSource(const MString &url)
 {
-    MRtmpUrl rtmpUrl(url);
+    BlsRtmpUrl rtmpUrl(url);
 
     return m_sources.contains(rtmpUrl.url());
 }
 
 void BlsBackSource::setHasBackSource(const MString &url)
 {
-    MRtmpUrl rtmpUrl(url);
+    BlsRtmpUrl rtmpUrl(url);
     SourcePair pair;
     pair.player = NULL;
     pair.url = rtmpUrl;

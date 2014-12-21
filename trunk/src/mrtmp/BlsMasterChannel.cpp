@@ -10,7 +10,7 @@
 #include <MStringList>
 
 #include "BlsUtils.hpp"
-#include "mrtmpurl.hpp"
+#include "BlsRtmpUrl.hpp"
 
 static MHash<int, BlsChild *> gs_childs;
 static MHash<MString, BlsChild *> gs_sources;

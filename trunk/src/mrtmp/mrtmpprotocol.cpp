@@ -1,6 +1,6 @@
 #include "mrtmpprotocol.hpp"
 #include "mrtmphandshake.hpp"
-#include "mrtmpurl.hpp"
+#include "BlsRtmpUrl.hpp"
 
 #include <MLoger>
 #include <MTcpSocket>
@@ -1102,7 +1102,7 @@ MRtmpContext::MRtmpContext()
     , bufferLength(0)
     , ackedSize(0)
 {
-    rtmpUrl = new MRtmpUrl;
+    rtmpUrl = new BlsRtmpUrl;
 }
 
 MRtmpContext::~MRtmpContext()

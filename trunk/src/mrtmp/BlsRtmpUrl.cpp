@@ -4,27 +4,27 @@
  */
 
 
-#include "mrtmpurl.hpp"
+#include "BlsRtmpUrl.hpp"
 
 #include <MStringList>
 
-MRtmpUrl::MRtmpUrl()
+BlsRtmpUrl::BlsRtmpUrl()
 {
 }
 
-MRtmpUrl::MRtmpUrl(const MString &url)
+BlsRtmpUrl::BlsRtmpUrl(const MString &url)
     : MUrl(url)
 {
     parse();
 }
 
-void MRtmpUrl::setRtmpUrl(const MString &url)
+void BlsRtmpUrl::setRtmpUrl(const MString &url)
 {
     setUrl(url);
     parse();
 }
 
-MString MRtmpUrl::url()
+MString BlsRtmpUrl::url()
 {
     // url = scheme + path + query
     MString ret = MString().sprintf("%s:%d%s", host().c_str(), port(), path().c_str());
@@ -34,7 +34,7 @@ MString MRtmpUrl::url()
     return ret;
 }
 
-void MRtmpUrl::parse()
+void BlsRtmpUrl::parse()
 {
     MStringList as = path().split("/");
     if (as.size() >=2) {

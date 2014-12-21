@@ -5,7 +5,7 @@ lib_LIBRARIES = libmrtmp.a
 CXXFLAGS += -Wall
 libmrtmp_a_SOURCES = \
 	mrtmpconnection.cpp \
-	mrtmpurl.cpp \
+	BlsRtmpUrl.cpp \
 	BlsRtmpServer.cpp \
 	mrtmphandshake.cpp \
 	mrtmpprotocol.cpp \
@@ -14,7 +14,7 @@ libmrtmp_a_SOURCES = \
 	BlsRtmpSource.cpp \
 	BlsConsumer.cpp \
 	mflashvideoinfo.cpp \
-	mrtmptimestampcorrector.cpp \
+	BlsTimestampCorrector.cpp \
 	mflvrecoder.cpp \
 	BlsConf.cpp \
 	BlsRtmpPlayer.cpp \
@@ -29,7 +29,7 @@ libmrtmp_a_SOURCES = \
 
 noinst_HEADERS = \
 	mrtmpconnection.hpp \
-	mrtmpurl.hpp \
+	BlsRtmpUrl.hpp \
 	BlsRtmpServer.hpp \
 	mrtmphandshake.hpp \
 	mrtmpprotocol.hpp \
@@ -38,7 +38,7 @@ noinst_HEADERS = \
 	BlsRtmpSource.hpp \
 	BlsConsumer.hpp \
 	mflashvideoinfo.hpp \
-	mrtmptimestampcorrector.hpp \
+	BlsTimestampCorrector.hpp \
 	mflvrecoder.hpp \
 	BlsConf.hpp \
 	BlsRtmpPlayer.hpp \

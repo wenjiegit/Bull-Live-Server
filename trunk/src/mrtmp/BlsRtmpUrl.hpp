@@ -11,11 +11,11 @@
 
 #include "BlsConf.hpp"
 
-class MRtmpUrl : public MUrl
+class BlsRtmpUrl : public MUrl
 {
 public:
-    MRtmpUrl();
-    MRtmpUrl(const MString &url);
+    BlsRtmpUrl();
+    BlsRtmpUrl(const MString &url);
 
     inline MString app() { return m_app; }
     inline MString vhost() { return m_vhost; }

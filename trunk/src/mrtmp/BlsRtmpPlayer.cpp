@@ -3,7 +3,7 @@
 #include <MTcpSocket>
 #include <MLoger>
 
-#include "mrtmpurl.hpp"
+#include "BlsRtmpUrl.hpp"
 #include "BlsRtmpSource.hpp"
 
 BlsRtmpPlayer::BlsRtmpPlayer(MObject *parent)
@@ -91,7 +91,7 @@ int BlsRtmpPlayer::onCommand(MRtmpMessage *msg, const MString &name, double tran
             log_trace("MRtmpPlayer Stream ID set to %d", streamID->var);
 
             // play stream
-            MRtmpUrl url(m_url);
+            BlsRtmpUrl url(m_url);
             if ((ret = play(url.stream())) != E_SUCCESS) {
                 return ret;
             }
@@ -160,7 +160,7 @@ int BlsRtmpPlayer::connectApp()
     obj->setValue("flashVer", new MAMF0ShortString("WIN 14,0,0,125"));
     obj->setValue("swfUrl", new MAMF0ShortString("http://www.cutv.com/demo/live_test.swf"));
 
-    MRtmpUrl url(m_url);
+    BlsRtmpUrl url(m_url);
 
     obj->setValue("tcUrl", new MAMF0ShortString(url.tcUrl()));
     obj->setValue("fpad", new MAMF0Boolean);
@@ -225,7 +225,7 @@ int BlsRtmpPlayer::service()
         return ret;
     }
 
-    MRtmpUrl url(m_url);
+    BlsRtmpUrl url(m_url);
     m_source = BlsRtmpSource::findSource(url.url());
 
     while (!RequestStop) {

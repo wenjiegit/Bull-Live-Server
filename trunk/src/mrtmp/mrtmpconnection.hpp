@@ -9,7 +9,7 @@
 
 #include <MThread>
 
-#include "mrtmpurl.hpp"
+#include "BlsRtmpUrl.hpp"
 #include "mrtmpprotocol.hpp"
 
 class MTcpSocket;
@@ -46,7 +46,7 @@ private:
     int closeConnection();
 
 private:
-    MRtmpUrl m_url;
+    BlsRtmpUrl m_url;
     MTcpSocket *m_socket;
     MRtmpProtocol *m_protocol;
     BlsRtmpSource *m_source;

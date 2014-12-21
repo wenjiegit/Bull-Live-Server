@@ -1,13 +1,13 @@
 #include "BlsConsumer.hpp"
 #include "mrtmpprotocol.hpp"
-#include "mrtmptimestampcorrector.hpp"
+#include "BlsTimestampCorrector.hpp"
 #include "BlsRtmpSource.hpp"
 
 #include <MLoger>
 
 BlsConsumer::BlsConsumer(const MString &url, MObject *parent)
     : MObject(parent)
-    , m_corrector(new MRtmpTimestampCorrector(this))
+    , m_corrector(new BlsTimestampCorrector(this))
     , m_url(url)
 {
 

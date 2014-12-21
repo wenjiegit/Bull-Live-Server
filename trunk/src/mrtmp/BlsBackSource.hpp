@@ -4,7 +4,7 @@
 #include <MObject>
 #include <MHash>
 
-#include "mrtmpurl.hpp"
+#include "BlsRtmpUrl.hpp"
 
 class BlsRtmpPlayer;
 
@@ -16,14 +16,14 @@ public:
     static BlsBackSource * instance();
 
     void add(const MString &host, mint16 port, const MString &app, const MString &url);
-    void remove(const MRtmpUrl &url);
+    void remove(const BlsRtmpUrl &url);
     bool hasBackSource(const MString &url);
     void setHasBackSource(const MString &url);
 
 private:
     struct SourcePair
     {
-        MRtmpUrl url;
+        BlsRtmpUrl url;
         BlsRtmpPlayer *player;
     };
 

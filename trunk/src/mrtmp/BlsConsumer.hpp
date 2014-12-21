@@ -7,7 +7,7 @@
 using namespace std;
 
 class MRtmpMessage;
-class MRtmpTimestampCorrector;
+class BlsTimestampCorrector;
 
 class BlsConsumer : public MObject
 {
@@ -25,7 +25,7 @@ public:
 
 private:
     list<MRtmpMessage> m_msgs;
-    MRtmpTimestampCorrector *m_corrector;
+    BlsTimestampCorrector *m_corrector;
     MString m_url;
 };
 

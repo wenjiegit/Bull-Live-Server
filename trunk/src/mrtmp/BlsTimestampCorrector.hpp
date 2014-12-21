@@ -5,10 +5,10 @@ class MRtmpMessage;
 
 #include <MObject>
 
-class MRtmpTimestampCorrector : public MObject
+class BlsTimestampCorrector : public MObject
 {
 public:
-    MRtmpTimestampCorrector(MObject *parent = 0);
+    BlsTimestampCorrector(MObject *parent = 0);
 
     int correct(MRtmpMessage &msg, int tba = 0, int tbv = 0);
     mint64 getCurrentTime();

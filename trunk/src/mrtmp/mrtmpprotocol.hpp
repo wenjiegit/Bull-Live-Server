@@ -168,7 +168,7 @@ enum {
 #define RTMP_AMF0_COMMAND_ON_FC_UNPUBLISH           "onFCUnpublish"
 
 class MTcpSocket;
-class MRtmpUrl;
+class BlsRtmpUrl;
 
 struct MRtmpMessageHeader
 {
@@ -304,7 +304,7 @@ public:
     int bufferLength;
     mint64 ackedSize;
 
-    MRtmpUrl *rtmpUrl;
+    BlsRtmpUrl *rtmpUrl;
     MString tcUrl;
 };
 

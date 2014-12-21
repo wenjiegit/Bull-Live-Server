@@ -2,7 +2,7 @@
 
 #include <MTcpSocket>
 
-#include "mrtmpurl.hpp"
+#include "BlsRtmpUrl.hpp"
 #include "BlsRtmpSource.hpp"
 #include "BlsConsumer.hpp"
 
@@ -130,7 +130,7 @@ int BlsRtmpPublisher::onCommand(MRtmpMessage *msg, const MString &name, double t
             }
 
             // publish stream
-            MRtmpUrl url(m_url);
+            BlsRtmpUrl url(m_url);
             if ((ret = m_protocol->publishStream(0, url.stream())) != E_SUCCESS) {
                 log_error("BlsRtmpPublisher send publish cmd error, ret=%d", ret);
                 return ret;
@@ -192,7 +192,7 @@ int BlsRtmpPublisher::connectApp()
     double  transactionID = 1;
     MRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
-    MRtmpUrl url(m_url);
+    BlsRtmpUrl url(m_url);
     MAMF0Object *obj = new MAMF0Object;
 
     obj->setValue("app", new MAMF0ShortString("live"));
@@ -230,7 +230,7 @@ int BlsRtmpPublisher::publish()
 {
     int ret = E_SUCCESS;
 
-    MRtmpUrl url(m_url);
+    BlsRtmpUrl url(m_url);
     BlsRtmpSource *source = BlsRtmpSource::findSource(url.url());
     BlsConsumer *pool = new BlsConsumer(url.url());
     source->addPool(pool);
