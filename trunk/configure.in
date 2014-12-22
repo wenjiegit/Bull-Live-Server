@@ -21,13 +21,13 @@ AC_PROG_RANLIB
 AC_DEFINE_UNQUOTED(BLS_VERSION,	["0.1.`git rev-list --all|wc -l`"], [bls version])
 AC_DEFINE_UNQUOTED(BLS_BUILD_DATE,	["`date`"],		[bls build time])
 
-TOP_INCLUDE="\${top_builddir}/include -I\${top_builddir}/include/mcore -I\${top_builddir}/include/mnetwork -I\${top_builddir}/src/mrtmp"
+TOP_INCLUDE="\${top_builddir}/include -I\${top_builddir}/include/mcore -I\${top_builddir}/include/mnetwork"
 AC_SUBST(TOP_INCLUDE)
 
 TP_INCLUDE="\${top_builddir}/3rdparty/st-1.9/obj -I\${top_builddir}/3rdparty/http-parser-2.1 -I\${top_builddir}/3rdparty/libconhash"
 AC_SUBST(TP_INCLUDE)
 
-TOP_LIBS="\${top_builddir}/src/mrtmp -lmrtmp -L\${top_builddir}/src/mnetwork -lmnetwork -L\${top_builddir}/src/mcore -lmcore"
+TOP_LIBS="\${top_builddir}/src/mnetwork -lmnetwork -L\${top_builddir}/src/mcore -lmcore"
 AC_SUBST(TOP_LIBS)
 
 TP_LIBS="\${top_builddir}/3rdparty/st-1.9/obj/libst.a -L\${top_builddir}/3rdparty/http-parser-2.1 -lhttp_parser -L\${top_builddir}/3rdparty/openssl-1.0.1c/ -lssl -lcrypto -L\${top_builddir}/3rdparty/libconhash/bin -lconhash"

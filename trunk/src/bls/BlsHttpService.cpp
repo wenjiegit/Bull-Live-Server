@@ -115,6 +115,7 @@ int BlsHttpClient::sendHttpLiveFlv(const MString &url)
     BlsRtmpSource *source = BlsRtmpSource::findSource(url);
     BlsConsumer *pool = new BlsConsumer(url);
     source->addPool(pool);
+    mAutoFree(BlsConsumer, pool);
 
     while (true) {
         list<BlsRtmpMessage> msgs = pool->getMessage();

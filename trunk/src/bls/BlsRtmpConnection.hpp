@@ -51,6 +51,7 @@ private:
     BlsRtmpProtocol *m_protocol;
     BlsRtmpSource *m_source;
     int m_role;
+    MString m_vhost;
 };
 
 #endif // MRTMPCONNECTION_HPP

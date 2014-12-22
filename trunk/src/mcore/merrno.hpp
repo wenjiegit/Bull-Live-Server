@@ -47,6 +47,8 @@ const int E_STREAM_ID_TOO_SMALL         = 250;
 const int E_RTMP_PUBLISH_FAILED         = 251;
 const int E_STREAM_BADNAME              = 252;
 const int E_STREAM_FILE_EXIST           = 253;
+
+const int E_VHOST_NOT_EXIST             = 254;
 }
 
 #endif // CMERRNO_HPP

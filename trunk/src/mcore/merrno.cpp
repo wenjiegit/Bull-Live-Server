@@ -59,6 +59,8 @@ const char *mstrerror(int errnum)
         return "NetStream.Publish.BadName";
     case MERROR::E_STREAM_FILE_EXIST:
         return "stream file exist";
+    case MERROR::E_VHOST_NOT_EXIST:
+        return "vhost is not exist";
 
     default:
         return strerror(errnum);

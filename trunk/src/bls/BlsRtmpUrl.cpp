@@ -3,8 +3,9 @@
  * Copyright (C) wenjie.zhao
  */
 
-
 #include "BlsRtmpUrl.hpp"
+
+#include "BlsUtils.hpp"
 
 #include <MStringList>
 
@@ -50,7 +51,7 @@ void BlsRtmpUrl::parse()
         m_vhost = host();
     } else {
         MString vhost = queryByKey("vhost");
-        m_vhost = vhost.empty() ? "default" : vhost;
+        m_vhost = vhost.empty() ? BLS_DEFAULT_VHOST : vhost;
     }
 
     m_tcUrl = scheme() + "://" + vhost() + ":" + MString::number(port()) + "/" + m_app;

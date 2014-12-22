@@ -150,6 +150,17 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
         BlsRtmpContext *ctx = m_protocol->getRtmpCtx();
         ctx->setStreamName(str->var);
 
+        // check vhost
+        m_vhost = ctx->rtmpUrl->vhost();
+        if (!BlsConf::instance()->containsVhost(m_vhost)) {
+            if (BlsConf::instance()->useDefaultVhost()) {
+                m_vhost = BLS_DEFAULT_VHOST;
+            } else {
+                log_error_with_errno(E_VHOST_NOT_EXIST, "can not find vhost.");
+                return E_VHOST_NOT_EXIST;
+            }
+        }
+
         MString url = ctx->rtmpUrl->url();
         m_source = BlsRtmpSource::findSource(url);
 
@@ -187,8 +198,6 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
 
         m_role = Role_Connection_Publish;
 
-        log_trace("start publish %s", url.c_str());
-
         BlsBackSource::instance()->setHasBackSource(url);
 
         // on_publish
@@ -196,6 +205,7 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
             log_error("on publish error. ret=%d", ret);
             return ret;
         }
+        log_trace("begin publish %s", url.c_str());
 
     } else if (name == "FCUnpublish") {
         MString cmdName = "onFCUnpublish";
@@ -209,15 +219,6 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
             return ret;
         }
     } else if (name == "closeStream") {
-
-        log_warn("---------------->");
-        m_protocol->getRtmpCtx()->streamID = 0;
-        if (m_source) {
-            m_source->onUnPublish();
-        }
-        log_warn("---------------->--------");
-
-
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
         BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
@@ -238,6 +239,12 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
             return ret;
         }
     } else if (name == "deleteStream") {
+        // do clean.
+        if (m_source) {
+            m_source->onUnPublish();
+        }
+
+        // send delete result.
         MString cmdName = RTMP_AMF0_COMMAND_RESULT;
         BlsRtmpMessageHeader header(RTMP_MSG_AMF0CommandMessage, RTMP_CID_OverConnection);
 
@@ -246,6 +253,10 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
         {
             return ret;
         }
+
+        // release stream id
+        m_protocol->getRtmpCtx()->streamID = 0;
+
     } else if (name == "play") {
         if ((ret = m_protocol->setChunkSize(40960)) != E_SUCCESS) {
             return ret;
@@ -293,15 +304,28 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
         ctx->setStreamName(str->var);
         MString url = ctx->rtmpUrl->url();
 
-        MString vhost = ctx->rtmpUrl->vhost();
-        MString mode = BlsConf::instance()->getMode(vhost);
+        m_vhost = ctx->rtmpUrl->vhost();
+        // check vhost
+        if (!BlsConf::instance()->containsVhost(m_vhost)) {
+            if (BlsConf::instance()->useDefaultVhost()) {
+                m_vhost = BLS_DEFAULT_VHOST;
+            } else {
+                log_error_with_errno(E_VHOST_NOT_EXIST, "can not find vhost.");
+                return E_VHOST_NOT_EXIST;
+            }
+        }
+
+        MString mode = BlsConf::instance()->getMode(m_vhost);
         MString fullUrl = ctx->rtmpUrl->fullUrl();
 
         int role = BlsConf::instance()->processRole();
         bool hasBackSource = BlsBackSource::instance()->hasBackSource(fullUrl);
 
         if (role == Process_Role_BackSource) {
-            log_trace("i am here.");
+            // if it's in remote mode, back source to origin server
+            if (mode == Mode_Remote) {
+
+            }
         } else if (role == Process_Role_Worker) {
             muint16 port = BlsServerSelector::instance()->lookUp(url);
             if (!hasBackSource) {
@@ -326,7 +350,7 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
             mAssert(false);
         }
 
-        log_trace("start play : %s", fullUrl.c_str());
+        log_trace("begin play : %s", fullUrl.c_str());
 
         m_source = BlsRtmpSource::findSource(url);
         m_role = Role_Connection_Play;
@@ -389,10 +413,12 @@ int BlsRtmpConnection::playService()
     int ret = E_SUCCESS;
 
     MString url = m_protocol->getRtmpCtx()->url();
-    BlsConsumer *pool = new BlsConsumer(url, this);
-    m_source->addPool(pool);
+    BlsConsumer *consumer = new BlsConsumer(url, this);
+    m_source->addPool(consumer);
+    mAutoFree(BlsConsumer, consumer);
+
     while (!RequestStop) {
-        list<BlsRtmpMessage> msgs = pool->getMessage();
+        list<BlsRtmpMessage> msgs = consumer->getMessage();
 
         list<BlsRtmpMessage>::iterator iter;
         for (iter = msgs.begin(); iter != msgs.end(); ++iter) {

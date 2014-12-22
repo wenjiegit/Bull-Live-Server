@@ -22,6 +22,16 @@ BlsConf *BlsConf::instance(const MString &confName)
     return th;
 }
 
+bool BlsConf::containsVhost(const MString &vhost)
+{
+    return m_vhosts.contains(vhost);
+}
+
+bool BlsConf::useDefaultVhost()
+{
+    return containsVhost(BLS_DEFAULT_VHOST);
+}
+
 vector<BlsHostInfo> BlsConf::getRtmpListenInfo()
 {
     return m_listenerInfo;

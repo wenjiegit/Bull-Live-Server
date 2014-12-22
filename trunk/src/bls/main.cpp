@@ -23,7 +23,7 @@ static void printHelp(int argc, char *argv[]);
 static int getOpt(int argc ,char* argv[]);
 
 static MString gs_confPath;
-#if 1
+
 int main(int argc, char *argv[])
 {
     if (getOpt(argc, argv) != E_SUCCESS) {
@@ -110,6 +110,9 @@ int main(int argc, char *argv[])
         if (pid > 0) {
             continue;
         } else if (pid == 0) {
+            // set process role to worker
+            BlsConf::instance()->setProcessRole(Process_Role_Worker);
+            // set app name
             MString appName = "bls_worker";
             app.setProcTitle(appName);
 
@@ -151,19 +154,6 @@ int main(int argc, char *argv[])
 
     return ret;
 }
-#else
-int main(int argc, char *argv[])
-{
-    MCoreApplication app(argc, argv);
-
-    BlsRtmpPublisher publisher;
-    publisher.setUrl("rtmp://ble.ossrs.net/live/ble");
-    publisher.setHost("127.0.0.1", 1935);
-    publisher.start();
-
-    return app.exec();
-}
-#endif
 
 int childRun(MCoreApplication &app)
 {

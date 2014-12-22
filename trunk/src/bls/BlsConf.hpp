@@ -51,6 +51,16 @@ public:
     inline void setProcessRole(int role) { m_processRole = role; }
     inline int processRole() const { return m_processRole; }
 
+    /*!
+        check whether contains this @vhost in conf.
+    */
+    bool containsVhost(const MString &vhost);
+
+    /*!
+        check whether exist default vhost in conf
+    */
+    bool useDefaultVhost();
+
     vector<BlsHostInfo> getRtmpListenInfo();
     MString getGopType(const MString &vhost);
     MString getMode(const MString &vhost);

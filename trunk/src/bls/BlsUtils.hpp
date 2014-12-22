@@ -5,9 +5,13 @@
 #include <MTcpSocket>
 #include <MStream>
 
-#define Process_Role_Worker          0x01
-#define Process_Role_Master         0x02
-#define Process_Role_BackSource     0x03
+#define BLS_RTMP_DEFAULT_PORT           (1935)
+#define BLS_DEFAULT_VHOST               ("__defaultVhost__")
+
+// process role
+#define Process_Role_Worker             (0x01)
+#define Process_Role_Master             (0x02)
+#define Process_Role_BackSource         (0x03)
 
 /*!
     Internal Msg format:
