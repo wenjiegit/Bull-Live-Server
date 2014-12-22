@@ -324,33 +324,33 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
         if (role == Process_Role_BackSource) {
             // if it's in remote mode, back source to origin server
             if (mode == Mode_Remote) {
+                vector<BlsHostInfo> origs = BlsConf::instance()->getOriginInfo(m_vhost);
+                if (origs.empty()) {
+                    log_warn("origin server should not be empty");
+                    ret = merrno = E_ORIGIN_NOT_EXIST;
+                    return ret;
+                }
 
+                // TODO fix support multi-hosts
+                // currently use the first origin address
+                const BlsHostInfo & origin = origs.at(0);
+                BlsBackSource::instance()->add(origin.addr, origin.port, ctx->rtmpUrl->app(), ctx->rtmpUrl->fullUrl());
+
+                log_trace("pull stream from orgin server %s:%d", origin.addr.c_str(), origin.port);
             }
         } else if (role == Process_Role_Worker) {
             muint16 port = BlsServerSelector::instance()->lookUp(url);
             if (!hasBackSource) {
                 // back source to local server
                 BlsBackSource::instance()->add("127.0.0.1", port, ctx->rtmpUrl->app(), ctx->rtmpUrl->fullUrl());
-                log_trace("url %s back source to local server at %d", url.c_str(), port);
-//                if (mode == Mode_Remote) {
-//                    if (port == 0) {
-//                        // back source to local server
-//                        BlsBackSource::instance()->add(ctx->rtmpUrl->vhost(), ctx->rtmpUrl->port(), ctx->rtmpUrl->app(), ctx->rtmpUrl->fullUrl());
-//                        log_trace("begin back source to %s:%d pid=%d", ctx->rtmpUrl->vhost().c_str(), ctx->rtmpUrl->port(), getpid());
-//                    } else if (port > 0) {
-//                        // back source to origin server
-//                        BlsBackSource::instance()->add("127.0.0.1", port, ctx->rtmpUrl->app(), ctx->rtmpUrl->fullUrl());
-//                        log_trace("begin back source to %s:%d pid=%d", "127.0.0.1", port, getpid());
-//                    }
-//                } else if (mode == Mode_Local) {
-//                    BlsBackSource::instance()->add("127.0.0.1", port, ctx->rtmpUrl->app(), ctx->rtmpUrl->fullUrl());      // back source to origin server
-//                }
+
+                log_trace("pull stream from local server %s:%d", url.c_str(), port);
             }
         } else {
             mAssert(false);
         }
 
-        log_trace("begin play : %s", fullUrl.c_str());
+        log_trace("play stream: %s", fullUrl.c_str());
 
         m_source = BlsRtmpSource::findSource(url);
         m_role = Role_Connection_Play;

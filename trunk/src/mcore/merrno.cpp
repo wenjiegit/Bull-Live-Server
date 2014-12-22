@@ -61,6 +61,8 @@ const char *mstrerror(int errnum)
         return "stream file exist";
     case MERROR::E_VHOST_NOT_EXIST:
         return "vhost is not exist";
+    case MERROR::E_ORIGIN_NOT_EXIST:
+        return "origin server is empty";
 
     default:
         return strerror(errnum);

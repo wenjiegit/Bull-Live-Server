@@ -72,8 +72,6 @@ int BlsRtmpProtocol::send_message(BlsRtmpMessage *msg)
 {
     int ret = E_SUCCESS;
 
-    mAssert(msg);
-
     if (msg->header.perfer_cid < 2) {
         log_warn("change the chunk_id=%d to default=%d",
             msg->header.perfer_cid, RTMP_CID_ProtocolControl);

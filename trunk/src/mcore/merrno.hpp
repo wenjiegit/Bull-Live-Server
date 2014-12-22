@@ -49,6 +49,7 @@ const int E_STREAM_BADNAME              = 252;
 const int E_STREAM_FILE_EXIST           = 253;
 
 const int E_VHOST_NOT_EXIST             = 254;
+const int E_ORIGIN_NOT_EXIST            = 255;
 }
 
 #endif // CMERRNO_HPP
