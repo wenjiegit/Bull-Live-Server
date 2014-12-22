@@ -32,6 +32,11 @@ bool BlsConf::useDefaultVhost()
     return containsVhost(BLS_DEFAULT_VHOST);
 }
 
+int BlsConf::chunkSize()
+{
+    return m_chunkSize;
+}
+
 vector<BlsHostInfo> BlsConf::getRtmpListenInfo()
 {
     return m_listenerInfo;
@@ -128,17 +133,17 @@ bool BlsConf::init(const MString &confName)
     // worker count
     MEE *rtmp_listen = root->get("worker_count");
     if (!rtmp_listen) {
-        m_workerCount = Min_Worker_Count;
-        log_warn("No worker_count feild in conf file, reset to default: %d", Min_Worker_Count);
+        m_workerCount = WORKER_COUNT_MIN;
+        log_warn("No worker_count feild in conf file, reset to default: %d", WORKER_COUNT_MIN);
     } else {
         m_workerCount = rtmp_listen->arg0().toInt();
 
-        if (m_workerCount < Min_Worker_Count) {
-            log_warn("worker count range [%d-%d], but actual is %d, reset to %d", Min_Worker_Count, Max_Worker_Count, m_workerCount, Min_Worker_Count);
-            m_workerCount = Min_Worker_Count;
-        } else if (m_workerCount > Max_Worker_Count) {
-            log_warn("worker count range [%d-%d], but actual is %d, reset to %d", Min_Worker_Count, Max_Worker_Count, m_workerCount, Max_Worker_Count);
-            m_workerCount = Max_Worker_Count;
+        if (m_workerCount < WORKER_COUNT_MIN) {
+            log_warn("worker count range [%d-%d], but actual is %d, reset to %d", WORKER_COUNT_MIN, WORKER_COUNT_MAX, m_workerCount, WORKER_COUNT_MIN);
+            m_workerCount = WORKER_COUNT_MIN;
+        } else if (m_workerCount > WORKER_COUNT_MAX) {
+            log_warn("worker count range [%d-%d], but actual is %d, reset to %d", WORKER_COUNT_MIN, WORKER_COUNT_MAX, m_workerCount, WORKER_COUNT_MAX);
+            m_workerCount = WORKER_COUNT_MAX;
         }
     }
 
@@ -159,9 +164,26 @@ bool BlsConf::init(const MString &confName)
         }
     }
 
+    // chunk size
+    MEE *chunk_size = root->get("chunk_size");
+    if (!chunk_size) {
+        // set default
+        m_chunkSize = DEFAULT_CHUNK_SIZE;
+        log_warn("No chunk_size feild in conf file, reset to default: %d", DEFAULT_CHUNK_SIZE);
+    } else {
+        int chunkSize = chunk_size->arg0().toInt();
+        if (chunkSize < CHUNK_SIZE_MIN) {
+            log_warn("chunk size range [%d-%d], but actual is %d, reset to %d", CHUNK_SIZE_MIN, CHUNK_SIZE_MAX, chunkSize, DEFAULT_CHUNK_SIZE);
+            m_chunkSize = DEFAULT_CHUNK_SIZE;
+        } else if (chunkSize > CHUNK_SIZE_MAX) {
+            log_warn("chunk size range [%d-%d], but actual is %d, reset to %d", CHUNK_SIZE_MIN, CHUNK_SIZE_MAX, chunkSize, DEFAULT_CHUNK_SIZE);
+            m_chunkSize = DEFAULT_CHUNK_SIZE;
+        }
+    }
+
     // all vhost
     vector<MEE*> vhosts = root->getVector("vhost");
-    for (int i = 0; i < vhosts.size(); ++i) {
+    for (unsigned int i = 0; i < vhosts.size(); ++i) {
         MEE *ee = vhosts.at(i);
 
         BlsVhost vh;

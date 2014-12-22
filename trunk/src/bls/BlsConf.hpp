@@ -14,8 +14,13 @@ using namespace std;
 #define Mode_Remote         "remote"
 #define Mode_Local          "local"
 
-#define Min_Worker_Count    (1)
-#define Max_Worker_Count    (32)
+#define WORKER_COUNT_MIN    (1)
+#define WORKER_COUNT_MAX    (32)
+
+// default chunk-size
+#define DEFAULT_CHUNK_SIZE      (40960)
+#define CHUNK_SIZE_MAX          (65535)
+#define CHUNK_SIZE_MIN          (128)
 
 struct BlsHostInfo
 {
@@ -61,6 +66,11 @@ public:
     */
     bool useDefaultVhost();
 
+    /*!
+        get chunk size
+    */
+    int chunkSize();
+
     vector<BlsHostInfo> getRtmpListenInfo();
     MString getGopType(const MString &vhost);
     MString getMode(const MString &vhost);
@@ -80,10 +90,11 @@ private:
 private:
     MHash<MString, BlsVhost> m_vhosts;
     vector<BlsHostInfo> m_listenerInfo;
-    int m_workerCount;
     vector<BlsHostInfo> m_backSourceAddr;
-
     vector<BlsHostInfo> m_httpLiveFlvHosts;
+
+    int m_workerCount;
+    int m_chunkSize;
 };
 
 extern "C" {

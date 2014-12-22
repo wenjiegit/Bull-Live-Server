@@ -258,7 +258,7 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
         m_protocol->getRtmpCtx()->streamID = 0;
 
     } else if (name == "play") {
-        if ((ret = m_protocol->setChunkSize(40960)) != E_SUCCESS) {
+        if ((ret = m_protocol->setChunkSize(BlsConf::instance()->chunkSize())) != E_SUCCESS) {
             return ret;
         }
 
