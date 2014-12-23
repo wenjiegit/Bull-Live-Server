@@ -201,7 +201,7 @@ int BlsRtmpConnection::onCommand(BlsRtmpMessage *msg, const MString &name, doubl
         BlsBackSource::instance()->setHasBackSource(url);
 
         // on_publish
-        if ((ret = m_source->onPublish()) != E_SUCCESS) {
+        if ((ret = m_source->onPublish(m_vhost)) != E_SUCCESS) {
             log_error("on publish error. ret=%d", ret);
             return ret;
         }

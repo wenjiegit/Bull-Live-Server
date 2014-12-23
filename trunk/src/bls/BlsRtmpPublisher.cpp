@@ -33,6 +33,7 @@ int BlsRtmpPublisher::run()
         // init
         m_socket = new MTcpSocket(this);
         mAutoFree(MTcpSocket, m_socket);
+        mAutoSleep(1000);
 
         if ((ret = m_socket->initSocket()) != E_SUCCESS) {
             log_error("BlsRtmpPublisher create socket error.");

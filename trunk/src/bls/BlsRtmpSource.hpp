@@ -10,6 +10,7 @@ using namespace std;
 class BlsRtmpMessage;
 class BlsConsumer;
 class BlsRtmpPublisher;
+class BlsFlvRecoder;
 
 class BlsRtmpSource : public MObject
 {
@@ -21,7 +22,7 @@ public:
     int onAudio(BlsRtmpMessage &msg);
     int onMetadata(BlsRtmpMessage &msg);
 
-    int onPublish();
+    int onPublish(const MString &vhost);
     int onUnPublish();
 
     void addPool(BlsConsumer *pool);
@@ -58,6 +59,8 @@ private:
     BlsRtmpPublisher *m_publisher;
     bool m_isActive;
     int m_lockFd;
+
+    BlsFlvRecoder *m_recoder;
 };
 
 #endif // MRTMPSOURCE_HPP

@@ -7,6 +7,8 @@
 #include "BlsChildChannel.hpp"
 #include "BlsUtils.hpp"
 #include "BlsRtmpPublisher.hpp"
+#include "BlsFlvRecoder.hpp"
+#include "BlsRtmpUrl.hpp"
 
 #include <MLoger>
 
@@ -20,6 +22,7 @@ BlsRtmpSource::BlsRtmpSource(const MString &url, MObject *parent)
 {
     m_url = url;
     m_publisher = NULL;
+    m_recoder = NULL;
 }
 
 BlsRtmpSource::~BlsRtmpSource()
@@ -71,7 +74,7 @@ int BlsRtmpSource::onMetadata(BlsRtmpMessage &msg)
     return E_SUCCESS;
 }
 
-int BlsRtmpSource::onPublish()
+int BlsRtmpSource::onPublish(const MString &vhost)
 {
     int ret = E_SUCCESS;
 
@@ -84,6 +87,42 @@ int BlsRtmpSource::onPublish()
         m_publisher->setHost("127.0.0.1", port);
         m_publisher->setUrl(m_url);
         m_publisher->start();
+    } else if (role == Process_Role_BackSource) {
+        DvrInfo info = BlsConf::instance()->getDvrInfo(vhost);
+        if (info.enabled) {
+            BlsRtmpUrl rtmpUrl(m_url);
+            MString fileName = info.path.trimmed() + "/" + rtmpUrl.stream() + ".flv";
+            fileName.replace("//", "/");
+
+            log_trace("start record file : %s", fileName.c_str());
+
+            m_recoder = new BlsFlvRecoder;
+            m_recoder->setFileName(fileName);
+            if (m_recoder->start() != E_SUCCESS) {
+                log_error("start record file failed: %s, so dvr will be disabled.", fileName.c_str());
+                mFree(m_recoder);
+            }
+
+            // push video sh, audo sh, metadata
+            if (m_videoSh) {
+                m_recoder->onMessage(m_videoSh);
+            }
+
+            if (m_audioSh) {
+                m_recoder->onMessage(m_audioSh);
+            }
+
+            if (m_metadata) {
+                m_recoder->onMessage(m_metadata);
+            }
+
+            // push gop data
+            list<BlsRtmpMessage>::iterator iter;
+            for (iter = m_gop.begin(); iter != m_gop.end(); ++iter) {
+                BlsRtmpMessage &msg = *iter;
+                m_recoder->onMessage(&msg);
+            }
+        }
     }
 
     return ret;
@@ -109,6 +148,11 @@ int BlsRtmpSource::onUnPublish()
         if ((ret = release(m_url)) != E_SUCCESS) {
             return ret;
         }
+    }
+
+    if (processIsBackSource()) {
+        log_trace("dvr stopped.");
+        mFree(m_recoder);
     }
 
     return E_SUCCESS;
@@ -212,6 +256,11 @@ int BlsRtmpSource::dispatch(BlsRtmpMessage &msg)
         rp->onMessage(msg);
     }
 
+    // to dvr
+    if (m_recoder) {
+        m_recoder->onMessage(&msg);
+    }
+
     return E_SUCCESS;
 }
 
@@ -231,4 +280,6 @@ int BlsRtmpSource::fastGop(BlsConsumer *pool)
 
         pool->onMessage(msg);
     }
+
+    return E_SUCCESS;
 }

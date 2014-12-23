@@ -93,6 +93,17 @@ vector<BlsHostInfo> BlsConf::getHttpLiveFlvListenInfo()
     return m_httpLiveFlvHosts;
 }
 
+DvrInfo BlsConf::getDvrInfo(const MString &vhost)
+{
+    if (m_vhosts.contains(vhost)) {
+        BlsVhost &host = m_vhosts[vhost];
+        return host.dvrInfo;
+    }
+
+    // empty one
+    return DvrInfo();
+}
+
 bool BlsConf::init(const MString &confName)
 {
     MConf *cf = new MConf(confName);
@@ -228,6 +239,16 @@ bool BlsConf::init(const MString &confName)
             if (enabled && enabled->arg0() == "on") {
                 vh.httpLiveFlvEnabled = true;
             }
+        }
+
+        MEE *dvr = ee->get("dvr");
+        if (dvr) {
+            MEE *pathPtr = dvr->get("path");
+            mAssert(pathPtr);
+            MString path = pathPtr->arg0();
+
+            vh.dvrInfo.enabled = true;
+            vh.dvrInfo.path = path;
         }
 
         // other

@@ -104,7 +104,7 @@ int BlsChild::run()
     while (!RequestStop) {
         BlsInternalMsg msg;
         if ((ret = readInternalMsg(msg, m_socket)) != E_SUCCESS) {
-            log_error("read msg from child channel error");
+            log_error("read msg from master channel error");
             break;
         }
 

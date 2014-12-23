@@ -11,6 +11,7 @@ class BlsFlvRecoder : public MObject
 {
 public:
     BlsFlvRecoder(MObject *parent = 0);
+    ~BlsFlvRecoder();
 
     void setFileName(const MString &name);
     int start();

@@ -30,7 +30,7 @@ BlsChildChannel::~BlsChildChannel()
 int BlsChildChannel::init()
 {
     // wait for master process running.
-    mSleep(5);
+    mSleep(3);
 
     int ret = E_SUCCESS;
 

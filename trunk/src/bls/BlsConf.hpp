@@ -28,6 +28,17 @@ struct BlsHostInfo
     mint16 port;
 };
 
+struct DvrInfo
+{
+    DvrInfo()
+    {
+        enabled = false;
+    }
+
+    bool enabled;
+    MString path;
+};
+
 struct BlsVhost
 {
     BlsVhost()
@@ -40,6 +51,7 @@ struct BlsVhost
     MString gopCache;
     MString mode;
     vector<BlsHostInfo> origins;
+    DvrInfo dvrInfo;
 };
 
 class BlsConf : public MObject
@@ -83,6 +95,12 @@ public:
     bool httpLiveFlvEnabled(const MString &vhost);
 
     vector<BlsHostInfo> getHttpLiveFlvListenInfo();
+
+    /*!
+        get @vhost dvr info
+        @ret dvr info struct.
+    */
+    DvrInfo getDvrInfo(const MString &vhost);
 
 private:
     bool init(const MString &confName);

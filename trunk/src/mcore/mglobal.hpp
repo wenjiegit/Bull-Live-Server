@@ -110,6 +110,30 @@ public:
 #define mMSleep(ms) \
     st_usleep(ms * 1000)
 
+/*!
+    auto sleep by deconstruct
+*/
+class _AutoSleep
+{
+public:
+    _AutoSleep(int ms)
+    {
+        m_ms = ms;
+    }
+
+    ~_AutoSleep()
+    {
+        if (m_ms > 0)
+            mMSleep(m_ms);
+    }
+
+private:
+    int m_ms;
+};
+
+#define mAutoSleep(ms) \
+    _AutoSleep _AutoSleep##ms(ms)
+
 // for string
 #define STR_STR(x) (((string)(x)).c_str())
 

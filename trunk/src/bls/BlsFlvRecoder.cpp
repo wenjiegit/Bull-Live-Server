@@ -48,7 +48,13 @@ static int writeFlv(BlsRtmpMessage *msg, MFile *file)
 
 BlsFlvRecoder::BlsFlvRecoder(MObject *parent)
     : MObject(parent)
+    , m_file(NULL)
 {
+}
+
+BlsFlvRecoder::~BlsFlvRecoder()
+{
+    mFree(m_file);
 }
 
 void BlsFlvRecoder::setFileName(const MString &name)
@@ -58,14 +64,22 @@ void BlsFlvRecoder::setFileName(const MString &name)
 
 int BlsFlvRecoder::start()
 {
+    if (m_file) {
+        log_warn("file has been opened.");
+        return E_SUCCESS;
+    }
+
     m_file = new MFile(m_fileName);
     if (!m_file->open("w")) {
         log_error("open file failed, %s", m_fileName.c_str());
+        mFree(m_file);
         return -1;
     }
+
     m_file->setAutoFlush(true);
 
     // write flv header 9 + 4bytes' previous tag size.
+    // TODO process write error
     m_file->write(flv_header, 13);
 
     return E_SUCCESS;
