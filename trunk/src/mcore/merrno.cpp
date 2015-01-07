@@ -63,6 +63,10 @@ const char *mstrerror(int errnum)
         return "vhost is not exist";
     case MERROR::E_ORIGIN_NOT_EXIST:
         return "origin server is empty";
+    case MERROR::E_F4M_OPEN_FAILED:
+        return "f4m file open failed";
+    case MERROR::E_F4M_WRITE_FAILED:
+        return "f4m file write failed";
 
     default:
         return strerror(errnum);

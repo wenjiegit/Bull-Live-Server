@@ -50,6 +50,10 @@ const int E_STREAM_FILE_EXIST           = 253;
 
 const int E_VHOST_NOT_EXIST             = 254;
 const int E_ORIGIN_NOT_EXIST            = 255;
+
+// hds
+const int E_F4M_OPEN_FAILED             = 2000;
+const int E_F4M_WRITE_FAILED            = 2001;
 }
 
 #endif // CMERRNO_HPP

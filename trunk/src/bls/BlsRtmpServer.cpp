@@ -26,4 +26,6 @@ int BlsRtmpServer::newConnection(MTcpSocket *socket)
     socket->setParent(conn);
     conn->setSocket(socket);
     conn->start();
+
+    return E_SUCCESS;
 }

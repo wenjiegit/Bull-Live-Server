@@ -23,6 +23,13 @@ public:
 
 private:
     int sendHttpLiveFlv(const MString & url);
+
+    /*!
+        @param url : rtmp url
+        @return E_SUCCESS if sucess, or other value
+    */
+    int processFlvPush(const MString & url);
+
     void clean();
 
 private:

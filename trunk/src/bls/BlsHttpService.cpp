@@ -10,9 +10,11 @@
 #include "BlsConsumer.hpp"
 #include "BlsRtmpProtocol.hpp"
 
+// TODO make this an option
 #define HTTP_LIVE_FLV_SUFFIX            ".flv"
 #define HTTP_DYNAMIC_STEAMING_SUFFIX    ".f4m"
 #define HTTP_LIVE_STEAMING_SUFFIX       ".m3u8"
+#define HTTP_LIVE_FLV_PUSH_SUFFIX       ".flv.push"
 
 static char flv_header[] = {'F', 'L', 'V',
                             0x01, 0x05, 0x00, 0x00, 0x00, 0x09,
@@ -77,6 +79,7 @@ int BlsHttpClient::run()
     }
 
     if (tempUrl.path().endWith(HTTP_LIVE_FLV_SUFFIX)) {
+        // TODO make "1935" to option, from blsconf
         MString rtmpStr = "rtmp://" + vhost + ":1935" + tempUrl.path();
         int suffixLen = sizeof(HTTP_LIVE_FLV_SUFFIX);
         rtmpStr = rtmpStr.substr(0, rtmpStr.size() - suffixLen + 1);
@@ -85,13 +88,21 @@ int BlsHttpClient::run()
         if (ret != E_SUCCESS) {
             log_trace("Http Live Flv finished.");
         }
+    } else if (tempUrl.path().endWith(HTTP_LIVE_FLV_PUSH_SUFFIX)) {
+        MString rtmpStr = "rtmp://" + vhost + ":1935" + tempUrl.path();
+        int suffixLen = sizeof(HTTP_LIVE_FLV_SUFFIX);
+        rtmpStr = rtmpStr.substr(0, rtmpStr.size() - suffixLen + 1);
+
+        int ret = processFlvPush(rtmpStr);
+        if (ret != E_SUCCESS) {
+            log_trace("flv push finished.");
+        }
     }
 
     else {
 
     }
 
-end:
     clean();
 
     return ret;
@@ -133,6 +144,26 @@ int BlsHttpClient::sendHttpLiveFlv(const MString &url)
 
         mMSleep(5);
     }
+
+    return E_SUCCESS;
+}
+
+int BlsHttpClient::processFlvPush(const MString &url)
+{
+    // response http header
+    MHttpResponseHeader header;
+    header.setStatusLine(200);
+    header.addValue("Connection", "close");
+    header.addValue("Accept-Ranges", "bytes");
+    header.addValue("Cache-Control", "no-store");
+    header.setContentType(MHttpHeader::contentType("flv"));
+
+    if (response(header) != E_SUCCESS) {
+        log_error("response flv push failed.");
+        return -1;
+    }
+
+     // BlsRtmpSource *source = BlsRtmpSource::findSource(url);
 
     return E_SUCCESS;
 }

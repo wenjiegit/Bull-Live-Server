@@ -11,6 +11,7 @@ class BlsRtmpMessage;
 class BlsConsumer;
 class BlsRtmpPublisher;
 class BlsFlvRecoder;
+class BlsHDS;
 
 class BlsRtmpSource : public MObject
 {
@@ -61,6 +62,7 @@ private:
     int m_lockFd;
 
     BlsFlvRecoder *m_recoder;
+    BlsHDS *m_hds;
 };
 
 #endif // MRTMPSOURCE_HPP

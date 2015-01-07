@@ -34,7 +34,8 @@ bls_SOURCES = \
 	BlsStatistics.cpp \
 	BlsHttpService.cpp \
 	BlsRtmpPublisher.cpp \
-	BlsServerSelector.cpp
+	BlsServerSelector.cpp \
+	BlsHDS.cpp
 
 noinst_HEADERS = \
 	BlsRtmpConnection.hpp \
@@ -60,6 +61,7 @@ noinst_HEADERS = \
 	BlsHttpService.hpp \
 	BlsRtmpPublisher.hpp \
 	BlsServerSelector.hpp
+	BlsHDS.hpp
 
 all-am:
 	@echo -e "\\e[32m"

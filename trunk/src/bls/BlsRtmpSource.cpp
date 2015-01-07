@@ -9,6 +9,7 @@
 #include "BlsRtmpPublisher.hpp"
 #include "BlsFlvRecoder.hpp"
 #include "BlsRtmpUrl.hpp"
+#include "BlsHDS.hpp"
 
 #include <MLoger>
 
@@ -20,9 +21,11 @@ BlsRtmpSource::BlsRtmpSource(const MString &url, MObject *parent)
     , m_audioSh(NULL)
     , m_metadata(NULL)
 {
+    // TODO to init in init list
     m_url = url;
     m_publisher = NULL;
     m_recoder = NULL;
+    m_hds = NULL;
 }
 
 BlsRtmpSource::~BlsRtmpSource()
@@ -73,7 +76,7 @@ int BlsRtmpSource::onMetadata(BlsRtmpMessage &msg)
 
     return E_SUCCESS;
 }
-
+#include <iostream>
 int BlsRtmpSource::onPublish(const MString &vhost)
 {
     int ret = E_SUCCESS;
@@ -122,6 +125,20 @@ int BlsRtmpSource::onPublish(const MString &vhost)
                 BlsRtmpMessage &msg = *iter;
                 m_recoder->onMessage(&msg);
             }
+        }
+
+        HDSInfo hds = BlsConf::instance()->getHDSInfo(vhost);
+        if (hds.enabled) {
+            m_hds = new BlsHDS;
+
+            BlsRtmpUrl rtmpUrl(m_url);
+            BlsHDS::BlsHDSCtx ctx;
+            ctx.durationMs = hds.segmentDuration;
+            ctx.segmentPath = hds.path;
+            ctx.streamName = rtmpUrl.stream();
+            ctx.windowSize = hds.windowSize;
+
+            m_hds->setCtx(ctx);
         }
     }
 

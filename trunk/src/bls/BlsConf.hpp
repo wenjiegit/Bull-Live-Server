@@ -22,6 +22,10 @@ using namespace std;
 #define CHUNK_SIZE_MAX          (65535)
 #define CHUNK_SIZE_MIN          (128)
 
+// HDS
+#define HDS_DEFAULT_DURATION     (4000)
+#define HDS_DEFAULT_WINDOW_SIZE  (40000)
+
 struct BlsHostInfo
 {
     MString addr;
@@ -39,6 +43,21 @@ struct DvrInfo
     MString path;
 };
 
+struct HDSInfo
+{
+    HDSInfo()
+    {
+        enabled = false;
+        segmentDuration = HDS_DEFAULT_DURATION;
+        windowSize = HDS_DEFAULT_WINDOW_SIZE;
+    }
+
+    bool enabled;
+    MString path;
+    int segmentDuration;
+    int windowSize;
+};
+
 struct BlsVhost
 {
     BlsVhost()
@@ -52,6 +71,7 @@ struct BlsVhost
     MString mode;
     vector<BlsHostInfo> origins;
     DvrInfo dvrInfo;
+    HDSInfo hdsInfo;
 };
 
 class BlsConf : public MObject
@@ -101,6 +121,11 @@ public:
         @ret dvr info struct.
     */
     DvrInfo getDvrInfo(const MString &vhost);
+
+    /*!
+        get hds info of @vhost
+    */
+    HDSInfo getHDSInfo(const MString &vhost);
 
 private:
     bool init(const MString &confName);

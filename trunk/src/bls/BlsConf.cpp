@@ -104,6 +104,17 @@ DvrInfo BlsConf::getDvrInfo(const MString &vhost)
     return DvrInfo();
 }
 
+HDSInfo BlsConf::getHDSInfo(const MString &vhost)
+{
+    if (m_vhosts.contains(vhost)) {
+        BlsVhost &host = m_vhosts[vhost];
+        return host.hdsInfo;
+    }
+
+    // empty one
+    return HDSInfo();
+}
+
 bool BlsConf::init(const MString &confName)
 {
     MConf *cf = new MConf(confName);
@@ -249,6 +260,32 @@ bool BlsConf::init(const MString &confName)
 
             vh.dvrInfo.enabled = true;
             vh.dvrInfo.path = path;
+        }
+
+        MEE *hds = ee->get("hds");
+        if (hds) {
+            MEE *enabled = hds->get("enabled");
+            if (enabled && enabled->arg0() == "on") {
+                vh.hdsInfo.enabled = true;
+            }
+
+            MEE *hdsPath = hds->get("hds_path");
+            if (!hdsPath) {
+                log_warn("you enabled the hds module, but hds_path field is empty !!");
+                mAssert(hdsPath);
+            }
+
+            vh.hdsInfo.path = hdsPath->arg0();
+
+            MEE *segmentDuration = hds->get("hds_segment_duration");
+            if (segmentDuration) {
+                vh.hdsInfo.segmentDuration = segmentDuration->arg0().toInt();
+            }
+
+            MEE *windowSize = hds->get("hds_window_size");
+            if (windowSize) {
+                vh.hdsInfo.windowSize = windowSize->arg0().toInt();
+            }
         }
 
         // other
