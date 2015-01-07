@@ -77,7 +77,6 @@ struct BlsVhost
 class BlsConf : public MObject
 {
 public:
-    int m_rtmpInternalPort;
     int m_processRole;
 
 public:

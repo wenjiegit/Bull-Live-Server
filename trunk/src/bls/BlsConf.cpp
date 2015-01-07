@@ -121,8 +121,6 @@ bool BlsConf::init(const MString &confName)
 
     MEE *root = cf->root();
 
-    m_rtmpInternalPort = 1961;
-
     // rtmp listen
     MStringList args = root->get("rtmp_listen")->arguments();
     for (MStringList::iterator iter = args.begin(); iter != args.end(); ++iter) {
@@ -193,7 +191,7 @@ bool BlsConf::init(const MString &confName)
         m_chunkSize = DEFAULT_CHUNK_SIZE;
         log_warn("No chunk_size feild in conf file, reset to default: %d", DEFAULT_CHUNK_SIZE);
     } else {
-        int chunkSize = chunk_size->arg0().toInt();
+        int chunkSize = m_chunkSize = chunk_size->arg0().toInt();
         if (chunkSize < CHUNK_SIZE_MIN) {
             log_warn("chunk size range [%d-%d], but actual is %d, reset to %d", CHUNK_SIZE_MIN, CHUNK_SIZE_MAX, chunkSize, DEFAULT_CHUNK_SIZE);
             m_chunkSize = DEFAULT_CHUNK_SIZE;
