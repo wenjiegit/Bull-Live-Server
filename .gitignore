@@ -40,7 +40,6 @@ configure
 depcomp
 config.log
 config.status
-bls
 autom4te.cache
 bls.creator.user
 config.h
